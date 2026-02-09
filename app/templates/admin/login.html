@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>HMD Hermada HR Solution Corporation :: cPanel - Login</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{{ url_for('static', filename='admin/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{{ url_for('static', filename='admin/css/sb-admin-2.min.css') }}" rel="stylesheet">
+
+    <!-- Font Awesome (for eye icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Sweetalert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .overlay {
+            display: none;
+            height: 100%;
+            width: 100%;
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            background-color: rgb(0,0,0); /* Black fallback color */
+            background-color: rgba(0,0,0, 0.7); /* Black w/opacity */
+            overflow-x: hidden; /* Disable horizontal scroll */
+            transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+        }
+
+        .overlay-content {
+            position: relative;
+            top: 25%; /* 25% from the top */
+            width: 100%; /* 100% width */
+            text-align: center; /* Centered text/links */
+            margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+        }
+
+        body.bg-color {
+            background-color: #0ef334;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+        }
+
+        .card {
+            width: 100%;
+            max-width: 800px; /* You can adjust width */
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                max-width: 90%;
+                margin: 20px;
+            }
+        }
+
+         /* Eye icon inside input */
+        .toggle-password {
+          position: absolute;
+          top: 75%;
+          right: 15px;
+          transform: translateY(-50%);
+          cursor: pointer;
+          color: #6c757d;
+        }
+    
+        .toggle-password:hover {
+          color: #000;
+        }
+
+        .btn-apply {
+            background-color: #0ef334;
+            border-color: #0ef334;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .btn-apply:hover {
+            background-color: #0ee231;
+            color: #000;
+        }
+
+        html {
+          overflow-y: scroll; /* Always show scrollbar (even if not needed) */
+        }
+
+        body.bg-color {
+          background-color: #0ef334;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          overflow-x: hidden;
+          transition: none !important;
+        }
+
+        .swal2-container {
+          overflow-y: hidden !important;
+        }
+
+    </style>
+</head>
+
+<body class="bg-color">
+
+    <div class="card o-hidden border-0 shadow-lg">
+        <div class="card-body p-0">
+            <div class="row">
+                <!-- Optional: hide image on small screens -->
+                <div class="col-lg-6 d-none d-lg-block"><img src="{{ url_for('static', filename='admin/img/hmd-login-logo.jpg') }}" alt="" width="450" height="400"></div>
+                <div class="col-lg-6">
+                    <div class="p-5">
+                        <div class="text-center">
+                            <h1 class="h4 text-gray-900 mb-4">HMD Hermada cPanel</h1>
+                        </div>
+                        <form class="user formValidation" method="POST" action="{{ url_for('auth.login') }}">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+						                	{% if messages %}
+						                		  {% for category, message in messages %}
+						                		  <script>
+                                    document.addEventListener("DOMContentLoaded", function() {
+                                      Swal.fire({
+                                        icon: '{{ category }}',
+                                        title: ( '{{ category }}' === 'success' ? 'Success' : '{{ category }}' === 'error' ? 'Error' : 'Notice' ),
+                                        text: '{{ message }}',
+                                        scrollbarPadding: false,
+                                        allowOutsideClick: false,
+                                        backdrop: true,
+                                        willOpen: () => {
+                                          // Prevent scrollbar or layout jump
+                                          document.body.style.paddingRight = '0px';
+                                          document.documentElement.style.overflowY = 'hidden';
+                                        },
+                                        didClose: () => {
+                                          // Restore scroll after closing
+                                          document.documentElement.style.overflowY = 'scroll';
+                                        }
+                                      });
+                                    });
+                                  </script>
+						                		  {% endfor %}
+						                	{% endif %}
+						                {% endwith %}
+                            <div class="form-group">
+                                <input type="hidden" name="csrf_token" value = "{{ csrf_token() }}" />
+                                <input type="email" name="txtEmail" class="form-control form-control-user"
+                                    id="exampleInputEmail" aria-describedby="emailHelp"
+                                    placeholder="Enter Email Address...">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="txtPassword" class="form-control form-control-user"
+                                    id="exampleInputPassword" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox small">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck">
+                                    <label class="custom-control-label" for="customCheck">Remember Me</label>
+                                </div>
+                            </div>
+                            <!-- <a href="index.html" class="btn btn-primary btn-user btn-block">
+                                Login
+                            </a> -->
+                            <button class="btn btn-apply btn-user btn-block" name="btnLogin" onclick="PWRLoginClicked();" id="btnLogin">Login</button>
+                        </form>
+                        <hr>
+                        <div class="text-center">
+                            <a class="small" href="#" data-toggle="modal" data-target="#exampleModal">Forgot Password?</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pwrOverlay" class="overlay">
+        <div class="overlay-content">
+            <div style="display: inline-block; width: 200px">
+                <div style="font-size: 20px; font-weight: bold; text-align: center; width: 100%;"></div>
+                <img src="{{ url_for('static', filename='admin/img/login-loading.gif') }}" style="width: 180px" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Forgot Password</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="txtemail" class="col-form-label">Email Address</label>
+                <input type="email" class="form-control" id="txtemail" name="txtemail" placeholder="Enter your email">
+              </div>
+
+              <!-- New Password -->
+              <div class="form-group position-relative">
+                <label for="txtnewpassword" class="col-form-label">New Password</label>
+                <input type="password" class="form-control" id="txtnewpassword" name="txtnewpassword" placeholder="Enter new password">
+                <i class="fas fa-eye toggle-password" toggle="#txtnewpassword"></i>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="form-group position-relative">
+                <label for="txtconfirmpassword" class="col-form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="txtconfirmpassword" name="txtconfirmpassword" placeholder="Confirm new password">
+                <i class="fas fa-eye toggle-password" toggle="#txtconfirmpassword"></i>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- script for pwr loading -->
+    <script src="{{ url_for('static', filename='administrator/js/jquery-1.10.2.js') }}"></script>
+
+    <script id="LoginJavascript" type="text/javascript">
+      var isPWRSubmitClicked = false;
+      $(function () {
+          $("input").bind("keydown", function (event) {
+              // track enter key
+              var keycode = (event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode));
+              if (keycode == 13 && isPWRSubmitClicked == false) { // keycode for enter key
+                 isPWRSubmitClicked = true;
+                 $("#btnLogin").click();
+                  return false;
+              } else {
+                  return true;
+              }
+          });
+      });
+
+      function PWRLoginClicked() {
+          $("#pwrOverlay").css("display", "block");
+          if (isPWRSubmitClicked == false){
+              isPWRSubmitClicked = true;
+              return true;
+          }
+          return false;
+      }
+    </script>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{{ url_for('static', filename='admin/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='admin/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='admin/js/sb-admin-2.min.js') }}"></script>
+
+    <!-- Script to toggle password visibility -->
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(function(icon) {
+          icon.addEventListener('click', function() {
+            const input = document.querySelector(this.getAttribute('toggle'));
+            if (input.type === 'password') {
+              input.type = 'text';
+              this.classList.remove('fa-eye');
+              this.classList.add('fa-eye-slash');
+            } else {
+              input.type = 'password';
+              this.classList.remove('fa-eye-slash');
+              this.classList.add('fa-eye');
+            }
+          });
+        });
+    </script>
+
+</body>
+
+</html>

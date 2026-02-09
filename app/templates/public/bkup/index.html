@@ -1,0 +1,1129 @@
+{% extends 'public/base.html' %}
+
+{% block title %} HMD Hermada - We set the gold standard in people solutions   {% endblock %}
+
+{% block head %}
+
+<style>
+/* ===========================
+   COMMON & SHARED STYLES
+=========================== */
+.service-details-wrapper,
+.service-details-wrapper .container {
+  display: flex;
+  justify-content: center;
+}
+
+.service-details-wrapper {
+  border-radius: 16px;
+}
+
+.service-details-wrapper .container {
+  max-width: 1140px;
+  width: 100%;
+  margin: 0 auto;
+  flex-direction: column;
+  padding: 0 15px;
+}
+
+.service-details {
+  display: none;
+  animation: fadeUp 0.4s ease;
+  padding: 30px 0;
+  border-radius: 16px;
+}
+
+.service-details.active { display: block; }
+
+.service-details h2 {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.service-details p {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333;
+  margin-bottom: 25px;
+
+  /* Alignment logic para pumantay sa UL */
+  max-width: 800px;      /* Pareho sa max-width ng UL */
+  margin-left: auto;     /* Gigitna ang block */
+  margin-right: auto;    /* Gigitna ang block */
+  text-align: left;      /* Left-aligned ang text sa loob para pantay sa bullets */
+}
+
+/* LIST STYLING */
+.service-details ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin-top: 10px;
+}
+
+.service-details ul li {
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 6px;
+  font-size: 14.5px;
+  line-height: 1.35;
+  color: #333;
+}
+
+.service-details ul li::before,
+.service-details ul li ul li::before {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #dec55d;
+}
+
+.service-details ul li::before {
+  content: "▶";
+  font-size: 10px;
+}
+
+.service-details ul li ul {
+  margin: 8px 0 0 15px !important;
+}
+
+.service-details ul li ul li {
+  font-size: 13.5px;
+  color: #555;
+  padding-left: 20px;
+  margin-bottom: 4px;
+}
+
+.service-details ul li ul li::before {
+  content: "▹";
+  font-size: 14px;
+}
+
+/* INTERACTIVE STATES */
+.service-item.active,
+.service-accordion.active {
+  background-color: #dec55d;
+}
+
+.service-item, .service-accordion {
+  cursor: pointer;
+}
+
+.service-item {
+  border-radius: 16px;
+  position: relative;
+  pointer-events: auto;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===========================
+   RESPONSIVE LAYOUTS
+=========================== */
+
+/* TABLET (iPad Mini & Air) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  section#services { padding-top: 15px !important; }
+
+  .services .container {
+    max-width: 90% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+
+  .services .row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin: 0 0 20px 0 !important;
+  }
+
+  .services .row > [class*="col-"] {
+    flex: 1 1 0 !important;
+    max-width: 18.5% !important;
+    padding: 0 !important;
+    display: flex !important;
+  }
+
+  .service-item {
+    width: 100% !important;
+    height: 145px !important;
+    padding: 10px 5px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .service-item .icon img {
+    width: 45px !important;
+    height: 45px !important;
+    object-fit: contain;
+    margin: 15px 0 10px 0 !important;
+  }
+
+  .service-item h3 {
+    font-size: 8px !important;
+    line-height: 1.2;
+    margin: 0 !important;
+    font-weight: 700;
+    word-break: break-word;
+  }
+}
+
+/* DESKTOP (>1024px) - UPDATED VERSION */
+@media (min-width: 1025px) {
+  .service-details-wrapper .container { padding: 0 15px; }
+  .service-details { padding: 30px 0; }
+
+  /* Target all the paragraph inside the details to align the list */
+  .service-details p {
+    max-width: 800px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: left; /* Left-aligned for bullets alignment */
+  }
+
+  /* This is for normal list connected to Service Detail Section CSS */
+  .service-details:not(#training):not(#team):not(#hr):not(#corporate):not(#talent):not(#branding) ul { /* in :not input the services id that not included in the normal list */
+    display: block;
+    column-count: 2;
+    column-gap: 40px;
+    max-width: 800px;
+    margin: 0 auto !important;
+    text-align: left;
+  }
+}
+
+
+/* ===========================
+   SERVICES SECTION – DESKTOP TUNING
+=========================== */
+@media (min-width: 1025px) {
+
+  /* Service card / button */
+  .services .service-item {
+    height: 180px;              /* mas balanced height */
+    padding: 20px 15px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    transition: all 0.25s ease;
+  }
+
+  /* Icon wrapper spacing */
+  .services .service-item .icon {
+    margin-top: 1px;
+    margin-bottom: 1px;
+  }
+
+  /* Logo / image size */
+  .services .service-item .icon img {
+    width: 50px;                /* uniform size */
+    height: 50px;
+    object-fit: contain;
+  }
+
+  /* Title text */
+  .services .service-item h3 {
+    font-size: 12px;            /* desktop-appropriate */
+    line-height: 1;
+    font-weight: 700;
+    margin: 0;
+    max-width: 155px;           /* para di sobrang haba */
+  }
+
+  /* Hover (optional pero ganda tingnan) */
+  .services .service-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  }
+}
+
+
+
+/* CSS – Watermark Layer (DESKTOP + TABLET ONLY) */
+/* ===========================
+   WATERMARK – DESKTOP + iPAD SAFE
+=========================== */
+@media (min-width: 768px) {
+
+  .service-item {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    background-color: #fff;
+  }
+
+  /* WATERMARK IMAGE */
+  .service-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image: var(--service-bg);
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: 100%;              /* iPad friendly */
+
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    z-index: 0;
+
+    /* iPad Safari SAFE */
+    filter: grayscale(100%) brightness(1.15);
+    pointer-events: none;
+  }
+
+  /* ACTIVE STATE (touch devices) */
+  .service-item.active::after {
+    opacity: 0.22;                     /* mas visible sa iPad */
+  }
+
+  /* HOVER (desktop only – harmless sa iPad) */
+  .service-item:hover::after {
+    opacity: 0.18;
+  }
+
+  /* Keep content above watermark */
+  .service-item > * {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+
+
+
+
+
+
+
+/* ============================
+  SERVICE DETAILS SECTION LAYOUT
+============================ */
+.columns-wrapper {
+  display: flex;
+  align-items: stretch;    /* The 'stretch' property is essential for leveling the height of both columns. */
+  justify-content: center;
+  gap: 50px;
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+
+.image-side {
+  flex: 1;
+  display: flex;          /* Prevents empty space from appearing at the bottom of the container. */
+  flex-direction: column;
+}
+
+.image-side img {
+  width: 100%;
+  height: auto;           /* Maintains aspect ratio */
+  display: block;
+}
+
+.details-side {
+  flex: 1.5;
+  padding-left: 30px;
+  border-left: 2px solid #27ae60;   /* This border will stretch to match the height of the longest column. */
+
+  /* Using flex-direction: column to manage internal layout spacing." */
+  display: flex;
+  flex-direction: column;
+}
+
+.training-desc {
+  font-size: 16px;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.list-grid {
+  display: flex;
+  gap: 30px;                      /* Distance between the first and second columns. */
+  justify-content: flex-start;    /* Aligned/snapped to the left. */
+  align-items: flex-start;
+}
+
+.list-grid ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  /* Instead of flex: 1, we will use a fixed width. */
+  flex: 0 0 220px !important;
+  min-width: 220px;
+}
+
+.list-grid li {
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  position: relative;
+  padding-left: 20px;
+}
+
+.list-grid li::before {
+  content: "▶";
+  color: #f1c40f;
+  font-size: 10px;
+  position: absolute;
+  left: 0;
+  top: 3px;
+}
+
+
+/* =================================================
+  SERVICE DETAILS SECTION LAYOUT - (MOBILE (<768px)
+================================================ */
+@media (max-width: 767px) {
+  .service-details-wrapper .container { padding: 0; }
+  .service-details { padding: 18px 16px; margin: 10px 0; }
+  .services .row { display: none; }
+
+  /* 1. Itago ang Image at Paragraph Description sa Mobile */
+  .image-side {
+    display: none !important;
+  }
+
+  /* 2. Ayusin ang Columns Wrapper para hindi maging Flex-Row */
+  .columns-wrapper {
+    display: block; /* Imbes na flex */
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  /* 3. Tanggalin ang Vertical Green Line at Padding-left */
+  .details-side {
+    padding-left: 0 !important;
+    border-left: none !important;
+    flex: none;
+    width: 100%;
+  }
+
+  /* 4. Ayusin ang List Grid para maging isang column lang sa Mobile */
+  .list-grid {
+    display: flex;
+    flex-direction: column; /* Stacks the two ULs vertically */
+    gap: 0;
+  }
+
+  .list-grid ul {
+    flex: 0 0 100% !important;
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .list-grid li {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  /* Rest of your accordion styles */
+  .service-accordion {
+    background: #ebe8e8bb;
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    transition: background 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .service-accordion-header, .service-accordion .left {
+    display: flex;
+    align-items: center;
+  }
+
+  .service-accordion-header { justify-content: space-between; }
+  .service-accordion .left { gap: 14px; }
+  .service-accordion img { width: 42px; }
+  .service-accordion span { font-weight: 700; font-size: 16px; }
+
+  .chevron {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .service-accordion.active .chevron { transform: rotate(180deg); }
+  .service-details h2 { display: none; }
+}
+
+
+
+
+
+
+/* TITLE SECTION */
+.title-section-title {
+  text-align: center;
+  padding-bottom: 1px;
+  position: relative;
+}
+
+.title-section-title h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+.title-section-title h2:after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 50px;
+  height: 3px;
+  background: var(--accent-color);
+  left: 0; right: 0; bottom: 0;
+  margin: auto;
+}
+
+.title-section-title p { margin-bottom: 0; }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+  <main class="main">
+
+    <!-- Banner Section -->
+    <section class="banner-container">
+      <div class="container d-flex justify-content-center">
+        <div class="banner-content">
+          <img src="{{ url_for('static', filename='public/images/hmd-logo-banner-3.png') }}" alt="HMD Logo Banner" class="banner-logo">
+          <h1 class="main-text">
+            We set the<br>
+            <span class="gold-text">GOLD STANDARD</span><br>
+            in people solutions
+          </h1>
+          <p class="sub-text">Every solution we deliver is designed to meet the exact need of our clients.<br>
+            We create programs that are relevant, result-driven, and impactful, delivered with<br>
+            the speed, precision, and quality that define #TheGoldStandard.
+          </p>
+        </div>
+      </div>
+    </section>
+    <!-- /Banner Section -->
+
+    <!-- Services Section -->
+    <section id="services" class="services section light-background">
+      <div class="container">
+
+        <!-- MOBILE SERVICES ACCORDION -->
+        <div class="mobile-services d-md-none">
+
+          <div class="service-accordion" data-service="training">
+            <div class="service-accordion-header">
+              <div class="left">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/professional-development-training.png') }}">
+                <span>Professional Development Training</span>
+              </div>
+              <span class="chevron">⌄</span>
+            </div>
+          </div>
+
+          <div class="service-accordion" data-service="team">
+            <div class="service-accordion-header">
+              <div class="left">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/team-building-events.png') }}">
+                <span>Team Building Events</span>
+              </div>
+              <span class="chevron">⌄</span>
+            </div>
+          </div>
+
+          <div class="service-accordion" data-service="hr">
+            <div class="service-accordion-header">
+              <div class="left">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/organization-development-human-resource-consultancy.png') }}">
+                <span>Organizational Development & Human Resource Consultancy</span>
+              </div>
+              <span class="chevron">⌄</span>
+            </div>
+          </div>
+
+          <div class="service-accordion" data-service="corporate">
+            <div class="service-accordion-header">
+              <div class="left">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/corporate-events-activations.png') }}">
+                <span>Corporate Events and Activations</span>
+              </div>
+              <span class="chevron">⌄</span>
+            </div>
+          </div>
+
+          <div class="service-accordion" data-service="talent">
+            <div class="service-accordion-header">
+              <div class="left">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/talent-acquisition-executive-headhunting.png') }}">
+                <span>Talent Acquisition & Executive Headhunting</span>
+              </div>
+              <span class="chevron">⌄</span>
+            </div>
+          </div>
+
+          <div class="service-accordion" data-service="branding">
+            <div class="service-accordion-header">
+              <div class="left">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/creative-employer-branding-solutions.png') }}">
+                <span>Creative Employer Branding Solutions</span>
+              </div>
+              <span class="chevron">⌄</span>
+            </div>
+          </div>
+
+        </div>
+        <!-- /MOBILE SERVICES ACCORDION -->
+
+        <div class="row justify-content-center gy-4 gx-4">
+
+          <!-- <div class="col-lg-2 col-md-4 col-sm-6" data-aos="fade-up" data-aos-delay="100"> -->
+          <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="service-item item-cyan position-relative service-tab active" data-service="training" data-bg="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-training.jpg') }}">
+
+              <div class="icon">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/professional-development-training.png') }}" height="70" width="60">
+              </div>
+
+              <a href="javascript:void(0)" class="stretched-link" title="HMD Hermada | Professional Development Training">
+                <h3>Professional Development Training</h3>
+              </a>
+
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="service-item item-cyan position-relative service-tab" data-service="team" data-bg="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-team-bulding.jpg') }}">
+
+              <div class="icon">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/team-building-events.png') }}" height="70" width="60">
+              </div>
+
+              <a href="javascript:void(0)" class="stretched-link" title="HMD Hermada | Team Building Events">
+                <h3>Team Building Events</h3>
+              </a>
+
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="service-item item-cyan position-relative service-tab" data-service="hr" data-bg="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-hr.jpg') }}">
+
+              <div class="icon">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/organization-development-human-resource-consultancy.png') }}" height="70" width="60">
+              </div>
+
+              <a href="javascript:void(0)" class="stretched-link" title="HMD Hermada | Organization Development & Human Resources Consultancy">
+                <h3>Organization Development & Human Resources Consultancy</h3>
+              </a>
+
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="service-item item-cyan position-relative service-tab" data-service="corporate" data-bg="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-corporate-event.jpg') }}">
+
+              <div class="icon">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/corporate-events-activations.png') }}" height="70" width="60">
+              </div>
+
+              <a href="javascript:void(0)" class="stretched-link" title="HMD Hermada | Corporate Events and Activations">
+                <h3>Corporate Events and Activations</h3>
+              </a>
+
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="service-item item-cyan position-relative service-tab" data-service="talent" data-bg="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-talent.jpg') }}">
+
+              <div class="icon">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/talent-acquisition-executive-headhunting.png') }}" height="70" width="60">
+              </div>
+
+              <a href="javascript:void(0)" class="stretched-link" title="HMD Hermada | Talent Acquisition & Executive Headhunting">
+                <h3>Talent Acquisition & Executive Headhunting</h3>
+              </a>
+
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="service-item item-cyan position-relative service-tab" data-service="branding" data-bg="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-creative.jpg') }}">
+
+              <div class="icon">
+                <img src="{{ url_for('static', filename='public/images/home-services-logo/creative-employer-branding-solutions.png') }}" height="70" width="60">
+              </div>
+
+              <a href="javascript:void(0)" class="stretched-link" title="HMD Hermada | Creative Employer Branding Solutions">
+                <h3>Creative Employer Branding Solutions</h3>
+              </a>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+    <!-- /Services Section -->
+
+    <!-- Services Details Section -->
+    <div class="service-details-wrapper">
+      <div class="container">
+
+        <div class="service-details active" id="training">
+          <div class="container title-section-title">
+            <h2>PROFESSIONAL DEVELOPMENT TRAINING</h2>
+          </div>
+
+          <div class="columns-wrapper">
+
+            <div class="column-item image-side">
+              <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-training.jpg') }}" alt="Corporate Training">
+            </div>
+
+            <div class="column-item details-side">
+              <p class="training-desc">
+                World-class programs that develop skills, inspire leadership, and unlock peak performance.
+              </p>
+
+              <div class="list-grid">
+                <ul>
+                  <li>Core Business & Professional Skills</li>
+                  <li>Leadership & Management Development</li>
+                  <li>Sales Marketing & Customer Excellence</li>
+                </ul>
+                <ul>
+                  <li>Human Resources, People & Culture</li>
+                  <li>Personal Effectiveness & Growth</li>
+                  <li>Custom Modules</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="service-details" id="team">
+          <div class="container title-section-title">
+            <h2>TEAM BUILDING EVENTS</h2>
+          </div>
+
+          <div class="columns-wrapper">
+            <div class="column-item image-side">
+              <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-team-bulding.jpg') }}" alt="Team Building">
+            </div>
+
+            <div class="column-item details-side">
+              <p class="training-desc">
+                Immersive and results-driven experiences, from half-day facilitation to full-day programs, that strengthen collaboration and culture.
+              </p>
+
+              <div class="list-grid">
+                <ul>
+                  <li>Indoor</li>
+                  <li>Outdoor</li>
+                  <li>Team Retreats</li>
+                </ul>
+                <ul>
+                  <li>Hermada Missions Stations</li>
+                  <li>Amazing Race</li>
+                  <li>Sportfest</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="service-details" id="hr">
+          <div class="container title-section-title">
+            <h2>ORGANIZATION DEVELOPMENT & HUMAN RESOURCE CONSULTANCY</h2>
+          </div>
+          <div class="columns-wrapper">
+              <div class="column-item image-side">
+                <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-hr.jpg') }}" alt="Team Building">
+              </div>
+
+              <div class="column-item details-side">
+                <p>
+                  Expert guidance that aligns people, processes, and organizational strategy for sustainable success.
+                </p>
+
+                <div class="list-grid">
+                  <ul>
+                    <li>Organizational Design & Development</li>
+                    <li>Talent Management & Workforce Planning</li>
+                    <li>Learning, Leadership & Capability Development</li>
+                  </ul>
+                  <ul>
+                    <li>HR Strategy, Policies & Compliance</li>
+                    <li>Employee Experience, Engagement & Wellbeing</li>
+                  </ul>
+                </div>
+              </div>
+          </div>
+        </div>
+
+
+        <div class="service-details" id="corporate">
+          <div class="container title-section-title">
+            <h2>CORPORATE EVENTS AND ACTIVATIONS</h2>
+          </div>
+
+          <div class="columns-wrapper">
+              <div class="column-item image-side">
+                <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-corporate-event.jpg') }}" alt="Team Building">
+              </div>
+
+              <div class="column-item details-side">
+                <p>
+                  End-to-end management of people and brand events including sports fests, anniversaries, Christmas parties, conferences, expos, and caravans that engage employees and strengthen your employer brand.
+                </p>
+
+                <div class="list-grid">
+                  <ul>
+                    <li>Event Strategy & Concept Development</li>
+                    <li>End-to-end Event Planning and Project Management</li>
+                    <li>Corporate Events Execution</li>
+                  </ul>
+                  <ul>
+                    <li>Brand Activations & Experiential Marketing</li>
+                    <li>Production Technology & Logistics</li>
+                    <li>Post-Event Measurement & Engagement</li>
+                  </ul>
+                </div>
+              </div>
+
+          </div>
+        </div>
+
+
+        <div class="service-details" id="talent">
+          <div class="container title-section-title">
+            <h2>TALENT ACQUISITION & EXECUTIVE HEADHUNTING</h2>
+          </div>
+
+          <div class="columns-wrapper">
+              <div class="column-item image-side">
+                <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-talent.jpg') }}" alt="Team Building">
+              </div>
+
+              <div class="column-item details-side">
+                <p>
+                  Strategic recruitment solutions that deliver top-tier talent and drive business growth.
+                </p>
+
+                <div class="list-grid">
+                  <ul>
+                    <li>End-to-End Recruitment</li>
+                    <li>Process Outsourcing</li>
+                    <li>Executive Search & Senior Headhunting</li>
+                  </ul>
+                  <ul>
+                    <li>Candidate Experience & Journey Optimization</li>
+                    <li>Psychometric & Skills-Based Assessments</li>
+                  </ul>
+                </div>
+              </div>
+
+          </div>
+        </div>
+
+
+        <div class="service-details" id="branding">
+          <div class="container title-section-title">
+            <h2>CREATIVE EMPLOYER BRANDING SOLUTIONS</h2>
+          </div>
+          <div class="columns-wrapper">
+              <div class="column-item image-side">
+                <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-creative.jpg') }}" alt="Team Building">
+              </div>
+
+              <div class="column-item details-side">
+                <p>
+                  Innovative marketing strategies that showcase your culture and elevate your reputation as a top employer both online and offline.
+                </p>
+
+                <div class="list-grid">
+                  <ul>
+                    <li>Internal Communication & Culture Campaigns</li>
+                    <li>Brand Development - Corporate Branding, Personal Branding, Brand Identity</li>
+                  </ul>
+                  <ul>
+                    <li>Content Creation and Social Media Management</li>
+                    <li>Website Development and Maintenance</li>
+                  </ul>
+                </div>
+              </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- /Services Details Section -->
+
+    <!-- LETS TALK TOGGLE -->
+    <div id="letsTalkWrapper">
+      <div id="letsTalkTab">Let’s Talk</div>
+
+      <div id="letsTalkPanel">
+        <form>
+          <label>Name*</label>
+          <input type="text" required>
+
+          <label>Email*</label>
+          <input type="email" required>
+
+          <label>Subject*</label>
+          <input type="text" required>
+
+          <label>Message*</label>
+          <textarea rows="4" required></textarea>
+
+          <button type="submit">SEND MESSAGE</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  {% endblock %}
+
+  {% block scripts %}
+
+  <!-- LetsTalk JS -->
+  <script>
+    const letsTalk = document.getElementById('letsTalkWrapper');
+    const tab = document.getElementById('letsTalkTab')
+    tab.addEventListener('click', () => {
+      letsTalk.classList.toggle('open');
+    });
+  </script>
+
+  <!-- Services Details JS -->
+  <script>
+    const MOBILE_BREAKPOINT = 768;
+
+    const desktopTabs = document.querySelectorAll('.service-tab');
+    const mobileAccordions = document.querySelectorAll('.service-accordion');
+    const serviceDetails = document.querySelectorAll('.service-details');
+    const detailsWrapper = document.querySelector('.service-details-wrapper .container');
+
+    let lastActiveService = null;
+    let currentView = window.innerWidth < MOBILE_BREAKPOINT ? 'mobile' : 'desktop';
+    const originalOrder = Array.from(serviceDetails);
+
+    /* =========================
+       RESET MOBILE ACCORDIONS ONLY
+    ========================= */
+    function resetMobileAccordions() {
+      mobileAccordions.forEach(a => a.classList.remove('active'));
+      serviceDetails.forEach(d => d.classList.remove('active'));
+    }
+
+    /* =========================
+       RESTORE DESKTOP ORDER
+    ========================= */
+    function restoreDesktopLayout() {
+      originalOrder.forEach(detail => detailsWrapper.appendChild(detail));
+    }
+
+    /* =========================
+       DESKTOP HOVER
+    ========================= */
+    desktopTabs.forEach(tab => {
+      const target = document.getElementById(tab.dataset.service);
+
+      tab.addEventListener('mouseenter', () => {
+        if (window.innerWidth >= MOBILE_BREAKPOINT) {
+          // Remove active from all except first (Corporate Training default)
+          desktopTabs.forEach(t => t.classList.remove('active'));
+          serviceDetails.forEach(d => d.classList.remove('active'));
+
+          // Activate hovered tab
+          tab.classList.add('active');
+          target.classList.add('active');
+          detailsWrapper.appendChild(target);
+        }
+      });
+    });
+
+    /* =========================
+       MOBILE ACCORDION CLICK
+    ========================= */
+    mobileAccordions.forEach(acc => {
+      const target = document.getElementById(acc.dataset.service);
+
+      acc.addEventListener('click', () => {
+        if (window.innerWidth >= MOBILE_BREAKPOINT) return;
+
+        const isOpen = acc.classList.contains('active');
+
+        if (isOpen) {
+          // CLOSE: sarili lang
+          acc.classList.remove('active');
+          target.classList.remove('active');
+        } else {
+          // OPEN: sarili lang (HINDI isinasara ang iba)
+          acc.classList.add('active');
+          target.classList.add('active');
+
+          // IMPORTANT: siguraduhing laging ilalagay sa tamang position
+          acc.after(target);
+        }
+      });
+    });
+
+
+    /* =========================
+       HANDLE RESIZE
+    ========================= */
+    function getOpenMobileServices() {
+      return Array.from(mobileAccordions)
+        .filter(acc => acc.classList.contains('active'))
+        .map(acc => acc.dataset.service);
+    }
+
+    function handleResize() {
+      const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+      const newView = isMobile ? 'mobile' : 'desktop';
+
+      if (newView === currentView) return;
+      currentView = newView;
+
+      if (!isMobile) {
+        // Desktop → default Corporate Training active on load
+        restoreDesktopLayout();
+        const defaultTab = desktopTabs[0];
+        const defaultDetail = serviceDetails[0];
+
+        resetAllDesktop();
+        defaultTab.classList.add('active');
+        defaultDetail.classList.add('active');
+      } else {
+        // Desktop → Mobile (preserve ALL open accordions)
+        const openServices = getOpenMobileServices();
+
+        resetMobileAccordions();
+
+        openServices.forEach(service => {
+          const acc = document.querySelector(`.service-accordion[data-service="${service}"]`);
+          const target = document.getElementById(service);
+
+          if (acc && target) {
+            acc.classList.add('active');
+            target.classList.add('active');
+            acc.after(target);
+          }
+        });
+      }
+
+    }
+
+    function resetAllDesktop() {
+      desktopTabs.forEach(t => t.classList.remove('active'));
+      serviceDetails.forEach(d => d.classList.remove('active'));
+    }
+
+    /* =========================
+       INITIAL LOAD
+    ========================= */
+    window.addEventListener('load', () => {
+      if (window.innerWidth >= MOBILE_BREAKPOINT) {
+        // Desktop: default Corporate Training active
+        restoreDesktopLayout();
+        desktopTabs[0]?.classList.add('active');
+        serviceDetails[0]?.classList.add('active');
+      } else {
+        // Mobile: start closed
+        lastActiveService = null;
+        resetMobileAccordions();
+        restoreDesktopLayout(); // ensure DOM clean
+      }
+    });
+
+    window.addEventListener('resize', handleResize);
+  </script>
+
+
+<!-- Button Watermarks-->
+<script>
+/* =========================
+   SETUP SERVICE BACKGROUND (watermark)
+========================= */
+document.querySelectorAll('.service-item').forEach(item => {
+  const bg = item.dataset.bg;
+  if (bg) {
+    item.style.setProperty('--service-bg', `url(${bg})`);
+  }
+});
+
+/* =========================
+   TOUCH DEVICES WATERMARK TOGGLE
+========================= */
+function isTouchDevice() {
+  return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+}
+
+if (isTouchDevice()) {
+  const serviceItems = document.querySelectorAll('.service-item');
+
+  serviceItems.forEach(item => {
+    item.addEventListener('touchstart', e => {
+      // toggle active class on tap
+      item.classList.toggle('active');
+      e.stopPropagation();
+    });
+  });
+
+  // remove active when tapping outside
+  document.addEventListener('touchstart', e => {
+    serviceItems.forEach(item => {
+      if (!item.contains(e.target)) {
+        item.classList.remove('active');
+      }
+    });
+  });
+}
+
+/* =========================
+   OPTIONAL: resize handler
+   ensure desktop hover still works
+========================= */
+window.addEventListener('resize', () => {
+  if (!isTouchDevice()) {
+    // remove active from touch toggles on desktop
+    document.querySelectorAll('.service-item.active').forEach(item => {
+      item.classList.remove('active');
+    });
+  }
+});
+
+</script>
+
+
+
+{% endblock %}

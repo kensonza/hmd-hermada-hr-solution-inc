@@ -1,0 +1,408 @@
+{% extends 'public/base.html' %}
+
+{% block title %} HMD Hermada - Our Services  {% endblock %}
+
+{% block head %}
+
+<style>
+/* Tab Content */
+.tab-content {
+  display: none;
+  width: 100%;
+  flex: 1;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Images */
+.services-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Extra padding for Creative tab */
+#creative {
+  padding-bottom: 30px;
+}
+
+/* Main Column (Desktop Default) */
+.service-col-main {
+  border-left: 1px solid #e5e5e5;
+  border-right: 1px solid #e5e5e5;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+.service-inner {
+  padding: 30px;
+}
+
+/* Side Column (Desktop Default) */
+.service-col-side {
+  padding-left: 30px;
+}
+
+.service-side-inner {
+  padding-top: 30px;
+}
+
+.service-col-side h4 {
+  margin-top: 0;
+}
+
+/* Layout */
+.service-layout {
+  position: relative;
+}
+
+/* Feature List */
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.feature-item {
+  display: flex;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.feature-item:hover h5 {
+  color: var(--accent-color);
+}
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-color);
+  font-size: 20px;
+}
+
+.feature-text h5 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.feature-text p {
+  font-size: 14px;
+  margin: 0;
+  color: color-mix(in srgb, var(--default-color), transparent 25%);
+}
+
+/* --- MEDIA QUERIES (SUPER COMPACT MOBILE VIEW) --- */
+@media (max-width: 991px) {
+  /* 1. Hinihila ang buong row paitaas sa Page Title */
+  .service-layout {
+    margin-top: -40px !important; 
+    row-gap: 0 !important;
+  }
+
+  /* 2. LEFT NAV - Konting adjust sa gap sa ilalim */
+  .service-col-left {
+    margin-bottom: 10px !important; /* Binawasan para lumapit ang Main Content */
+    padding-bottom: 0 !important;
+  }
+
+  /* 3. MAIN CONTENT - Pinilit nating umakyat din */
+  .service-col-main {
+    border: none;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important; /* Tinanggal ang gap sa taas */
+  }
+
+  .service-inner {
+    padding-top: 0 !important; /* Siguradong simula agad sa H3 title */
+    padding-bottom: 15px !important;
+  }
+
+  /* Saktong spacing sa title ng Main Content */
+  .tab-content h3 {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* 4. RIGHT SIDE CONTENT - Pantay sa spacing ng Main Content */
+  .service-col-side {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    border-top: 1px solid #eee;
+    margin-top: 10px !important;
+  }
+
+  .service-side-inner {
+    padding-top: 15px !important;
+    padding-bottom: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .feature-list {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-top: 15px;
+  }
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title accent-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Our Services</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li class="current">Our Services</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    <!-- End Page Title -->
+
+    <!-- Our Service Details Section -->
+    <section id="service-details" class="service-details section light-background">
+      <div class="container">
+        <div class="row gy-4 service-layout">
+
+          <!-- LEFT NAV -->
+          <div class="col-lg-3 service-col-left">
+            <div class="services-list">
+              <a href="#" class="tab-link active" data-tab="hr">HR Solutions</a>
+              <a href="#" class="tab-link" data-tab="creative">Creative Solutions</a>
+            </div>
+          </div>
+        
+          <!-- MAIN CONTENT -->
+          <div class="col-lg-6 service-col-main">
+            <div class="service-inner">
+          
+              <!-- HR SOLUTION CONTENT -->
+              <div class="tab-content active" id="hr">
+                <!-- <img src="{{ url_for('static', filename='assets/img/services.jpg') }}" class="img-fluid services-img"> -->
+                <h3>HR Solutions</h3>
+              
+                <hr class="content-divider">
+              
+                <p>
+                  We offer holistic and customized human resource services that support both employee and business growth.
+                  Carefully personalized, our programs can be applied from individual employees, medium-sized teams, to whole organizations, aligning them to business goals. We help companies build a productive, engaged, and future-ready workforce through strategic and people-centered programs.
+                </p>
+              
+                <div class="feature-list">
+
+                <a href="#" class="feature-item">
+                  <span class="feature-icon">
+                    <i class="bi bi-person"></i>
+                  </span>
+                  <div class="feature-text">
+                    <h5>Professional Development Training</h5>
+                    <p>
+                      World-class programs that develop skills, inspire leadership, and unlock peak performance.
+                    </p>
+                  </div>
+                </a>
+              
+                <a href="#" class="feature-item">
+                  <span class="feature-icon">
+                    <i class="bi bi-people"></i>
+                  </span>
+                  <div class="feature-text">
+                    <h5>Team Building Events</h5>
+                    <p>
+                      Immersive and results-driven experiences, from half-day facilitation to full-day programs, that strengthen collaboration and culture.
+                    </p>
+                  </div>
+                </a>
+              
+                <a href="#" class="feature-item">
+                  <span class="feature-icon">
+                    <i class="bi bi-briefcase"></i>
+                  </span>
+                  <div class="feature-text">
+                    <h5>Organization Development</h5>
+                    <p>
+                      Expert guidance that aligns people, processes, and organizational strategy for sustainable success.
+                    </p>
+                  </div>
+                </a>
+              
+                <a href="#" class="feature-item">
+                  <span class="feature-icon">
+                    <i class="bi bi-person-workspace"></i>
+                  </span>
+                  <div class="feature-text">
+                    <h5>Human Resource Consultancy</h5>
+                    <p>
+                      We provide expert advice and solutions to manage human capital efficiently and effectively.
+                    </p>
+                  </div>
+                </a>
+              
+                <a href="#" class="feature-item">
+                  <span class="feature-icon">
+                    <i class="bi bi-search"></i>
+                  </span>
+                  <div class="feature-text">
+                    <h5>Talent Acquisition & Executive Headhunting</h5>
+                    <p>
+                      Strategic recruitment solutions that deliver top-tier talent and drive business growth.
+                    </p>
+                  </div>
+                </a>
+              
+              </div>
+              
+                
+              </div>
+            
+              <!-- CREATIVE -->
+              <div class="tab-content" id="creative">
+                <h3>Creative Solutions</h3>
+
+                <hr class="content-divider">
+                              
+                <p>
+                  Innovative marketing strategies that showcase your culture and elevate your reputation as a top employer both online and offline.
+                </p>
+                
+                <div class="feature-list">
+                
+                  <a href="#" class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-palette"></i>
+                    </span>
+                    <div class="feature-text">
+                      <h5>Corporate Events and Activations</h5>
+                      <p>
+                        End-to-end management of people and brand events including sports fests, anniversaries, Christmas parties, conferences, expos, and caravans that engage employees and strengthen your employer brand.
+                      </p>
+                    </div>
+                  </a>
+                
+                  <a href="#" class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-layout-text-window"></i>
+                    </span>
+                    <div class="feature-text">
+                      <h5>Creative Employer Branding</h5>
+                      <p>
+                        Design, branding and multimedia solutions that are dedicated to translating your vision into impactful visuals that elevate your business and resonate with your target market.
+                      </p>
+                    </div>
+                  </a>
+                
+                  <!-- <a href="#" class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-megaphone"></i>
+                    </span>
+                    <div class="feature-text">
+                      <h5>Marketing Consultancy</h5>
+                      <p>
+                        Providing strategic marketing guidance to help brands communicate effectively,
+                        reach the right audience, and achieve campaign objectives.
+                      </p>
+                    </div>
+                  </a> -->
+                
+                  <!-- <a href="#" class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-lightbulb"></i>
+                    </span>
+                    <div class="feature-text">
+                      <h5>Events and Activation</h5>
+                      <p>
+                        Creating memorable brand experiences through events, activations, and campaigns
+                        that connect audiences with your brand in meaningful ways.
+                      </p>
+                    </div>
+                  </a> -->
+                
+              </div>
+            
+            </div>
+          
+            </div>
+          </div>
+        
+          <!-- RIGHT SIDE CONTENT (NEW COLUMN) -->
+          <div class="col-lg-3 service-col-side">
+            <div class="service-side-inner">
+          
+              <!-- HR SIDE -->
+              <div class="tab-content active" data-side="hr">
+                <h4>HR Insights</h4>
+                <p>
+                  Engagement, flexibility, and recognition are not “nice to haves” but factors that directly impact productivity and retention. Don’t forget to address them.
+                </p>
+              </div>
+            
+              <!-- CREATIVE SIDE -->
+              <div class="tab-content" data-side="creative">
+                <h4>Creative Insights</h4>
+                <p>
+                  Supporting creative strategies through design, branding,
+                  and storytelling solutions.
+                </p>
+              </div>
+
+            </div>
+          </div>
+        
+        </div>
+
+      </div>
+    </section>
+
+    <!-- /Our Service Details Section -->
+
+</main>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+  const tabLinks = document.querySelectorAll('.tab-link');
+  const mainTabs = document.querySelectorAll('.tab-content[id]');
+  const sideTabs = document.querySelectorAll('[data-side]');
+
+  tabLinks.forEach(link => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      tabLinks.forEach(item => item.classList.remove('active'));
+      mainTabs.forEach(content => content.classList.remove('active'));
+      sideTabs.forEach(content => content.classList.remove('active'));
+
+      this.classList.add('active');
+
+      const target = this.dataset.tab;
+
+      document.getElementById(target).classList.add('active');
+      document.querySelector(`[data-side="${target}"]`).classList.add('active');
+    });
+  });
+</script>
+
+{% endblock %}

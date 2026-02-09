@@ -1,0 +1,482 @@
+{% extends 'public/base.html' %}
+
+{% block title %} HMD Hermada HR Solution Corporation :: Careers | Accounting Supervisor  {% endblock %}
+
+{% block head %}
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* body {
+      background-color: #f8fafc;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      color: #6c757d;
+    } */
+
+    /* Fonts */
+    :root {
+    --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, 
+    "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", 
+    "Segoe UI Symbol", "Noto Color Emoji";
+    }
+
+    /* Apply font globally */
+    html, body {
+      font-family: var(--default-font);
+      color: #212529;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+  /*--------------------------------------------------------------
+  # Job Header
+  --------------------------------------------------------------*/
+    .job-header {
+      /* padding: 2rem; */
+      /* box-shadow: 0 2px 10px rgba(0,0,0,0.05); */
+      background-color: #fbf9f9;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      padding: 40px;
+      box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap; /* allows wrapping on smaller screens */
+      gap: 1.5rem;
+    }
+
+    .company-logo img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+
+    .job-title {
+      font-weight: 600;
+      font-size: 1.75rem;
+      color: #1d2b3a;
+      margin-bottom: 0.4rem;
+    }
+
+    .job-meta {
+      color: #6c757d;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.2rem 2rem; /* vertical and horizontal spacing */
+    }
+
+    .job-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .job-meta i {
+      color: #999;
+      font-size: 1rem;
+    }
+
+    /* Tablet and smaller screens */
+    @media (max-width: 768px) {
+      .job-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem;
+      }
+
+      .company-logo img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .job-title {
+        font-size: 1.5rem;
+      }
+
+      .job-meta {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.8rem 1.5rem;
+      }
+    }
+
+    /* Mobile phones */
+    @media (max-width: 480px) {
+      .job-header {
+        padding: 1.25rem;
+      }
+
+      .job-title {
+        font-size: 1.3rem;
+      }
+
+      .job-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+        font-size: 0.95rem;
+      }
+    }
+  /* End Job Header */
+
+
+  /*--------------------------------------------------------------
+  # Job Body
+  --------------------------------------------------------------*/
+    .job-body {
+      background-color: #fbf9f9;
+      padding: 40px;
+      box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    /* Tighten up "Responsibilities" and "Qualifications" spacing */
+    .job-body h5.section-title {
+      font-weight: 500;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: #6c757d;
+      text-align: left !important;
+    }
+
+    .job-body ul {
+      margin-top: 0 !important; /* remove default browser margin */
+      margin-bottom: 1rem;
+      padding-left: 1.2rem;
+      list-style-type: disc;
+      font-size: 1rem;
+    }
+
+    .job-body li {
+      margin-bottom: 0.35rem;
+      line-height: 1.5;
+    }
+
+    /* Remove gap between title and list */
+    .job-body h5.section-title {
+      margin-bottom: 1rem;
+      padding-bottom: 0px !important;
+    }
+  /* End Job Body */
+
+
+  /*--------------------------------------------------------------
+  # Job Overview
+  --------------------------------------------------------------*/
+    .job-overview {
+      /* background-color: #fbf9f9;;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); */
+      background-color: #fbf9f9;
+      padding: 40px;
+      box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .job-overview h5 {
+      font-weight: 600;
+      color: #6c757d;
+
+    }
+
+    .overview-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    .overview-item span {
+      color: #0d1b2a;
+    }
+
+    .apply-btn {
+      background-color: #1bbd36;
+      border: none;
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 5px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .apply-btn:hover {
+      background-color: #0ee231;
+      color: #fff;
+    }
+
+    .company-info {
+      background-color: #fbf9f9;
+      margin-top: 2rem;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+  /* End Job Overview */
+
+
+  /*--------------------------------------------------------------
+  # Company Info
+  --------------------------------------------------------------*/
+    .company-info {
+      background-color: #fbf9f9;
+      padding: 40px;
+      box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .company-info h5 {
+      font-weight: 600;
+      color: #6c757d;
+
+    }
+
+    @media (max-width: 991px) {
+      .job-overview, .company-info {
+        margin-top: 2rem;
+      }
+    }
+  /* End Company Info */
+
+
+  /*--------------------------------------------------------------
+  # Bootstrap Modal Close Button
+  --------------------------------------------------------------*/
+    .close-btn {
+      background-color: #808080;
+      border: none;
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 5px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background-color: #D3D3D3;
+      color: #fff;
+    }
+  
+    /* forms label font size */
+    .form-font {
+      font-size: 0.75rem;
+    }
+  
+    /* Disable scroll to top button when modal is open */
+    .modal-open .scroll-top {
+      display: none !important;
+    }
+  /* End Bootstrap Modal Close Button */
+  </style>
+
+
+{% endblock %}
+
+{% block content %}
+
+<main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title accent-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Career Job</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li><a href="/careers">Careers</a></li>
+            <li class="current">Career Job</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <div class="container my-5">
+    <div class="row">
+      <!-- Left Column -->
+      <div class="col-lg-8">
+
+        <div class="job-header d-flex align-items-center">
+          <div class="company-logo me-3">
+            <img src="{{ url_for('static', filename='public/images/hmd-index-logo.png') }}" alt="">
+          </div>
+          <div>
+            <h2 class="job-title mb-1">Accounting Supervisor</h2>
+            <div class="job-meta">
+              <span><i class="bi bi-geo-alt"></i> Quezon City</span>
+              <span><i class="bi bi-building"></i> Medical</span>
+              <span><i class="bi bi-clock"></i> Full Time</span>
+              <span><i class="bi bi-cash"></i> ₱30,000 - ₱35,000</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-body p-4">
+          <h5 class="section-title">Responsibilities</h5>
+          <ul>
+            <li>Researching accounting issues for compliance with generally accepted accounting principles (GAAP).</li>
+            <li>Coordinating the budget process.</li>
+            <li>Develop staff by managing performance, setting goals, providing ongoing training, and maintaining strong employee relations.</li>
+          </ul>
+
+          <h5 class="section-title">Qualifications</h5>
+          <ul>
+            <li>Bachelor’s degree in Accountancy.</li>
+            <li>5+ years of progressive accounting experience with a portion of it being in a supervisory role.</li>
+            <li>Thorough knowledge of Philippine GAAP.</li>
+            <li>Excellent verbal and written communication abilities across all level of an organization.</li>
+            <li>Strong leadership skills with a dedication to driving and achieving results.</li>
+            <li>Knowledge of employee relationship building and performance management techniques.</li>
+            <li>Advanced Microsoft Excel skills. Experience with other accounting software financial systems.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-lg-4">
+        <div class="job-overview">
+          <h5 class="mb-4 fw-semibold">Job Overview</h5>
+
+          <div class="overview-item"><span>Posted date:</span><span>October 3, 2025</span></div>
+          <div class="overview-item"><span>Location:</span><span>Quezon City</span></div>
+          <div class="overview-item"><span>Vacancy:</span><span>1</span></div>
+          <div class="overview-item"><span>Job nature:</span><span>Full time</span></div>
+          <div class="overview-item"><span>Salary:</span><span>₱30,000 - ₱35,000</span></div>
+          <div class="overview-item"><span>Application date:</span><span>November 30, 2025</span></div>
+
+          <div class="text-left mt-5">
+            <!-- <a href="apply.html" class="apply-btn">Apply Now</a> -->
+            <button type="button" class="apply-btn btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#jobModal">Apply Now</button>
+          </div>
+        </div>
+
+        <div class="company-info">
+          <h5 class="mb-3">Company Information</h5>
+          <p>
+            Focus on growth while we handle HR. Contact us today for stress-free HR and people development!
+          </p>
+          <!-- <p class="mb-1"><strong>Name:</strong> HMD Hermada HR Solutions Corporation</p>
+          <p class="mb-1"><strong>Web:</strong> hmdhermada.com</p>
+          <p><strong>Email:</strong> jobs@hmdhermada.com</p> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="jobModal" tabindex="-1" aria-labelledby="jobModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="jobModalLabel">Job Application Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <h4>You are applying for "Accounting Supervisor"</h4>
+        <p>
+          We are looking for an experienced accounting supervisor responsible for overseeing financial reports and managing the accounting team.
+        </p>
+
+        <hr>
+        <p><b>Notice and Data Privacy Statement</b></p>
+        <p>
+          By completing and submitting this application form, you agree to share your personal and professional information with us voluntarily. We are dedicated to respecting your privacy and will protect your data with strict confidentiality, in line with data protection legislation.
+        </p>
+        <ul>
+          <li>No fees or costs will be charged by us at any stage of this process.</li>
+          <li>No CV/Resume, no processing of application.</li>
+          <li>Submitting your information does not guarantee job placement; it places you into our talent pool for consideration.</li>
+          <li>Your data will be used solely for recruitment purposes.</li>
+          <li>You may be contacted by our recruitment team for further interviews or updates.</li>
+        </ul>
+        <p>If you have questions, reach out via <a href="mailto:ask@hmdhermada.com">ask@hmdhermada.com</a> or our Facebook Page.</p>
+        <hr>
+
+        <h6><b>Applicant Details:</b></h6>
+        <form>
+          <div class="row">
+            <div class="col-12 col-md-6 mb-2">
+              <label for="inputSurName" class="form-label">Surname</label>
+              <input type="text" class="form-control" name="txtsurname" autocomplete="family-name">
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+              <label for="inputFirstName" class="form-label">First name</label>
+              <input type="text" class="form-control" name="txtfname" autocomplete="given-name">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-md-6 mb-2">
+              <label for="inputMiddleName" class="form-label">Middle name</label>
+              <input type="text" class="form-control" placeholder="Dela">
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+              <label for="inputSuffix" class="form-label">Suffix</label>
+              <select class="form-select">
+                <option selected></option>
+                <option value="Jr.">Jr.</option>
+                <option value="Sr.">Sr.</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-md-6 mb-2">
+              <label for="inputEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" placeholder="jdc@google.com">
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+              <label for="inputMobile" class="form-label">Mobile Number</label>
+              <input type="text" class="form-control" placeholder="09171234567">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-md-6 mb-2">
+              <label for="inputLocation" class="form-label">Location 
+                <small class="text-muted">(If willing to relocate, select others)</small>
+              </label>
+              <select class="form-select">
+                <option selected></option>
+                <option>Manila</option>
+                <option>Cebu</option>
+                <option>Davao</option>
+                <option>Others</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+              <label for="customFile" class="form-label">Upload your resume 
+                <small class="text-muted">(PDF or image format)</small>
+              </label>
+              <input type="file" class="form-control" id="customFile" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success">Apply Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Bootstrap 5 JS (required for modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+
+  </main>
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>{% block title %} Base Template {% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Focus on growth while we handle HR. Contact us today for stress-free HR and people development!">
+  <meta name="keywords" content="HR outsourcing, HR solutions, HR consultancy, HMD Hermada HR Solution Corporation, people development, HR Philippines">
+  <meta name="author" content="HMD Hermada HR Solution Corporation">
+  <meta name="robots" content="index,follow,noodp,noydir" />
+
+  <!-- Open Graph (Facebook, LinkedIn, etc.) -->
+  <meta property="og:title" content="HMD Hermada HR Solution Corporation - Your Trusted HR Partner">
+  <meta property="og:description" content="Focus on growth while we handle HR. Contact us today for stress-free HR and people development!">
+  <meta property="og:image" content="https://hmdhermada.pythonanywhere.com/static/images/hmd-index-logo.png">
+  <meta property="og:url" content="https://hmdhermada.pythonanywhere.com">
+  <meta property="og:type" content="website">
+
+  <!-- Google -->
+  <meta name="google-site-verification" content="0eXbiBMQBKQ4IjnA8xJE1Hd--OV8dYWIs8Tujkraz60" />
+
+  <!-- Additional Info -->
+  <meta name="language" content="en">
+  <meta name="distribution" content="global">
+  <meta name="copyright" content="© 2026 HMD Hermada HR Solution Corporation. All rights reserved.">
+  <link rel="canonical" href="https://www.hmdhermada.com">
+
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='public/images/favicon/favicon-96x96.png') }}" rel="icon" sizes="96x96">
+  <link href="{{ url_for('static', filename='public/images/favicon/apple-touch-icon.png') }}" rel="apple-touch-icon">
+  
+  <!-- <link rel="icon" type="image/png" href="{{ url_for('static', filename='public/images/favicon/favicon-96x96.png') }}" sizes="96x96" />
+  <link rel="icon" type="image/png" href="public/images/favicon/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="public/images/favicon/favicon.svg" />
+  <link rel="shortcut icon" href="public/images/favicon/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="public/images/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="public/images/favicon/site.webmanifest" /> -->
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <!-- <link href="{{ url_for('static', filename='public/assets/css/google-roboto.css') }}" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='public/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='public/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='public/assets/vendor/aos/aos.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='public/assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='public/assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
+
+  <!-- For Fas Fa -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
+  <!-- Main CSS File -->
+  <link href="{{ url_for('static', filename='public/assets/css/main.css') }}" rel="stylesheet">
+
+  {% block head %}
+  
+  {% endblock %}
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center">
+
+      <a href="/" class="logo d-flex align-items-center me-auto">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <img src="{{ url_for('static', filename='public/images/hmd-logo.png') }}" title="HMD Hermada HR Solution Corpuration" alt="HMD Hermada Logo">
+        <!-- <h1 class="sitename">Company</h1><span>.</span> -->
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="/" class="{% if nav_active == 'index' %} active {% endif %}">Home</a></li>
+          <li><a href="/about" class="{% if nav_active == 'about' %} active {% endif %}">About</a></li>
+          <li><a href="our-services" class="{% if nav_active == 'our-services' %} active {% endif %}">Our Services</a></li>
+          <!-- <li class="dropdown"><a href="/services" class="{% if nav_active == 'services' %} active {% endif %}"><span>HR Solutions</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Corporate Training</a></li>
+              <li><a href="#">Team Building</a></li>
+              <li><a href="#">Leadership Development</a></li>
+              <li><a href="#">Talent Acquisition</a></li>
+            </ul>
+          </li> -->
+          <!-- <li class="dropdown"><a href="#" class="{% if nav_active == 'csolution' %} active {% endif %}"><span>Creative Solutions</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Brand Development</a></li>
+              <li><a href="#">Social Media & Web Development</a></li>
+              <li><a href="#">Marketing Consultancy</a></li>
+              <li><a href="#">Event and Activation</a></li>
+            </ul>
+          </li> -->
+          <li><a href="/careers" class="{% if nav_active == 'careers' %} active {% endif %}"">Careers</a></li>
+          <li><a href="/blog" class="{% if nav_active == 'blog' %} active {% endif %}"">Blog</a></li>
+          <li><a href="/contact" class="{% if nav_active == 'contact' %} active {% endif %}">Contact</a></li>
+          <li><a href="#" class="{% if nav_active == 'contact' %} active {% endif %}">Book a Free Consultation</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <div class="header-social-links">
+        <!-- <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a> -->
+        <a href="https://www.facebook.com/hmdhermada/" target="_blank" title="Facebook | HMD Hermada" class="facebook"><i class="bi bi-facebook"></i></a>
+        <!-- <a href="#" class="instagram"><i class="bi bi-instagram"></i></a> -->
+        <a href="https://www.linkedin.com/company/hmd-hermada" target="_blank" title="LinkedIn | HMD Hermada" class="linkedin"><i class="bi bi-linkedin"></i></a>
+      </div>
+
+    </div>
+  </header>
+
+  {% block content %}
+
+  {% endblock %}
+
+  <footer id="footer" class="footer dark-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <!-- <a href="/" class="logo d-flex align-items-center">
+            <span class="sitename">Company</span>
+          </a> -->
+          <div class="footer-contact pt-6">
+            <h4>Corporate Address</h4>
+            <p>Unit 2c 4th Floor Regus One E-com Bldg Ocean Drive</p>
+            <p>Mall Of Asia Complex, Barangay 76</p>
+            <p>1300 Pasay City NCR, Fourth District Philippines</p>
+            <p class="mt-3"><strong>Phone</strong>
+              <p class="bi bi-telephone"> (02) 8 737 9323</p>
+              <p class="bi bi-telephone"> +63 917 960 6290</p>
+              <p class="bi bi-telephone"> +63 917 103 0298</p>
+            </p>
+            <p class="mt-3"><strong>Email:</strong> <span>ask@hmdhermada.com</span></p>
+          </div>
+          <div class="social-links d-flex mt-4">
+            <!-- <a href=""><i class="bi bi-twitter-x"></i></a> -->
+            <a href="https://www.facebook.com/hmdhermada/" title="Facebook | HMD Hermada"><i class="bi bi-facebook"></i></a>
+            <!-- <a href=""><i class="bi bi-instagram"></i></a> -->
+            <a href="https://www.linkedin.com/company/hmd-hermada" title="LinkedIn | HMD Hermada"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/our-services">Our Services</a></li>
+            <li><a href="/careers">Careers</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="#">Book A Free Consultation</a></li>
+            <li><a href="#">Terms of service</a></li>
+            <li><a href="#">Privacy policy</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Our Services</h4>
+          <ul>
+            <li><a href="/our-services">HR Solutions</a></li>
+            <li><a href="/our-services">Creative Solutions</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 footer-newsletter">
+          <h4>Our Newsletter</h4>
+          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
+          <form action="/newsletter" method="post" class="php-email-form">
+            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>2026</span> <strong class="px-1 sitename">HMD Hermada HR Solution Corporation.</strong><span>All Rights Reserved</span></p>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="preloader-content">
+      <div class="spinner"></div>
+      <!-- <img src="{{ url_for('static', filename='public/images/preloader/hmd-preloader.png') }}" alt="Logo" class="preloader-logo"> -->
+      <img src="data:image/png;base64,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" alt="Logo" class="preloader-logo">
+    </div>
+  </div>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ url_for('static', filename='public/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='public/assets/vendor/php-email-form/validate.js') }}"></script>
+  <script src="{{ url_for('static', filename='public/assets/vendor/aos/aos.js') }}"></script>
+  <script src="{{ url_for('static', filename='public/assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='public/assets/vendor/imagesloaded/imagesloaded.pkgd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='public/assets/vendor/isotope-layout/isotope.pkgd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='public/assets/vendor/waypoints/noframework.waypoints.js') }}"></script>
+  <script src="{{ url_for('static', filename='public/assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
+
+  <!-- Main JS File -->
+  <script src="{{ url_for('static', filename='public/assets/js/main.js') }}"></script>
+
+  {% block scripts %}
+    
+  {% endblock %}
+
+</body>
+</html>
