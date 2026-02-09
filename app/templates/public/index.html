@@ -667,7 +667,7 @@
   }
 
   .collage-item {
-    background-color: #ddd;
+    background-color: #fdfdfd;
     border-radius: 12px;
     overflow: hidden;
     position: relative;
@@ -1390,43 +1390,11 @@
     </div>
     <!-- /Services Details Section -->
 
-    <!-- LETS TALK TOGGLE -->
-    <div id="letsTalkWrapper">
-      <div id="letsTalkTab">Let’s Talk</div>
-    
-      <div id="letsTalkPanel">
-        <form>
-          <label>Name*</label>
-          <input type="text" required>
-        
-          <label>Email*</label>
-          <input type="email" required>
-        
-          <label>Subject*</label>
-          <input type="text" required>
-        
-          <label>Message*</label>
-          <textarea rows="4" required></textarea>
-        
-          <button type="submit">SEND MESSAGE</button>
-        </form>
-      </div>
-    </div>
-
   </main>
 
   {% endblock %}
 
   {% block scripts %}
-
-  <!-- LetsTalk JS -->
-  <script>
-    const letsTalk = document.getElementById('letsTalkWrapper');
-    const tab = document.getElementById('letsTalkTab')
-    tab.addEventListener('click', () => {
-      letsTalk.classList.toggle('open');
-    });
-  </script>
 
   <!-- Services Details JS -->
   <script>

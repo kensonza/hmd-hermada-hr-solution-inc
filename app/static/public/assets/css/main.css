@@ -856,27 +856,33 @@ section,
 /*--------------------------------------------------------------
 # HMD Let's Talk Section
 --------------------------------------------------------------*/
+
+/* Wrapper (slider container) */
 #letsTalkWrapper {
   position: fixed;
   top: 180px;
-
-  /* KEY CHANGE: hide panel off-screen */
-  right: -320px;
-
+  right: -320px;                 /* hidden off-screen */
   z-index: 9999;
-  display: flex;
-  align-items: flex-start;
 
-  /* wrapper ang gagalaw, hindi panel */
+  display: flex;
+  align-items: flex-start;       /* prevent flex stretching */
+
   transition: right 0.3s ease;
+  pointer-events: none;          /* wrapper ignores clicks */
 }
 
-/* OPEN STATE: bring everything in */
+/* Open state */
 #letsTalkWrapper.open {
   right: 0;
 }
 
-/* Yellow tab */
+/* Enable interaction for children */
+#letsTalkTab,
+#letsTalkPanel {
+  pointer-events: auto;
+}
+
+/* Yellow vertical tab */
 #letsTalkTab {
   background: #f4c300;
   color: #fdfdfd;
@@ -889,7 +895,9 @@ section,
 
   border-radius: 8px 0 0 8px;
 
-  /* hover stays */
+  align-self: flex-start;        /* 🔥 prevents expansion */
+  flex: 0 0 auto;
+
   transition: background 0.2s ease;
 }
 
@@ -902,7 +910,6 @@ section,
   width: 320px;
   background: #fdfdfd;
   padding: 20px;
-
   box-shadow: -5px 0 15px rgba(0,0,0,0.2);
 }
 
@@ -935,27 +942,6 @@ section,
 
 #letsTalkPanel button:hover {
   background: #dec700;
-}
-
-#letsTalkWrapper {
-  position: fixed;
-  top: 180px;
-  right: -320px;
-  z-index: 9999;
-  display: flex;
-  align-items: flex-start;
-  transition: right 0.3s ease;
-
-  pointer-events: none;
-}
-
-#letsTalkWrapper.open {
-  right: 0;
-}
-
-#letsTalkTab,
-#letsTalkPanel {
-  pointer-events: auto;
 }
 
 /* Hide Let's Talk on mobile */

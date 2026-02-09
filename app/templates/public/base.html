@@ -98,7 +98,7 @@
           <li><a href="/careers" class="{% if nav_active == 'careers' %} active {% endif %}"">Careers</a></li>
           <li><a href="/blog" class="{% if nav_active == 'blog' %} active {% endif %}"">Blog</a></li>
           <li><a href="/contact" class="{% if nav_active == 'contact' %} active {% endif %}">Contact</a></li>
-          <li><a href="#" class="{% if nav_active == 'contact' %} active {% endif %}">Book a Free Consultation</a></li>
+          <li><a href="/book-a-free-consultation" class="{% if nav_active == 'book-a-free-consultation' %} active {% endif %}">Book a Free Consultation</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -116,6 +116,33 @@
   {% block content %}
 
   {% endblock %}
+  
+  {% if nav_active == 'contact' %}
+  {% else %}
+  <!-- LETS TALK TOGGLE -->
+    <div id="letsTalkWrapper">
+      <div id="letsTalkTab">Let’s Talk</div>
+    
+      <div id="letsTalkPanel">
+        <form>
+          <label>Name*</label>
+          <input type="text" required>
+        
+          <label>Email*</label>
+          <input type="email" required>
+        
+          <label>Subject*</label>
+          <input type="text" required>
+        
+          <label>Message*</label>
+          <textarea rows="4" required></textarea>
+        
+          <button type="submit">SEND MESSAGE</button>
+        </form>
+      </div>
+    </div>
+  <!-- /LETS TALK TOGGLE -->
+  {% endif %} 
 
   <footer id="footer" class="footer dark-background">
 
@@ -212,8 +239,17 @@
   <!-- Main JS File -->
   <script src="{{ url_for('static', filename='public/assets/js/main.js') }}"></script>
 
+  <!-- LetsTalk JS -->
+  <script>
+    const letsTalk = document.getElementById('letsTalkWrapper');
+    const tab = document.getElementById('letsTalkTab')
+    tab.addEventListener('click', () => {
+      letsTalk.classList.toggle('open');
+    });
+  </script>
+
   {% block scripts %}
-    
+
   {% endblock %}
 
 </body>
