@@ -158,6 +158,83 @@
     margin-top: 15px;
   }
 }
+
+/* SERVICE PROGRAMS FOR 2026 */
+/* Para sa link ng title */
+.feature-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Para sa listahan sa ilalim */
+.service-sub-list {
+  list-style: none; /* Tinanggal ang default bullets */
+  padding: 0;       /* Tinanggal ang space sa kaliwa */
+  margin: 0;
+}
+
+.service-sub-list li {
+  font-size: 14px;  /* Maliit na font */
+  color: #646060;   /* Grey na kulay */
+  line-height: 1.5; /* Maayos na spacing ng bawat linya */
+  margin-bottom: 5px;
+}
+
+/* Optional: Kung gusto mo pa rin ng maliit na custom bullet */
+.service-sub-list li::before {
+  content: "•";
+  color: #f4c300;
+  margin-right: 8px;
+  
+  /* Dagdagan ang laki dito */
+  font-size: 24px; 
+  
+  /* Importante: I-adjust ang position para pantay sa gitna ng text */
+  vertical-align: middle; 
+  line-height: 0;
+}
+
+
+
+/* ===== SERVICE PROGRAM FULL WIDTH MODE ===== */
+/* FORCE hide right column */
+.service-layout.service-program-active > .service-col-side {
+  display: none !important;
+}
+
+/* FORCE expand main column */
+.service-layout.service-program-active > .service-col-main {
+  flex: 0 0 75% !important;
+  max-width: 75% !important;
+  border-right: none;
+}
+
+/* Service Program = 3 columns */
+.service-layout.service-program-active #service-program .feature-list {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .service-layout.service-program-active > .service-col-main {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  .service-layout.service-program-active
+  #service-program .feature-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .service-layout.service-program-active
+  #service-program .feature-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 </style>
 
 {% endblock %}
@@ -190,6 +267,7 @@
             <div class="services-list">
               <a href="#" class="tab-link active" data-tab="hr">HR Solutions</a>
               <a href="#" class="tab-link" data-tab="creative">Creative Solutions</a>
+              <a href="#" class="tab-link" data-tab="service-program">Service Programs for 2026</a>
             </div>
           </div>
         
@@ -240,7 +318,7 @@
                     <i class="bi bi-briefcase"></i>
                   </span>
                   <div class="feature-text">
-                    <h5>Organization Development</h5>
+                    <h5>Organizational Development</h5>
                     <p>
                       Expert guidance that aligns people, processes, and organizational strategy for sustainable success.
                     </p>
@@ -272,11 +350,12 @@
                 </a>
               
               </div>
+              <!-- /HR SOLUTION CONTENT -->
               
                 
               </div>
             
-              <!-- CREATIVE -->
+              <!-- CREATIVE CONTENT -->
               <div class="tab-content" id="creative">
                 <h3>Creative Solutions</h3>
 
@@ -339,8 +418,136 @@
                   </a> -->
                 
               </div>
+              <!-- /CREATIVE CONTENT -->
             
-            </div>
+              </div>
+
+              <!-- SERVICE PROGRAM 2026 CONTENT -->
+              <div class="tab-content" id="service-program">
+                <h3>Service Programs for 2026</h3>
+
+                <hr class="content-divider">
+                <h4>Customizable, Action-Based Learning</h4>              
+                <p>
+                  All programs can be customized based on your company's real operational gaps and behavioral challenges.
+                  We design actionable learning experiences that directly address actual problems, bridge skill gaps, and create measurable change in how your teams work every day.
+                </p>
+                
+                <div class="feature-list">
+                
+                  <div class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-briefcase"></i>
+                    </span>
+                    <div class="feature-text">
+                      <a href="#"><h5>Core Business & Professional Skills</h5></a>
+                      <ul class="service-sub-list">
+                        <li>Effective Communication at Work (Business & Corporate Communication)</li>
+                        <li>Writing and Office Etiquette (Business Writing & Workplace Etiquette)</li>
+                        <li>Integrity and Accountability at Work (Business Ethics)</li>
+                        <li>Accounting for Non-Accountants (Making Numbers Make Sense)</li>
+                        <li>Operational Excellence (Streamlining Work for Results)</li>
+                        <li>Smart Selling and Excellent Service (Sales Fundamentals & Customer Service Essentials)</li>
+                        <li>Time Management and Productivity Hacks</li>
+                        <li>Critical Thinking and Problem Solving at Work</li>
+                        <li>Public Speaking and Presentation Mastery</li>
+                        <li>Advanced Excel for Professionals (Mastering Data for Smarter Decisions)</li>
+                      </ul>
+                    </div>
+                  </div>
+                
+                  <div class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-people"></i>
+                    </span>
+                    <div class="feature-text">
+                      <a href="#"><h5>Supervisory Skills and People Management (For Emerging Leaders)</h5></a>
+                      <ul class="service-sub-list">
+                        <li>Managing People with Empathy and Results</li>
+                        <li>Motivation, Conflict Resolution, and Team Building</li>
+                        <li>Coaching Conversations that Drive Performance</li>
+                        <li>KPI, KRA, and Performance Management Basics</li>
+                        <li>Strategic Planning and Execution (Turning Vision into Action)</li>
+                        <li>Creating Mission, Vision, and Values (Building Alignment and Purpose)</li>
+                        <li>Organizational Structure and Development (Designing for Growth)</li>
+                        <li>Culture Building (Shaping High-Trust, High-Performance Teams)</li>
+                      </ul>
+                    </div>
+                  </div>
+                
+                  <div class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-graph-up-arrow"></i>
+                    </span>
+                    <div class="feature-text">
+                      <a href="#""><h5>Sales Management and Account Development (Managerial Challenges & Workflow Solutions)</h5></a>
+                      <ul class="service-sub-list">
+                        <li>Advanced Sales Strategy and Market Expansion (For Growth-Driven Teams)</li>
+                        <li>Distribution Management</li>
+                        <li>Sales Management Mastery</li>
+                        <li>Marketing Development Program</li>
+                        <li>Consultative Selling: Winning Clients with Trust</li>
+                        <li>Customer Obsession: Creating Wow Experiences</li>
+                        <li>Supply Chain 101 (Understanding the Flow from Production to Customer)</li>
+                        <li>Logistics 101 (Essentials of Warehousing, Distribution, and Inventory Management)</li>
+                        <li>Brokerage 101 (Basics of Trading, Securities, and Market Operations)</li>
+                      </ul>
+                    </div>
+                  </div>
+                
+                  <div class="feature-item">
+                    <span class="feature-icon">
+                     <i class="bi bi-person-badge"></i>
+                    </span>
+                    <div class="feature-text">
+                      <a href="#"><h5>Human Resources, People & Culture</h5></a>
+                      <ul class="service-sub-list">
+                        <li>HR Fundamentals and Best Practices (Practical HR for Non-HR Leaders)</li>
+                        <li>Building a Winning Team (Teamwork & Engagement Workshops)</li>
+                        <li>Creating a Culture of Accountability and Respect</li>
+                        <li>Workplace Ethics and Professionalism</li>
+                        <li>Employee Engagement and Retention Strategies</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-bullseye"></i>
+                    </span>
+                    <div class="feature-text">
+                      <a href="#"><h5>Personal Mastery and Mindset at Work</h5></a>
+                      <ul class="service-sub-list">
+                        <li>Building Confidence and Executive Presence</li>
+                        <li>Resilience and Mental Toughness in the Workplace</li>
+                        <li>Professional Image and Personal Branding</li>
+                        <li>Navigating Change and Uncertainty (Thriving in Transition)</li>
+                        <li>Work: Finding Meaning in What You Do</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="feature-item">
+                    <span class="feature-icon">
+                      <i class="bi bi-puzzle"></i>
+                    </span>
+                    <div class="feature-text">
+                      <a href="#"><h5>Custom Modules</h5></a>
+                      <ul class="service-sub-list">
+                        <li>Tailored to your company culture, leadership priorities, and operational gaps</li>
+                        <li>Strategic & Annual Planning Workshops (Aligning vision, goals, and execution across teams)</li>
+                        <li>Customized Team Alignment Sessions</li>
+                        <li>Workplace Survey, Diagnostics & Culture Mapping</li>
+                        <li>Leadership Offsite Facilitation</li>
+                        <li>Performance Coaching for Executives and Managers</li>
+                      </ul>
+                    </div>
+                  </div>
+                
+              </div>
+              <!-- /SERVICE PROGRAM 2026 CONTENT -->
+            
+              </div>
           
             </div>
           </div>
@@ -383,25 +590,54 @@
 {% block scripts %}
 
 <script>
-  const tabLinks = document.querySelectorAll('.tab-link');
-  const mainTabs = document.querySelectorAll('.tab-content[id]');
-  const sideTabs = document.querySelectorAll('[data-side]');
-
-  tabLinks.forEach(link => {
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-
-      tabLinks.forEach(item => item.classList.remove('active'));
-      mainTabs.forEach(content => content.classList.remove('active'));
-      sideTabs.forEach(content => content.classList.remove('active'));
-
-      this.classList.add('active');
-
-      const target = this.dataset.tab;
-
-      document.getElementById(target).classList.add('active');
-      document.querySelector(`[data-side="${target}"]`).classList.add('active');
+  document.addEventListener('DOMContentLoaded', () => {
+  
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const mainTabs = document.querySelectorAll('.tab-content[id]');
+    const sideTabs = document.querySelectorAll('[data-side]');
+    const layout = document.querySelector('.service-layout');
+  
+    function activateTab(target) {
+    
+      tabLinks.forEach(l => l.classList.remove('active'));
+      mainTabs.forEach(t => t.classList.remove('active'));
+      sideTabs.forEach(s => s.classList.remove('active'));
+    
+      const activeLink = document.querySelector(`[data-tab="${target}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    
+      const activeMain = document.getElementById(target);
+      if (activeMain) activeMain.classList.add('active');
+    
+      const activeSide = document.querySelector(`[data-side="${target}"]`);
+      if (activeSide) activeSide.classList.add('active');
+    
+      // layout mode
+      if (target === 'service-program') {
+        layout.classList.add('service-program-active');
+      } else {
+        layout.classList.remove('service-program-active');
+      }
+    }
+  
+    // 🔥 CHECK URL PARAM
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+  
+    if (tabParam) {
+      activateTab(tabParam);
+    } else {
+      activateTab('hr'); // default
+    }
+  
+    // click behavior
+    tabLinks.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        activateTab(link.dataset.tab);
+      });
     });
+  
   });
 </script>
 

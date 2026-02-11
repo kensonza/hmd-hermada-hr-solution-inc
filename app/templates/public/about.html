@@ -5,6 +5,37 @@
 {% block head %}
 
 <style>
+    /* --- GLOBAL CHECKMARK STYLE (Desktop, Tablet, Mobile) --- */
+    .about-text ul {
+      list-style: none !important; /* Remove all default dot */
+      padding-left: 0 !important;
+      margin-top: 20px;
+    }
+
+    .about-text li {
+      position: relative !important;
+      padding-left: 35px !important; /* Space for checkmark */
+      margin-bottom: 15px !important;
+      list-style: none !important;
+      line-height: 1.6;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .about-text li::before {
+      /* Use the SVG to control the color and thickness  */
+      content: "" !important;
+      position: absolute !important;
+      left: 0 !important;
+      top: 3px !important; /* Adjust this to align with the center of the text. */
+      width: 20px !important;
+      height: 20px !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f5b400' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E") !important;
+      background-size: contain !important;
+      background-repeat: no-repeat !important;
+    }
+    /* -------------------------------------------------------- */
+
     /* MAIN WRAPPER */
     .about-wrapper {
       display: flex;
@@ -39,7 +70,7 @@
       left: 50px; /* <-- DITO YUNG NILAYO */
       top: 40px;
       width: 2px;
-      height: 65%;
+      height: 85%;
       background: #f5b400;
     }
 
@@ -83,21 +114,11 @@
       padding-left: 0;
     }
 
-    .about-text ul {
-      margin: 10px 0 0; /* ⬅ walang bottom margin */
-      padding-left: 20px;
-    }
-    
-    .about-text li {
-      margin-bottom: 10px;
-    }
-
     .gold-text {
       color: #dec55d;
     }
 
   }
-
 
   /* FIX SURFACE PRO 7 */
   @media (min-width: 912px) and (max-width: 915px) {
@@ -108,47 +129,53 @@
       }
   }
 
-  /* NEST HUB AT IPAD PRO (DESKTOP STYLE VIEW) */
+  /* NEST HUB, NEST HUB MAX, AT IPAD PRO (DESKTOP STYLE VIEW) */
   @media (width: 1024px) and (height: 600px), /* Nest Hub */
-         (min-width: 1024px) and (max-device-width: 1366px) { /* iPad Pro */
+         (width: 1280px) and (height: 800px), /* Nest Hub Max */
+         (min-width: 1024px) and (max-device-width: 1366px) { /* iPad Pro & Tablets */
       
     .about-wrapper {
-        display: flex !important; /* Pinipilit na magkatabi (Desktop style) */
+        display: flex !important;
         flex-direction: row !important; 
         height: auto !important;
+        align-items: stretch; /* Para pantay ang height ng image at text box */
     }
 
     .about-image {
         width: 45% !important;
-        height: 500px !important; /* Fixed height para hindi kainin ang buong screen */
+        height: auto !important; /* Hayaan ang content ang mag-dikta ng height */
     }
 
     .about-image img {
         width: 100% !important;
         height: 100% !important;
-        object-fit: fill !important; /* STRETCH: Para ipakita ang buong image */
+        object-fit: cover !important; /* 'cover' para hindi mukhang pilit o stretch */
     }
 
     .about-content {
         width: 55% !important;
-        padding: 40px 30px !important; /* Binawasan ang padding para 'di "naipit" ang text */
+        padding: 80px 60px !important; /* Nilakihan natin para hindi dikit sa image */
         display: flex;
         align-items: center;
+        position: relative;
     }
 
+    /* YELLOW LINE ADJUSTMENT */
     .about-content::before {
-        left: 20px !important; /* Inilapit ang yellow line */
-        height: 60% !important;
+        display: block !important; /* Siguraduhin na visible */
+        left: 30px !important; /* Space mula sa edge ng image */
+        top: 10%;
+        height: 80% !important;
     }
 
     .about-text {
         max-width: 100% !important;
-        padding-left: 10px !important;
+        padding-left: 20px !important; /* Space mula sa yellow line */
     }
 
     .about-text p {
-        font-size: 14px !important; /* Konting liit para kumasya sa maliit na screen */
-        line-height: 1.6 !important;
+        font-size: 15px !important; /* Same as desktop */
+        line-height: 1.8 !important;
     }
   }
 
@@ -234,74 +261,110 @@
 
         <div class="row gy-4">
 
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
             <div class="team-member">
               <div class="member-img">
-                <img src="{{ url_for('static', filename='public/assets/img/team/team-1.jpg') }}" class="img-fluid" alt="">
+                <img src="{{ url_for('static', filename='public/images/our-team/HPA.png') }}" class="img-fluid" alt="">
                 <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
+                  <!-- <a href=""><i class="bi bi-twitter-x"></i></a> -->
+                  <a href=""><i class="bi bi-facebook" title="Facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram" title="Instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin" title="LinkedIn"></i></a>
                 </div>
               </div>
               <div class="member-info">
-                <h4>Nikki M. Lucas</h4>
-                <span>Chief Executive Officer</span>
+                <h4>Hernan P. Albino</h4>
+                <span>Chairman / Founder / CEO</span>
               </div>
             </div>
           </div><!-- End Team Member -->
 
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
             <div class="team-member">
               <div class="member-img">
-                <img src="{{ url_for('static', filename='public/assets/img/team/team-2.jpg') }}" class="img-fluid" alt="">
+                <img src="{{ url_for('static', filename='public/images/our-team/DMV.png') }}" class="img-fluid" alt="">
                 <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
+                  <!-- <a href=""><i class="bi bi-twitter-x"></i></a> -->
+                  <a href=""><i class="bi bi-facebook" title="Facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram" title="Instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin" title="LinkedIn"></i></a>
                 </div>
               </div>
               <div class="member-info">
                 <h4>Dawn M. Valencia</h4>
-                <span>Product Manager</span>
+                <span>Vice Chairman / Founder / Chief Global Learning Officer</span>
               </div>
             </div>
           </div><!-- End Team Member -->
 
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
             <div class="team-member">
               <div class="member-img">
-                <img src="{{ url_for('static', filename='public/assets/img/team/team-3.jpg') }}" class="img-fluid" alt="">
+                <img src="{{ url_for('static', filename='public/images/our-team/NML.png') }}" class="img-fluid" alt="">
                 <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
+                  <!-- <a href=""><i class="bi bi-twitter-x"></i></a> -->
+                  <a href=""><i class="bi bi-facebook" title="Facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram" title="Instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin" title="LinkedIn"></i></a>
                 </div>
               </div>
               <div class="member-info">
-                <h4>Abi Posadas</h4>
-                <span>CTO</span>
+                <h4>Nikki M. Lucas</h4>
+                <span>President / Chief Learning Strategist</span>
               </div>
             </div>
           </div><!-- End Team Member -->
 
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
             <div class="team-member">
               <div class="member-img">
-                <img src="{{ url_for('static', filename='public/assets/img/team/team-4.jpg') }}" class="img-fluid" alt="">
+                <img src="{{ url_for('static', filename='public/images/our-team/MMS.png') }}" class="img-fluid" alt="">
                 <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
+                 <!-- <a href=""><i class="bi bi-twitter-x"></i></a> -->
+                  <a href=""><i class="bi bi-facebook" title="Facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram" title="Instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin" title="LinkedIn"></i></a>
                 </div>
               </div>
               <div class="member-info">
                 <h4>Mike M. Sonza</h4>
                 <span>Sales and Operations Director</span>
+              </div>
+            </div>
+          </div><!-- End Team Member -->
+
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+            <div class="team-member">
+              <div class="member-img">
+                <img src="{{ url_for('static', filename='public/images/our-team/MMA.png') }}" class="img-fluid" alt="">
+                <div class="social">
+                 <!-- <a href=""><i class="bi bi-twitter-x"></i></a> -->
+                  <a href=""><i class="bi bi-facebook" title="Facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram" title="Instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin" title="LinkedIn"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Marie M. Anastacio </h4>
+                <span>Marketing and Corporate Services Manager</span>
+              </div>
+            </div>
+          </div><!-- End Team Member -->
+
+          <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+            <div class="team-member">
+              <div class="member-img">
+                <img src="{{ url_for('static', filename='public/images/our-team/AIV.png') }}" class="img-fluid" alt="">
+                <div class="social">
+                 <!-- <a href=""><i class="bi bi-twitter-x"></i></a> -->
+                  <a href=""><i class="bi bi-facebook" title="Facebook"></i></a>
+                  <a href=""><i class="bi bi-instagram" title="Instagram"></i></a>
+                  <a href=""><i class="bi bi-linkedin" title="LinkedIn"></i></a>
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>Ayen I. Venida</h4>
+                <span>Recruitment Specialist</span>
               </div>
             </div>
           </div><!-- End Team Member -->
@@ -334,7 +397,7 @@
           </div><!-- End Client Item -->
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/3.png') }}" title="H&Co" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/3.png') }}" title="H&Co." class="img-fluid" alt="">
           </div><!-- End Client Item -->
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
@@ -342,83 +405,99 @@
           </div><!-- End Client Item -->
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/5.png') }}" title="RG Meditron" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/5.png') }}" title="H&CO Training" class="img-fluid" alt="">
           </div><!-- End Client Item -->
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/6.png') }}" title="Edwards" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/6.png') }}" title="LLV Landco" class="img-fluid" alt="">
           </div><!-- End Client Item -->
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/7.png') }}" title="Brillant Skin Essentials" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/7.png') }}" title="EcoShield Pest Control & Fumigation Services" class="img-fluid" alt="">
           </div><!-- End Client Item -->
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/8.png') }}" title="Waido" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/8.png') }}" title="HM Apparel" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/9.png') }}" title="Millenial Resorts" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/9.png') }}" title="RG Meditron" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/10.png') }}" title="3MD Logistics" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/10.png') }}" title="Edwards" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/11.png') }}" title="Brand Soluxions" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/11.png') }}" title="Brilliant Skin Essentials" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/12.png') }}" title="ADL" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/12.png') }}" title="Waido Marketing & Destribution, Inc." class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/13.png') }}" title="Scan Global Logistics" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/13.png') }}" title="Millenial Resorts" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/14.png') }}" title="Azeus" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/14.png') }}" title="3MD Logistics" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/15.png') }}" title="Thrift Mart" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/15.png') }}" title="Brand Soluxions" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/16.png') }}" title="RMC Interiors Manufacturing" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/16.png') }}" title="ADL" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/17.png') }}" title="The Brand Theatre Worldwide" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/17.png') }}" title="Scan Global Logistics" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/18.png') }}" title="DUB Project" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/18.png') }}" title="Azeus" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/19.png') }}" title="Prime Movers" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/19.png') }}" title="Thrift Mart" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/20.png') }}" title="Beatus" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/20.png') }}" title="RMC Interiors Manufacturing" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/21.png') }}" title="Slate" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/21.png') }}" title="The Brand Theatre Worldwide" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/22.png') }}" title="Zintech" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/22.png') }}" title="Dub Project" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/23.png') }}" title="Victory Group of Companies" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/23.png') }}" title="HPrime Movers" class="img-fluid" alt="">
           </div>
 
           <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
-            <img src="{{ url_for('static', filename='public/assets/img/clients/24.png') }}" title="Leisure Citylight Grove" class="img-fluid" alt="">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/24.png') }}" title="Beatus" class="img-fluid" alt="">
+          </div>
+
+          <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/25.png') }}" title="Slate Medical Group" class="img-fluid" alt="">
+          </div>
+
+          <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/26.png') }}" title="Zinctech Galvanizing Industrial Inc" class="img-fluid" alt="">
+          </div>
+
+          <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/27.png') }}" title="Victory Group of Companies" class="img-fluid" alt="">
+          </div>
+
+          <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6 hmd-client-logo">
+            <img src="{{ url_for('static', filename='public/assets/img/clients/28.png') }}" title="Leisure Citylight Grove" class="img-fluid" alt="">
           </div>
           
           <!-- End Client Item -->

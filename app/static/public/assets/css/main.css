@@ -984,7 +984,7 @@ section,
   /* Responsive sizing: big to small base sa screen */
   width: clamp(120px, 15vw, 200px); 
   height: auto;
-  margin-bottom: 1px; /* margin-bottom: 25px; */
+  margin-top: 25px; /* margin-bottom: 25px; */
 }
 
 .main-text {
@@ -1000,7 +1000,6 @@ section,
 }
 
 .sub-text {
-  font-family: 'Montserrat', sans-serif;
   font-size: clamp(0.75rem, 2vw, 1rem);
   letter-spacing: 3px;
   margin-top: 15px;

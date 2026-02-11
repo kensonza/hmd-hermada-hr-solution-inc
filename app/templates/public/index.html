@@ -1,6 +1,6 @@
 {% extends 'public/base.html' %}
 
-{% block title %} HMD Hermada - We set the gold standard in people solutions   {% endblock %}
+{% block title %} HMD Hermada - Corporate Training | Motivation | Team Building {% endblock %}
 
 {% block head %}
 
@@ -30,7 +30,7 @@
   display: none;
   animation: fadeUp 0.4s ease;
   padding: 10px 0;
-  border-radius: 16px;
+  border-radius: 0px;
 }
 
 .service-details.active { display: block; }
@@ -112,7 +112,7 @@
 }
 
 .service-item {
-  border-radius: 16px;
+  border-radius: 0px;
   position: relative;
   pointer-events: auto;
 }
@@ -161,7 +161,7 @@
     flex-direction: column !important;
     justify-content: flex-start !important;
     align-items: center !important;
-    border-radius: 12px;
+    border-radius: 0px;
     text-align: center;
   }
 
@@ -510,7 +510,7 @@
 
 .title-section-title p { margin-bottom: 0; }
 
-/* TEST */
+
 /* SECTION */
     .service-detail-section {
       padding: 90px 20px;
@@ -538,7 +538,7 @@
 
     .service-image img {
       width: 100%;
-      border-radius: 18px;
+      border-radius: 0px;
       display: block;
     }
 
@@ -605,7 +605,7 @@
     }
 
     .feature-item:hover {
-      background: #f9f9f9;
+      background: #fdfdfd;
       transform: translateY(-5px);
     }
 
@@ -649,12 +649,11 @@
         font-size: 24px;
       }
     }
+  
 
-    
-
-  /* =================================================
-  COLLAGE SECTION STYLES
-  ================================================ */
+  /* =======================================================
+  COLLAGE SECTION STYLES (Professional Development Training)
+  ======================================================= */
   .compact-collage {
     display: grid;
     /* We will use six columns to allow for more flexible span. */
@@ -668,7 +667,7 @@
 
   .collage-item {
     background-color: #fdfdfd;
-    border-radius: 12px;
+    border-radius: 0px;
     overflow: hidden;
     position: relative;
     cursor: zoom-in;
@@ -678,42 +677,145 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
 
-
-  /* Professional Development Training - Image Collage */
-  .img-1 { 
+  .training-img-1 { 
     grid-column: span 3;
     grid-row: span 2;
   }
-  .img-2 { 
+  .training-img-2 { 
     grid-column: span 3; 
     grid-row: span 2; 
   }
 
-  .img-3 { 
+  .training-img-3 { 
     grid-column: span 2; /* 1/3 ng lapad */
     grid-row: span 2; 
   }
-  .img-4 { 
+  .training-img-4 { 
     grid-column: span 4; /* 2/3 ng lapad */
     grid-row: span 2; 
   }
 
-  .img-5 { 
+  .training-img-5 { 
     grid-column: span 2; 
     grid-row: span 2; 
   }
-  .img-6 { 
+  .training-img-6 { 
     grid-column: span 4; 
     grid-row: span 2; 
   }
 
-  /* --- HOVER STATE (TOP) --- */
-  .collage-item:hover {
-    transform: translateY(-10px); /* Angat ng 10px */
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2); /* Mas malalim na anino */
+
+  /* Team Building Events */
+  .team-bulding-img-1 { 
+    grid-column: span 5;
+    grid-row: span 5;
+  }
+  .team-building-img-2 { 
+    grid-column: span 2; 
+    grid-row: span 3; 
   }
 
-  .collage-item img {
+  .team-building-img-3 { 
+    grid-column: span 1; /* 1/3 ng lapad */
+    grid-row: span 1; 
+  }
+  .team-building-img-4 { 
+    grid-column: span 1; /* 2/3 ng lapad */
+    grid-row: span 1; 
+  }
+
+
+  /* =================================================
+  COLLAGE SECTION STYLES (Team Building)
+  ================================================ */
+  .compact-collage-team-bulding { 
+  display: grid;
+  /* Ginaya ang 6 columns ng Training */
+  grid-template-columns: repeat(6, 1fr); 
+  /* Ginaya ang 90px height ng Training */
+  grid-auto-rows: 90px; 
+  /* Ginaya ang 10px gap ng Training */
+  gap: 10px; 
+  /* Ginaya ang 900px max-width ng Training */
+  max-width: 900px; 
+  margin: auto;
+}
+
+  .collage-item-team-building {
+    border-radius: 0px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .collage-item-team-building img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Siguradong hindi "pinitpit" ang tao kahit i-stretch mo ang box */
+    display: block;
+  }
+
+  /* --- DITO MO GAGALAWIN ANG LAKI NG BAWAT IMAGE --- */
+  /* Image 1: Red Shirts */
+  .team-building-img-1 { 
+    grid-column: span 3; /* 3 out of 6 columns = Kalahati ng lapad */
+    grid-row: span 3;    
+  }
+  
+  /* Image 2: Yellow Shirts */
+  .team-building-img-2 { 
+    grid-column: span 3; 
+    grid-row: span 4;    /* Ito ang magpapahaba sa kanya pababa */
+  }
+  
+  /* Image 3: Blue Shirts */
+  .team-building-img-3 { 
+    grid-column: span 3; 
+    grid-row: span 3;    
+  }
+  
+  /* Image 4: Seminar Hall */
+  .team-building-img-4 { 
+    grid-column: span 3; 
+    grid-row: span 2;    /* Saktong pampuno sa ilalim ng Image 2 */
+  }
+
+  /* =================================================
+   UNIVERSAL MOBILE VIEW (Training & Team Building)
+   ================================================= */
+  @media (max-width: 650px) {
+    /* Pinagsama ang dalawang container para pareho ang sukat */
+    .compact-collage, 
+    .compact-collage-team-bulding {
+      grid-template-columns: repeat(6, 1fr) !important; 
+      /* Ginawang 55px para mas compact at hindi mahaba sa screen */
+      grid-auto-rows: 55px !important; 
+      grid-template-rows: unset !important; /* Binura ang fixed 4 rows */
+      gap: 5px !important;
+      padding: 0 10px;
+      max-width: 100%;
+    }
+  
+    /* Siguraduhin na walang kanto sa mobile */
+    .collage-item, 
+    .collage-item-team-building {
+      border-radius: 0px !important;
+    }
+  }
+
+
+  /* ====================================================
+  UNIVERSAL HOVER STATE & ZOOM RELAY FOR IMAGE SERVICES
+  =================================================== */
+  .collage-item:hover, 
+  .collage-item-team-building:hover {
+    transform: translateY(-10px); 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    z-index: 10;
+  }
+
+  /* Universal Image transition */
+  .collage-item img, 
+  .collage-item-team-building img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -721,16 +823,16 @@
     transition: transform 0.5s ease;
   }
 
-  /* Zoom effect on the image itself when hovered */
-  .collage-item:hover img {
+  /* Universal Zoom effect on hover */
+  .collage-item:hover img, 
+  .collage-item-team-building:hover img {
     transform: scale(1.05);
   }
 
-  /* --- ZOOM OVERLAY (MODAL) --- */
   .zoom-overlay {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 2000; /* Tinaasan ko para laging nasa ibabaw */
     top: 0;
     left: 0;
     width: 100%;
@@ -741,21 +843,13 @@
     cursor: zoom-out;
   }
 
-  /* --- ZOOM OVERLAY (MODAL) --- */
   .zoom-overlay img {
-    /* The 'width: auto' and 'height: auto' ensure that
-       the image follows its original aspect ratio */
     width: auto;
     height: auto;
-    
-    /* This limits the image so it does not extend beyond the screen */
     max-width: 90%;
     max-height: 90%;
-    
-    /* 'contain' ensures the ENTIRE original image is visible without distortion */
     object-fit: contain; 
-    
-    border-radius: 8px;
+    border-radius: 0px;
     animation: zoomIn 0.3s ease;
     box-shadow: 0 5px 25px rgba(0,0,0,0.5);
   }
@@ -793,9 +887,10 @@
             <span class="gold-text">GOLD STANDARD</span><br>
             in people solutions
           </h1>
-          <p class="sub-text">Every solution we deliver is designed to meet the exact need of our clients.<br>
+          <p class="sub-text hero">Every solution we deliver is designed to meet the exact need of our clients.<br>
             We create programs that are relevant, result-driven, and impactful, delivered with<br>
             the speed, precision, and quality that define #TheGoldStandard.
+            <a href="/our-services?tab=service-program" class="btn-get-started" title="HMD Hermada | 2026 Program Offerings">View Our 2026 Program Offerings</a>
           </p>
         </div>
       </div>
@@ -932,7 +1027,7 @@
           </div>
 
           <div class="col-lg-2 col-md-4 col-sm-6">
-            <div class="service-item item-cyan position-relative service-tab" data-service="talent" data-bg="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-talent.png') }}">
+            <div class="service-item item-cyan position-relative service-tab" data-service="talent" data-bg="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-recruitment.png') }}">
 
               <div class="icon">
                 <img src="{{ url_for('static', filename='public/images/home-services-logo/talent-acquisition-executive-headhunting.png') }}" height="70" width="60">
@@ -981,17 +1076,17 @@
             <div class="service-image">
 
               <div class="compact-collage">
-                  <div class="collage-item img-1"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-1.png') }}" alt="1"></div>
-                  <div class="collage-item img-2"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-2.png') }}" alt="2"></div>
-                  <div class="collage-item img-3"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-3.png') }}" alt="3"></div>
-                  <div class="collage-item img-4"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-4.png') }}" alt="4"></div>
-                  <div class="collage-item img-5"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-5.png') }}" alt="5"></div>
-                  <div class="collage-item img-6"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-6.png') }}" alt="6"></div>
+                  <div class="collage-item training-img-1"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-1.png') }}" alt="1"></div>
+                  <div class="collage-item training-img-2"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-2.png') }}" alt="2"></div>
+                  <div class="collage-item training-img-3"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-3.png') }}" alt="3"></div>
+                  <div class="collage-item training-img-4"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-4.png') }}" alt="4"></div>
+                  <div class="collage-item training-img-5"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-5.png') }}" alt="5"></div>
+                  <div class="collage-item training-img-6"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/training/training-6.png') }}" alt="6"></div>
               </div>
             
-              <div class="zoom-overlay" id="zoomOverlay" onclick="this.style.display='none'">
+              <!-- <div class="zoom-overlay" id="zoomOverlay" onclick="this.style.display='none'">
                   <img id="zoomedImg" src="">
-              </div>
+              </div> -->
 
             </div>
             <!-- /Service Image -->
@@ -1016,7 +1111,7 @@
                 <div class="feature-item">
                   <i class="fas fa-user-tie"></i>
                   <div>
-                    <h4>Leadership & Management Development</h4>
+                    <h4>Leadership & Management Development Sales</h4>
                     <p>Develop confident and people-centered leaders.</p>
                   </div>
                 </div>
@@ -1024,7 +1119,7 @@
                 <div class="feature-item">
                   <i class="fas fa-chart-line"></i>
                   <div>
-                    <h4>Sales, Marketing & Customer Excellence</h4>
+                    <h4>Marketing & Customer Excellence</h4>
                     <p>Strategies that drive growth and long-term customer loyalty.</p>
                   </div>
                 </div>
@@ -1064,10 +1159,22 @@
         <div class="service-details" id="team">
           <div class="service-detail-card">
           
-            <!-- IMAGE -->
+            <!-- Service Image -->
             <div class="service-image">
-              <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-team-building.png') }}" alt="Professional Training">
+
+              <div class="compact-collage-team-bulding">
+                  <div class="collage-item collage-item-team-building team-building-img-1"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/team-building/team-building-1.png') }}" alt="1"></div>
+                  <div class="collage-item collage-item-team-building team-building-img-2"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/team-building/team-building-2.png') }}" alt="2"></div>
+                  <div class="collage-item collage-item-team-building team-building-img-3"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/team-building/team-building-3.png') }}" alt="3"></div>
+                  <div class="collage-item collage-item-team-building team-building-img-4"><img src="{{ url_for('static', filename='public/images/home-services-bg-button/team-building/team-building-4.png') }}" alt="4"></div>
+              </div>
+            
+              <!-- <div class="zoom-overlay" id="zoomOverlay" onclick="this.style.display='none'">
+                  <img id="zoomedImg" src="">
+              </div> -->
+
             </div>
+            <!-- /Service Image -->
           
             <!-- CONTENT -->
             <div class="service-content">
@@ -1130,7 +1237,7 @@
           <div class="service-detail-card">
           
             <!-- IMAGE -->
-            <div class="service-image">
+            <div class="service-image collage-item">
               <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-consultancy.png') }}" alt="Professional Training">
             </div>
           
@@ -1195,7 +1302,7 @@
           <div class="service-detail-card">
           
             <!-- IMAGE -->
-            <div class="service-image">
+            <div class="service-image collage-item">
               <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-corporate-event.png') }}" alt="Professional Training">
             </div>
           
@@ -1269,8 +1376,8 @@
           <div class="service-detail-card">
           
             <!-- IMAGE -->
-            <div class="service-image">
-              <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-talent.png') }}" alt="Professional Training">
+            <div class="service-image collage-item">
+              <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-recruitment.png') }}" alt="Professional Training">
             </div>
           
             <!-- CONTENT -->
@@ -1334,7 +1441,7 @@
           <div class="service-detail-card">
           
             <!-- IMAGE -->
-            <div class="service-image">
+            <div class="service-image collage-item">
               <img src="{{ url_for('static', filename='public/images/home-services-bg-button/hmd-creative.png') }}" alt="Creative Employer Branding Solutions">
             </div>
           
@@ -1384,11 +1491,16 @@
           
           </div>
         </div>
-        <!-- /CREATIVE EMPLOYER BRANDING SOLUTIONS--> 
+        <!-- /CREATIVE EMPLOYER BRANDING SOLUTIONS-->
 
       </div>
     </div>
     <!-- /Services Details Section -->
+
+    <!-- Universal Zoom Overlay for Services Images -->
+    <div class="zoom-overlay" id="globalZoomOverlay">
+      <img id="globalZoomedImg" src="">
+    </div>
 
   </main>
 
@@ -1599,15 +1711,26 @@ window.addEventListener('resize', () => {
 
 <!-- Collage -->
  <script>
-        const overlay = document.getElementById('zoomOverlay');
-        const zoomedImg = document.getElementById('zoomedImg');
+        document.addEventListener("click", function(e) {
+  // Titingnan kung ang clinick ay image sa loob ng kahit anong collage
+  const item = e.target.closest('.collage-item, .collage-item-team-building');
+  
+  if (item) {
+    const overlay = document.getElementById('globalZoomOverlay');
+    const zoomedImg = document.getElementById('globalZoomedImg');
+    const clickedImg = item.querySelector('img');
 
-        document.querySelectorAll('.collage-item img').forEach(img => {
-            img.onclick = function() {
-                overlay.style.display = 'flex';
-                zoomedImg.src = this.src;
-            }
-        });
+    if (clickedImg) {
+      zoomedImg.src = clickedImg.src;
+      overlay.style.display = 'flex';
+    }
+  }
+
+  // Isara ang overlay kapag clinick ang background
+  if (e.target.id === 'globalZoomOverlay') {
+    e.target.style.display = 'none';
+  }
+});
     </script>
 
 
