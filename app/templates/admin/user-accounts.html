@@ -1,0 +1,761 @@
+{% extends 'admin/base.html' %}
+
+{% block title %} HMD Hermada - User Accounts {% endblock %}
+
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Font Awesome (for eye icons) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<style>
+th.sortable {
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+th.sortable::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-top-color: #ccc;
+  border-bottom-color: #ccc;
+}
+th.sortable.asc::after {
+  border-bottom-color: transparent;
+  border-top-color: #000;
+}
+th.sortable.desc::after {
+  border-top-color: transparent;
+  border-bottom-color: #000;
+}
+
+/* Wrapper para sa input at icon */
+.password-wrapper {
+  position: relative;
+}
+
+/* Eye icon positioning */
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%); /* Sentro sa vertical */
+  cursor: pointer;
+  color: #6c757d;
+  z-index: 10; /* Siguradong nasa ibabaw ng input */
+}
+
+.toggle-password:hover {
+  color: #000;
+}
+
+/* Iwasang matakpan ng icon ang text na tinatype */
+.form-control.password-input {
+  padding-right: 40px;
+}
+
+/* Alert Notification */
+.user-alert {
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  display: none;
+}
+
+.user-success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.user-error {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+/* Idagdag ito sa loob ng <style> tag mo */
+#userTable td.d-flex {
+    height: 100%;
+    min-height: 45px; /* Adjust base sa normal height ng rows mo */
+    border-bottom: 0; /* Iwas sa double border sa loob */
+}
+
+/* Edit User Accounts Button */
+/* Modal footer base */
+.modal-footer {
+    display: flex;
+    gap: 6px;
+}
+
+/* Modal footer Mobile view */
+@media (max-width: 768px) {
+
+  .modal-footer {
+      flex-direction: row;
+      flex-wrap: nowrap;          /* one row only */
+      justify-content: space-between;
+      align-items: center;
+  }
+
+  .modal-footer .btn {
+      flex: 1 1 auto;             /* pantay lapad */
+      width: auto;
+      padding: 6px 8px;           /* mas compact */
+      font-size: 13px;            /* kasya sa mobile */
+      white-space: nowrap;        /* hindi mag wrap text */
+  }
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">User Accounts</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+            <li class="breadcrumb-item active">User Accounts</li>
+        </ol>
+
+        <hr>
+        
+        <div class="container">
+         
+          <!-- Controls -->
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+        
+            <!-- LEFT: ADD BUTTON -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+              Add User
+            </button>
+        
+            <!-- RIGHT: SEARCH -->
+            <div style="width: 300px;">
+              <input type="text" id="searchText" class="form-control" placeholder="Search User">
+            </div>
+        
+          </div>
+      
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle" id="dataTable">
+              <thead class="table-light">
+                <tr>
+                  <th data-column="0" class="sortable">Token ID</th>
+                  <th data-column="1" class="sortable">First Name</th>
+                  <th data-column="2" class="sortable">Last Name</th>
+                  <th data-column="3" class="sortable">Nickname</th>
+                  <th data-column="4" class="sortable">Email</th>
+                  <th data-column="5" class="sortable">Department</th>
+                  <th data-column="6" class="sortable">Role</th>
+                  <th data-column="7" class="sortable">Status</th>
+                  <th data-column="8" class="sortable"></th>
+                </tr>
+              </thead>
+              <tbody id="userTable"></tbody>
+            </table>
+          </div>
+      
+          <!-- Showing Info -->
+          <div class="small text-muted" id="tableInfo"></div>
+      
+          <!-- Pagination + Rows -->
+          <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap">
+            <div></div>
+            <div class="d-flex align-items-center gap-3 mx-auto">
+              <nav>
+                <ul class="pagination mb-0" id="pagination"></ul>
+              </nav>
+              <div class="d-flex align-items-center gap-2">
+                <span class="small text-muted">Show</span>
+                <select id="rowsPerPage" class="form-select form-select-sm w-auto">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADD USERS MODAL -->
+        <div class="modal fade" id="addModal" tabindex="-1">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div id="addUserResponse" class="user-alert" style="display:none;"></div>
+                <form id="addUserForm" method="post" action="{{ url_for('admin_controller.new_user') }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label for="recipient-name" class="col-form-label">First Name:</label>
+                      <input type="text" class="form-control" name="txtFName" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label for="recipient-name" class="col-form-label">Last Name:</label>
+                      <input type="text" class="form-control" name="txtLName" required>
+                    </div>
+                  </div>
+              
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label for="recipient-name" class="col-form-label">Nickname:</label>
+                      <input type="text" class="form-control" name="txtNickName" required>
+                    </div>
+                    <div class="col-12 col-md-6"
+                      <label for="recipient-name" class="col-form-label">Email:</label>
+                      <input type="email" class="form-control" name="txtEmail" autocomplete="email" required>
+                    </div>
+                  </div>
+
+                  <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <label class="col-form-label">Password:</label>
+                    <div class="password-wrapper">
+                      <input type="password" class="form-control password-input" id="txtnewpassword" name="txtPassword" autocomplete="new-password" required>
+                      <i class="fas fa-eye toggle-password" toggle="#txtnewpassword"></i>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="col-form-label">Password Confirmation:</label>
+                    <div class="password-wrapper">
+                      <input type="password" class="form-control password-input" id="txtconfirmpassword" name="txtPasswordConfirm" autocomplete="new-password" required>
+                      <i class="fas fa-eye toggle-password" toggle="#txtconfirmpassword"></i>
+                    </div>
+                  </div>
+                </div>
+            
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label for="recipient-name" class="col-form-label">Department</label>
+                      <select class="form-select" aria-label="Default select example" name="txtDepartment" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Operation">Operation</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label for="recipient-name" class="col-form-label">Role</label>
+                      <select class="form-select" aria-label="Default select example" name="txtRole" required>
+                        <option value="" disabled selected>Select Role</option>
+                        <option value="User">User</option>
+                        <option value="Admin">Admin</option>
+                      </select>
+                    </div>
+                  </div>
+              
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label for="recipient-name" class="col-form-label">Status</label>
+                      <select class="form-select" aria-label="Default select example" name="txtStatus" required>
+                      <option value="" disabled selected>Select Status</option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                    </div>
+                
+                    <div class="col-12 col-md-6">
+                      <label for="formFile" class="form-label">Image</label>
+                      <input class="form-control" type="file" id="formFile">
+                    </div>
+                  </div>
+              
+              </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                  </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDIT USERS MODAL -->
+        <div class="modal fade" id="editModal" tabindex="-1">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div id="editUserResponse" class="user-alert" style="display:none;"></div>
+                <form id="editUserForm" method="post" action="{{ url_for('admin_controller.edit_user') }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <input type="hidden" id="editUserId" name="user_id" />
+                
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label class="col-form-label">First Name:</label>
+                      <input type="text" class="form-control" id="editFName" name="txtFName" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="col-form-label">Last Name:</label>
+                      <input type="text" class="form-control" id="editLName" name="txtLName" required>
+                    </div>
+                  </div>
+                
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label class="col-form-label">Nickname:</label>
+                      <input type="text" class="form-control" id="editNickName" name="txtNickName" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="col-form-label">Email:</label>
+                      <input type="email" class="form-control" id="editEmail" name="txtEmail" required>
+                    </div>
+                  </div>
+                
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label class="col-form-label">Department</label>
+                      <select class="form-select" id="editDepartment" name="txtDepartment" required>
+                        <option value="" disabled>Select Department</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Operation">Operation</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="col-form-label">Role</label>
+                      <select class="form-select" id="editRole" name="txtRole" required>
+                        <option value="" disabled>Select Role</option>
+                        <option value="User">User</option>
+                        <option value="Admin">Admin</option>
+                      </select>
+                    </div>
+                  </div>
+                
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label class="col-form-label">Status</label>
+                      <select class="form-select" id="editStatus" name="txtStatus" required>
+                        <option value="" disabled>Select Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                    </div>
+                  
+                    <div class="col-12 col-md-6">
+                      <label for="editFormFile" class="form-label">Image</label>
+                      <input class="form-control" type="file" id="editFormFile" name="user_image">
+                    </div>
+                  </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" id="btnOpenChangePass">Change Password</button>
+                <button type="submit" class="btn btn-primary">Update User</button>
+              </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- USER CHANGE PASSWORD-->
+        <div class="modal fade" id="changePassModal" tabindex="-1" style="z-index: 1060;">
+          <div class="modal-dialog">
+            <div class="modal-content border-warning">
+              <div class="modal-header">
+                <h5 class="modal-title">Change User Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div id="changePassResponse" class="user-alert" style="display:none;"></div>
+
+                <form id="changePassForm" method="post" action="{{ url_for('admin_controller.change_password_user') }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <input type="hidden" id="changePassUserId" name="user_id" />
+                
+                  <div class="mb-3">
+                    <label class="form-label">New Password:</label>
+                    <div class="password-wrapper">
+                      <input type="password" class="form-control password-input" id="newPassInput" name="new_password" autocomplete="new-password" required>
+                      <i class="fas fa-eye toggle-password" toggle="#newPassInput"></i>
+                    </div>
+                  </div>
+                
+                  <div class="mb-3">
+                    <label class="form-label">Confirm New Password:</label>
+                    <div class="password-wrapper">
+                      <input type="password" class="form-control password-input" id="confirmPassInput" name="confirm_password" autocomplete="new-password" required>
+                      <i class="fas fa-eye toggle-password" toggle="#confirmPassInput"></i>
+                    </div>
+                  </div>
+                
+                  <div class="modal-footer px-0 pb-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Update Password</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</main>
+<br>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+
+<!-- Script to toggle password visibility -->
+<script>
+document.addEventListener("click", function(e) {
+    const icon = e.target.closest(".toggle-password");
+    if (!icon) return;
+
+    const input = document.querySelector(icon.getAttribute("toggle"));
+    if (!input) return;
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+    }
+});
+</script>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const table = document.getElementById("dataTable");
+  const tbody = document.getElementById("userTable");
+  const searchText = document.getElementById("searchText");
+  const rowsPerPageSelect = document.getElementById("rowsPerPage");
+  const pagination = document.getElementById("pagination");
+  const tableInfo = document.getElementById("tableInfo");
+
+  let allRows = [], filteredRows = [];
+  let currentPage = 1, rowsPerPage = parseInt(rowsPerPageSelect.value);
+  let sortColumn = null, sortAsc = true;
+
+  const socket = io(window.location.origin);
+  socket.on("connect", () => console.log("Connected:", socket.id));
+  socket.on("new_user", user => handleSocketAdd(user, "table-success"));
+  socket.on("update_user", handleSocketUpdate);
+  socket.on("delete_user", user_token_id => {
+      allRows = allRows.filter(u => u.user_token_id !== user_token_id);
+      filteredRows = filteredRows.filter(u => u.user_token_id !== user_token_id);
+      displayTable();
+      setupPagination();
+  });
+
+  fetch("/api/user/accounts")
+    .then(res => res.json())
+    .then(data => {
+      allRows = Array.isArray(data) ? data : [];
+      filteredRows = [...allRows];
+      displayTable();
+      setupPagination();
+    })
+    .catch(err => console.error("FETCH ERROR:", err));
+
+  // ===============================
+  // TABLE FUNCTIONS
+  // ===============================
+  function createRow(user) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+          <td>${user.user_token_id}</td>
+          <td>${user.first_name}</td>
+          <td>${user.last_name}</td>
+          <td>${user.nickname}</td>
+          <td>${user.email}</td>
+          <td>${user.department}</td>
+          <td>${user.role}</td>
+          <td>${user.status}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm btn-outline-primary edit-btn">Edit</button>
+              <button class="btn btn-sm btn-outline-danger delete-btn">Delete</button>
+            </div>
+          </td>
+      `;
+      return tr;
+  }
+
+  function displayTable() {
+      tbody.innerHTML = "";
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedItems = filteredRows.slice(start, end);
+
+      const fragment = document.createDocumentFragment();
+      paginatedItems.forEach(user => fragment.appendChild(createRow(user)));
+      tbody.appendChild(fragment);
+
+      const total = filteredRows.length;
+      const showingStart = total === 0 ? 0 : start + 1;
+      const showingEnd = Math.min(end, total);
+      tableInfo.innerHTML = `Showing <strong>${showingStart}</strong> to <strong>${showingEnd}</strong> of <strong>${total}</strong> entries`;
+  }
+
+  // ===============================
+  // EVENT DELEGATION for Edit/Delete
+  // ===============================
+  tbody.onclick = function(e) {
+      const editBtn = e.target.closest(".edit-btn");
+      if(editBtn){
+          const row = editBtn.closest("tr");
+          const index = Array.from(tbody.children).indexOf(row);
+          const user = filteredRows[(currentPage - 1) * rowsPerPage + index];
+
+          document.getElementById("editUserId").value = user.user_token_id;
+          document.getElementById("editFName").value = user.first_name;
+          document.getElementById("editLName").value = user.last_name;
+          document.getElementById("editNickName").value = user.nickname;
+          document.getElementById("editEmail").value = user.email;
+          document.getElementById("editDepartment").value = user.department;
+          document.getElementById("editRole").value = user.role;
+          document.getElementById("editStatus").value = user.status;
+
+          new bootstrap.Modal(document.getElementById("editModal")).show();
+          return;
+      }
+
+      const deleteBtn = e.target.closest(".delete-btn");
+      if(deleteBtn){
+          const row = deleteBtn.closest("tr");
+          const tokenId = row.cells[0].innerText.trim();
+          const fullName = `${row.cells[1].innerText} ${row.cells[2].innerText}`;
+          if (!confirm(`Are you sure you want to delete ${fullName}?`)) return;
+
+          fetch(`/admin/delete-user/${tokenId}`, {
+              method: 'POST',
+              headers: {
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+              }
+          })
+          .then(res => res.ok ? res.json() : res.json().then(err => { throw err; }))
+          .then(data => {
+              if (data.message) {
+                  alert(data.message);
+                  allRows = allRows.filter(u => u.user_token_id !== tokenId);
+                  filteredRows = filteredRows.filter(u => u.user_token_id !== tokenId);
+                  displayTable();
+                  setupPagination();
+              }
+          })
+          .catch(err => alert("Error: " + (err.error || "Server Error")));
+      }
+  };
+
+  // ===============================
+  // DEBOUNCED SEARCH
+  // ===============================
+  function debounce(fn, delay) {
+      let timer;
+      return function(...args){
+          clearTimeout(timer);
+          timer = setTimeout(() => fn.apply(this, args), delay);
+      }
+  }
+
+  searchText.addEventListener("input", debounce(() => {
+      const text = searchText.value.toLowerCase().trim();
+      filteredRows = allRows.filter(user => Object.values(user).join(" ").toLowerCase().includes(text));
+      currentPage = 1;
+      displayTable();
+      setupPagination();
+  }, 250));
+
+  // ===============================
+  // SORT
+  // ===============================
+  table.querySelectorAll("th.sortable").forEach((header, colIndex) => {
+      header.onclick = () => {
+          sortColumn = sortColumn === colIndex ? colIndex : colIndex;
+          sortAsc = sortColumn === colIndex ? !sortAsc : true;
+
+          table.querySelectorAll("th.sortable").forEach(h => h.classList.remove("asc","desc"));
+          header.classList.add(sortAsc ? "asc" : "desc");
+
+          const keys = ["user_token_id","first_name","last_name","nickname","email","department","role","status"];
+          filteredRows.sort((a,b) => {
+              let aVal = (a[keys[colIndex]] || "").toString().toLowerCase();
+              let bVal = (b[keys[colIndex]] || "").toString().toLowerCase();
+              return (aVal > bVal ? 1 : aVal < bVal ? -1 : 0) * (sortAsc ? 1 : -1);
+          });
+
+          currentPage = 1;
+          displayTable();
+          setupPagination();
+      };
+  });
+
+  // ===============================
+  // PAGINATION
+  // ===============================
+  function setupPagination() {
+      pagination.innerHTML = "";
+      const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+      if(pageCount <= 1) return;
+
+      for(let i = 1; i <= pageCount; i++){
+          const li = document.createElement("li");
+          li.className = `page-item ${i === currentPage ? "active" : ""}`;
+          li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+          li.onclick = e => { e.preventDefault(); currentPage = i; displayTable(); setupPagination(); };
+          pagination.appendChild(li);
+      }
+  }
+
+  rowsPerPageSelect.onchange = function() {
+      rowsPerPage = parseInt(this.value);
+      currentPage = 1;
+      displayTable();
+      setupPagination();
+  };
+
+  // ===============================
+  // MODAL FORM HANDLER (AJAX)
+  // ===============================
+  function ajaxFormHandler(formId, responseId) {
+      const form = document.getElementById(formId);
+      const responseDiv = document.getElementById(responseId);
+      if(!form || !responseDiv) return;
+
+      function showAlert(message, type){
+          responseDiv.className = "user-alert " + (type === "success" ? "user-success" : "user-error");
+          responseDiv.style.display = "block";
+          responseDiv.innerText = message;
+          setTimeout(() => responseDiv.style.display = "none", 4000);
+      }
+
+      form.onsubmit = e => {
+          e.preventDefault();
+          
+          // --- PASSWORD VALIDATION ---
+          const passwordFields = form.querySelectorAll('input[type="password"]');
+          if (passwordFields.length >= 2) {
+              const pass = passwordFields[0].value;
+              const confirm = passwordFields[1].value;
+
+              // Check if passwords match
+              if (pass !== confirm) {
+                  showAlert("Passwords do not match!", "error");
+                  return;
+              }
+              // Check if password is not empty (for Add and Change Pass)
+              if (pass.trim() === "") {
+                  showAlert("Password cannot be empty!", "error");
+                  return;
+              }
+          }
+
+          fetch(form.action, {
+              method: 'POST',
+              body: new FormData(form),
+              headers: {'X-Requested-With': 'XMLHttpRequest'}
+          })
+          .then(res => res.json())
+          .then(data => {
+              if (data.message) {
+                  showAlert(data.message, "success");
+                  form.reset();
+                  // Close modal if it's the change password form
+                  if(formId === 'changePassForm') {
+                      setTimeout(() => {
+                          const cpModal = bootstrap.Modal.getInstance(document.getElementById('changePassModal'));
+                          if(cpModal) cpModal.hide();
+                      }, 2000);
+                  }
+              } else {
+                  showAlert(data.error || "An error occurred", "error");
+              }
+          })
+          .catch(()=> showAlert("Something went wrong. Try again.", "error"));
+      };
+  }
+
+  // LOGIC TO OPEN CHANGE PASSWORD MODAL
+  const btnOpenChangePass = document.getElementById('btnOpenChangePass');
+  if (btnOpenChangePass) {
+      btnOpenChangePass.addEventListener('click', function() {
+          const editModalEl = document.getElementById('editModal');
+          const editModalInstance = bootstrap.Modal.getInstance(editModalEl);
+          
+          const userId = document.getElementById('editUserId').value;
+          document.getElementById('changePassUserId').value = userId;
+
+          if (editModalInstance) {
+              editModalInstance.hide();
+              
+              editModalEl.addEventListener('hidden.bs.modal', function handler() {
+                  const cpModalEl = document.getElementById('changePassModal');
+                  const cpModal = new bootstrap.Modal(cpModalEl);
+                  cpModal.show();
+                  editModalEl.removeEventListener('hidden.bs.modal', handler);
+              });
+          }
+      });
+  }
+
+  // Register lahat ng forms
+  ajaxFormHandler('addUserForm','addUserResponse');
+  ajaxFormHandler('editUserForm','editUserResponse');
+  ajaxFormHandler('changePassForm', 'changePassResponse');
+
+  // ===============================
+  // SOCKET HELPERS
+  // ===============================
+  function handleSocketAdd(user, highlightClass) {
+      allRows.unshift(user);
+      filteredRows.unshift(user);
+      currentPage = 1;
+      displayTable();
+      setupPagination();
+
+      const firstRow = tbody.querySelector("tr");
+      if(firstRow){
+          firstRow.classList.add(highlightClass);
+          setTimeout(()=> firstRow.classList.remove(highlightClass), 2000);
+      }
+  }
+
+  function handleSocketUpdate(updatedUser){
+      const updateArray = arr => {
+          const idx = arr.findIndex(u => u.user_token_id === updatedUser.user_token_id);
+          if(idx !== -1) arr[idx] = updatedUser;
+      };
+      updateArray(allRows);
+      updateArray(filteredRows);
+
+      displayTable();
+
+      const start = (currentPage-1)*rowsPerPage;
+      filteredRows.slice(start,start+rowsPerPage).forEach((user,i)=>{
+          if(user.user_token_id === updatedUser.user_token_id){
+              const row = tbody.children[i];
+              row.classList.add("table-warning");
+              setTimeout(()=> row.classList.remove("table-warning"),2000);
+          }
+      });
+  }
+});
+</script>
+
+{% endblock %}

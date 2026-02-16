@@ -1,0 +1,314 @@
+{% extends 'admin/base.html' %}
+
+{% block title %} HMD Hermada - Contact List {% endblock %}
+
+{% block head %}
+
+<style>
+/* Sorting arrows style */
+th.sortable {
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+th.sortable::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-top-color: #ccc;   /* up arrow */
+  border-bottom-color: #ccc; /* down arrow */
+  display: inline-block;
+  margin-left: 4px;
+}
+th.sortable.asc::after {
+  border-bottom-color: transparent;
+  border-top-color: #000;
+}
+th.sortable.desc::after {
+  border-top-color: transparent;
+  border-bottom-color: #000;
+}
+
+#searchDate {
+  cursor: pointer;
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Contact Inquiries</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="/hidden/admin-panel/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item">Sites</a></li>
+            <li class="breadcrumb-item active">Contact Inquiries</li>
+        </ol>
+
+        <hr>
+        
+        <div class="container">
+
+          <!-- Controls -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <input type="text" id="searchText" class="form-control" placeholder="Search ID, Name, Subject">
+            </div>
+            <div class="col-md-3">
+              <input type="date" id="searchDate" class="form-control">
+            </div>
+          </div>
+      
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle" id="dataTable">
+              <thead class="table-light">
+                <tr>
+                  <th data-column="0" class="sortable">Token ID</th>
+                  <th data-column="1" class="sortable">Name</th>
+                  <th data-column="2" class="sortable">Email</th>
+                  <th data-column="3" class="sortable">Subject</th>
+                  <th data-column="4" class="sortable">Message</th>
+                  <th data-column="5" class="sortable">Date</th>
+                </tr>
+              </thead>
+              <tbody id="contactTable"></tbody>
+            </table>
+          </div>
+      
+          <!-- Showing Info -->
+          <div class="small text-muted" id="tableInfo"></div>
+      
+          <!-- Pagination + Rows -->
+          <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap">
+            <div></div> <!-- empty for spacing -->
+            <div class="d-flex align-items-center gap-3 mx-auto">
+              <nav>
+                <ul class="pagination mb-0" id="pagination"></ul>
+              </nav>
+              <div class="d-flex align-items-center gap-2">
+                <span class="small text-muted">Show</span>
+                <select id="rowsPerPage" class="form-select form-select-sm w-auto">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</main>
+<br>
+
+{% endblock %}
+
+{% block scripts %}
+
+<!-- Fetch contact inquiries and populate the table -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+const table = document.getElementById("dataTable");
+const tbody = document.getElementById("contactTable");
+const searchText = document.getElementById("searchText");
+const searchDate = document.getElementById("searchDate");
+const rowsPerPageSelect = document.getElementById("rowsPerPage");
+const pagination = document.getElementById("pagination");
+const tableInfo = document.getElementById("tableInfo");
+
+// --- GLOBAL STATE ---
+let allRows = [];      // raw data objects
+let filteredRows = [];
+let currentPage = 1;
+let rowsPerPage = parseInt(rowsPerPageSelect.value);
+let sortColumn = null;
+let sortAsc = true;
+
+// --- CREATE TABLE ROW FROM DATA ---
+function createRow(item) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+        <td>${item.token_id}</td>
+        <td>${item.name}</td>
+        <td>${item.email}</td>
+        <td>${item.subject}</td>
+        <td>${item.message}</td>
+        <td>${item.date_created}</td>
+    `;
+    return tr;
+}
+
+// --- DISPLAY TABLE ---
+function displayTable() {
+    tbody.innerHTML = "";
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const paginatedItems = filteredRows.slice(start, end);
+    paginatedItems.forEach(item => {
+        tbody.appendChild(createRow(item));
+    });
+
+    const total = filteredRows.length;
+    const showingStart = total === 0 ? 0 : start + 1;
+    const showingEnd = Math.min(end, total);
+    tableInfo.innerHTML = `Showing <strong>${showingStart}</strong> to <strong>${showingEnd}</strong> of <strong>${total}</strong> entries`;
+}
+
+// --- FILTER TABLE ---
+function filterTable() {
+    const text = searchText.value.toLowerCase();
+    const date = searchDate.value;
+    filteredRows = allRows.filter(item => {
+        const rowText = `${item.token_id} ${item.name} ${item.email} ${item.subject}`.toLowerCase();
+        const matchText = rowText.includes(text);
+        const matchDate = date ? item.date_created.startsWith(date) : true;
+        return matchText && matchDate;
+    });
+    currentPage = 1;
+    displayTable();
+    setupPagination();
+}
+
+// --- SORT TABLE ---
+function sortTable(colIndex) {
+    if(sortColumn === colIndex) sortAsc = !sortAsc;
+    else { sortColumn = colIndex; sortAsc = true; }
+
+    const headers = table.querySelectorAll("th.sortable");
+    headers.forEach(h => h.classList.remove("asc","desc"));
+    headers[colIndex].classList.add(sortAsc ? "asc":"desc");
+
+    filteredRows.sort((a,b) => {
+        let aText, bText;
+        switch(colIndex){
+            case 0: // token_id
+                aText = a.token_id.toLowerCase();
+                bText = b.token_id.toLowerCase();
+                break;
+            case 1: aText = a.name.toLowerCase(); bText = b.name.toLowerCase(); break;
+            case 2: aText = a.email.toLowerCase(); bText = b.email.toLowerCase(); break;
+            case 3: aText = a.subject.toLowerCase(); bText = b.subject.toLowerCase(); break;
+            case 4: aText = a.message.toLowerCase(); bText = b.message.toLowerCase(); break;
+            case 5: aText = new Date(a.date_created); bText = new Date(b.date_created); break;
+        }
+        if(aText > bText) return sortAsc ? 1 : -1;
+        if(aText < bText) return sortAsc ? -1 : 1;
+        return 0;
+    });
+
+    currentPage = 1;
+    displayTable();
+    setupPagination();
+}
+
+// --- PAGINATION ---
+function setupPagination() {
+    pagination.innerHTML = "";
+    const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+    if (pageCount <= 1) return;
+
+    const range = 1;
+    let pages = [];
+
+    // Previous
+    const prevLi = document.createElement("li");
+    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `<a class="page-link" href="#">&laquo;</a>`;
+    prevLi.addEventListener("click", e => {
+        e.preventDefault();
+        if(currentPage > 1){ currentPage--; displayTable(); setupPagination(); }
+    });
+    pagination.appendChild(prevLi);
+
+    // Pages + ellipsis
+    for(let i=1; i<=pageCount; i++){
+        if(i===1 || i===pageCount || (i >= currentPage-range && i <= currentPage+range)){
+            pages.push(i);
+        } else if(pages[pages.length-1] !== "..."){
+            pages.push("...");
+        }
+    }
+
+    pages.forEach(page=>{
+        const li = document.createElement("li");
+        li.classList.add("page-item");
+        if(page==="..."){
+            li.classList.add("disabled");
+            li.innerHTML=`<span class="page-link">...</span>`;
+        } else {
+            if(page===currentPage) li.classList.add("active");
+            const a=document.createElement("a");
+            a.classList.add("page-link");
+            a.href="#";
+            a.innerText=page;
+            a.addEventListener("click", e=>{
+                e.preventDefault();
+                currentPage=page;
+                displayTable();
+                setupPagination();
+            });
+            li.appendChild(a);
+        }
+        pagination.appendChild(li);
+    });
+
+    // Next
+    const nextLi=document.createElement("li");
+    nextLi.className=`page-item ${currentPage===pageCount ? 'disabled':''}`;
+    nextLi.innerHTML=`<a class="page-link" href="#">&raquo;</a>`;
+    nextLi.addEventListener("click", e=>{
+        e.preventDefault();
+        if(currentPage<pageCount){ currentPage++; displayTable(); setupPagination(); }
+    });
+    pagination.appendChild(nextLi);
+}
+
+// --- INITIAL FETCH ---
+fetch('/api/contact/inquiries')
+.then(res => res.json())
+.then(data => {
+    allRows = data; // store raw objects
+    filteredRows = [...allRows];
+    displayTable();
+    setupPagination();
+});
+
+// --- SOCKET.IO REALTIME ---
+const socket = io();
+socket.on('new_contact', function(data){
+    allRows.unshift(data); // prepend new object
+    filteredRows = [...allRows];
+    displayTable();
+    setupPagination();
+});
+
+// --- EVENT LISTENERS ---
+searchText.addEventListener("keyup", filterTable);
+searchDate.addEventListener("change", filterTable);
+rowsPerPageSelect.addEventListener("change", function(){
+    rowsPerPage = parseInt(this.value);
+    currentPage = 1;
+    displayTable();
+    setupPagination();
+});
+
+// Sorting headers
+table.querySelectorAll("th.sortable").forEach((header,index)=>{
+    header.addEventListener("click",()=>sortTable(index));
+});
+
+// Calendar picker
+searchDate.addEventListener("click", function(){
+    try{ this.showPicker(); } catch { console.log("Browser doesn't support showPicker()"); }
+});
+</script>
+
+
+
+{% endblock %}

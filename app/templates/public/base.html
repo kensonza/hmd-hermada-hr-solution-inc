@@ -58,6 +58,9 @@
   <!-- Main CSS File -->
   <link href="{{ url_for('static', filename='public/assets/css/main.css') }}" rel="stylesheet">
 
+  <!-- HMD Public CSS File -->
+  <link href="{{ url_for('static', filename='public/assets/css/hmd-public.css') }}" rel="stylesheet">
+
   {% block head %}
   
   {% endblock %}
@@ -120,27 +123,31 @@
   {% if nav_active == 'contact' %}
   {% else %}
   <!-- LETS TALK TOGGLE -->
-    <div id="letsTalkWrapper">
-      <div id="letsTalkTab">Let’s Talk</div>
-    
-      <div id="letsTalkPanel">
-        <form>
-          <label>Name*</label>
-          <input type="text" required>
-        
-          <label>Email*</label>
-          <input type="email" required>
-        
-          <label>Subject*</label>
-          <input type="text" required>
-        
-          <label>Message*</label>
-          <textarea rows="4" required></textarea>
-        
-          <button type="submit">SEND MESSAGE</button>
-        </form>
-      </div>
+  <div id="letsTalkWrapper">
+    <div id="letsTalkTab">Let’s Talk</div>
+
+    <div id="letsTalkPanel">
+      <div id="letsTalkResponse" class="lets-talk-alert"></div>
+      <form id="letsTalkForm" method="post" action="{{ url_for('public_controller.new_contact') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+        <label>Name*</label>
+        <input type="text" name="name" required>
+
+        <label>Email*</label>
+        <input type="email" name="email" required>
+
+        <label>Subject*</label>
+        <input type="text" name="subject" required>
+
+        <label>Message*</label>
+        <textarea name="message" rows="4" required></textarea>
+
+        <button type="submit">SEND MESSAGE</button>
+      </form>
+
     </div>
+  </div>
   <!-- /LETS TALK TOGGLE -->
   {% endif %} 
 
@@ -242,10 +249,95 @@
 
   <!-- LetsTalk JS -->
   <script>
-    const letsTalk = document.getElementById('letsTalkWrapper');
-    const tab = document.getElementById('letsTalkTab')
-    tab.addEventListener('click', () => {
-      letsTalk.classList.toggle('open');
+    document.addEventListener("DOMContentLoaded", function () {
+    
+      // ===============================
+      // LETS TALK TOGGLE (unchanged)
+      // ===============================
+      const letsTalk = document.getElementById('letsTalkWrapper');
+      const tab = document.getElementById('letsTalkTab');
+    
+      if (letsTalk && tab) {
+        tab.addEventListener('click', () => {
+          letsTalk.classList.toggle('open');
+        });
+      }
+    
+      // ===============================
+      // GENERIC AJAX FORM HANDLER
+      // ===============================
+      function ajaxFormHandler(formId, responseId, baseClass, successClass, errorClass) {
+        const form = document.getElementById(formId);
+        const responseDiv = document.getElementById(responseId);
+      
+        if (!form || !responseDiv) return;
+      
+        function showAlert(message, type) {
+          responseDiv.className = baseClass;
+          responseDiv.style.display = 'block';
+          responseDiv.innerText = message;
+        
+          if (type === 'success') {
+            responseDiv.classList.add(successClass);
+          } else {
+            responseDiv.classList.add(errorClass);
+          }
+        
+          setTimeout(() => {
+            responseDiv.style.display = 'none';
+          }, 4000);
+        }
+      
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+        
+          const formData = new FormData(form);
+        
+          fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.message) {
+              showAlert(data.message, 'success');
+              form.reset();
+            } else if (data.error) {
+              showAlert(data.error, 'error');
+            }
+          })
+          .catch(() => {
+            showAlert("Something went wrong. Try again.", 'error');
+          });
+        
+        });
+      }
+    
+      // ===============================
+      // ACTIVATE BOTH FORMS
+      // ===============================
+    
+      // Lets Talk
+      ajaxFormHandler(
+        'letsTalkForm',
+        'letsTalkResponse',
+        'lets-talk-alert',
+        'lets-talk-success',
+        'lets-talk-error'
+      );
+    
+      // Contact
+      ajaxFormHandler(
+        'contactForm',
+        'contactResponse',
+        'contact-alert',
+        'contact-success',
+        'contact-error'
+      );
+    
     });
   </script>
 

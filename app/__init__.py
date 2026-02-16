@@ -1,15 +1,17 @@
 import os
 from app.extension import db
-from flask import Flask, request, render_template, redirect, session
+from flask import Flask, request, render_template, redirect, session, jsonify
 from flask_wtf import CSRFProtect
 from flask_migrate import Migrate
 from dotenv import load_dotenv
+from flask_socketio import SocketIO
+
+# SocketIO Initialization
+socketio = SocketIO(cors_allowed_origins="*")
 
 # Absolute import after db is initialized
 from app.models import Users
-
-# Import blueprints (Public, Template Link, Admin)
-from .views import pubroute, tmproute, admroute
+from app.models import Contact
 
 # Load environment variables from .env file
 load_dotenv()
@@ -37,6 +39,9 @@ migrate = Migrate(app, db)
 app.secret_key = os.urandom(32)
 csrf = CSRFProtect(app)
 
+# SocketIO
+socketio.init_app(app)
+
 # Checking Invalid Route
 @app.errorhandler(404)
 def invalid_route(e):
@@ -50,14 +55,17 @@ def invalid_route(e):
     # Otherwise public
     return render_template('public/404.html'), 404
 
-# Blueprint Registration (Auth)
-from app.views.auth import auth
-app.register_blueprint(auth)
+
+# Import blueprints (Controller, Routes)
+from app.controller import register_blueprints_controller
+from app.routes import register_blueprints_routes
 
 # Blueprint Registration (Public, Template Link, Admin)
-for bp in [pubroute, tmproute, admroute]:
-    app.register_blueprint(bp)
+register_blueprints_controller(app)
+
+# Blueprint Registration (Public, Template Link, Admin)
+register_blueprints_routes(app)
 
 if __name__ == '__main__':
-    app.run(debug=True, host="127.0.0.1")
+    socketio.run(app, debug=True, host="127.0.0.1")
     #app.run(debug=True, host="0.0.0.0")
