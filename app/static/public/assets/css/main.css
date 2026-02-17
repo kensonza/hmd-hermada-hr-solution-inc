@@ -956,7 +956,7 @@ section,
 --------------------------------------------------------------*/
 .banner-container {
   /* Combination of old background image and new overlay logic */
-  background: url("/static/public/images/hmd-banner-final.jpg"); /* background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("/static/public/images/hmd-banner-test.jpg"); */
+  background: url("/static/public/images/hmd-banner.jpg"); /* background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("/static/public/images/hmd-banner-test.jpg"); */
   /* Fallback color: background-color: #7a6e30; */
   background-size: cover;
   background-position: center;

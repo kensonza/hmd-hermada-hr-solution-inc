@@ -35,6 +35,10 @@ th.sortable.desc::after {
 #searchDate {
   cursor: pointer;
 }
+
+td span {
+  word-break: break-word;
+}
 </style>
 
 {% endblock %}
@@ -104,6 +108,47 @@ th.sortable.desc::after {
           </div>
         </div>
     </div>
+
+    <!-- Contact Details Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Contact Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-bordered">
+              <tr>
+                <th>Token ID</th>
+                <td id="modal_token"></td>
+              </tr>
+              <tr>
+                <th>Name</th>
+                <td id="modal_name"></td>
+              </tr>
+              <tr>
+                <th>Email</th>
+                <td id="modal_email"></td>
+              </tr>
+              <tr>
+                <th>Subject</th>
+                <td id="modal_subject"></td>
+              </tr>
+              <tr>
+                <th>Message</th>
+                <td id="modal_message" style="white-space: pre-wrap;"></td>
+              </tr>
+              <tr>
+                <th>Date</th>
+                <td id="modal_date"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
 </main>
 <br>
 
@@ -133,16 +178,92 @@ let sortAsc = true;
 // --- CREATE TABLE ROW FROM DATA ---
 function createRow(item) {
     const tr = document.createElement("tr");
+
+    const maxLength = 50;
+    const fullMessage = item.message || "";
+    const shortMessage = fullMessage.length > maxLength 
+        ? fullMessage.substring(0, maxLength) + "..." 
+        : fullMessage;
+
+    const messageId = "msg-" + item.token_id;
+
     tr.innerHTML = `
-        <td>${item.token_id}</td>
+        <td>
+            <a href="#" class="view-details text-primary fw-bold" 
+               data-token="${item.token_id}"
+               style="cursor:pointer;">
+               ${item.token_id}
+            </a>
+        </td>
         <td>${item.name}</td>
         <td>${item.email}</td>
         <td>${item.subject}</td>
-        <td>${item.message}</td>
+        <td>
+            <span id="${messageId}" 
+                  data-full="${fullMessage.replace(/"/g, '&quot;')}" 
+                  data-short="${shortMessage}">
+                ${shortMessage}
+            </span>
+            ${fullMessage.length > maxLength 
+                ? `<button class="btn btn-sm btn-link p-0 ms-1" 
+                           onclick="toggleMessage('${messageId}')">
+                        View All
+                   </button>` 
+                : ""}
+        </td>
         <td>${item.date_created}</td>
     `;
+
     return tr;
 }
+
+// --- TOGGLE MESSAGE ---
+function toggleMessage(id) {
+    const span = document.getElementById(id);
+    const button = span.nextElementSibling;
+
+    const full = span.getAttribute("data-full");
+    const short = span.getAttribute("data-short");
+
+    if (span.innerText === short) {
+        span.innerText = full;
+        button.innerText = "Show Less";
+    } else {
+        span.innerText = short;
+        button.innerText = "View All";
+    }
+}
+
+// --- MODAL POPUP FOR TOKEN ID ---
+const contactModalEl = document.getElementById('contactModal');
+const contactModal = new bootstrap.Modal(contactModalEl);
+
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("view-details")){
+        e.preventDefault();
+
+        const token = e.target.dataset.token;
+
+        // Find full data
+        const data = allRows.find(item => 
+            String(item.token_id) === String(token)
+        );
+
+        if(!data) return;
+
+        // Populate modal fields
+        document.getElementById("modal_token").innerText = data.token_id;
+        document.getElementById("modal_name").innerText = data.name;
+        document.getElementById("modal_email").innerText = data.email;
+        document.getElementById("modal_subject").innerText = data.subject;
+        document.getElementById("modal_message").innerText = data.message;
+        document.getElementById("modal_date").innerText = data.date_created;
+        
+        contactModal.show();
+    }
+});
+
+
 
 // --- DISPLAY TABLE ---
 function displayTable() {
@@ -187,9 +308,9 @@ function sortTable(colIndex) {
     filteredRows.sort((a,b) => {
         let aText, bText;
         switch(colIndex){
-            case 0: // token_id
-                aText = a.token_id.toLowerCase();
-                bText = b.token_id.toLowerCase();
+            case 0:
+                aText = String(a.token_id).toLowerCase();
+                bText = String(b.token_id).toLowerCase();
                 break;
             case 1: aText = a.name.toLowerCase(); bText = b.name.toLowerCase(); break;
             case 2: aText = a.email.toLowerCase(); bText = b.email.toLowerCase(); break;
@@ -308,7 +429,5 @@ searchDate.addEventListener("click", function(){
     try{ this.showPicker(); } catch { console.log("Browser doesn't support showPicker()"); }
 });
 </script>
-
-
 
 {% endblock %}
