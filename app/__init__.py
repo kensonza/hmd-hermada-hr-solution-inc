@@ -4,10 +4,10 @@ from flask import Flask, request, render_template, redirect, session, jsonify
 from flask_wtf import CSRFProtect
 from flask_migrate import Migrate
 from dotenv import load_dotenv
-from flask_socketio import SocketIO
+#from flask_socketio import SocketIO
 
 # SocketIO Initialization
-socketio = SocketIO(cors_allowed_origins="*")
+# socketio = SocketIO(cors_allowed_origins="*")
 
 # Absolute import after db is initialized
 from app.models import Users
@@ -40,7 +40,7 @@ app.secret_key = os.urandom(32)
 csrf = CSRFProtect(app)
 
 # SocketIO
-socketio.init_app(app)
+# socketio.init_app(app)
 
 # Checking Invalid Route
 @app.errorhandler(404)
@@ -67,5 +67,5 @@ register_blueprints_controller(app)
 register_blueprints_routes(app)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host="127.0.0.1")
-    #app.run(debug=True, host="0.0.0.0")
+    #socketio.run(app, debug=True, host="127.0.0.1")
+    app.run(debug=True, host="127.0.0.1")

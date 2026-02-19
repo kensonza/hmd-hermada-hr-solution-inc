@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app.models import Contact
 from app.models import Users
-from app import db, socketio
+from app import db
+#from app import db, socketio
 from app.routes.admin_routes import admin_contact_inquiries
 from werkzeug.security import generate_password_hash
 
@@ -13,19 +14,17 @@ admcontroller = Blueprint('admin_controller', __name__, template_folder='templat
 def get_inquiries():
     
     # Get all contact inquiries ordered by date created (newest first)
-    admin_contact_inquiries = db.session.execute(db.select(Contact).order_by(Contact.date_created.desc())).scalars().all()
+    inquiries = db.session.execute(db.select(Contact).order_by(Contact.date_created.desc())).scalars().all()
 
-    data = []
-    for i in admin_contact_inquiries:
-        data.append({
-            "token_id": i.token_id,
-            "name": i.name,
-            "email": i.email,
-            "subject": i.subject,
-            "message": i.message,
-            "date_created": i.date_created.strftime("%Y-%m-%d %H:%M:%S")
-        })
-    
+    data = [{
+        "token_id": i.token_id,
+        "name": i.name,
+        "email": i.email,
+        "subject": i.subject,
+        "message": i.message,
+        "date_created": i.date_created.strftime("%Y-%m-%d %H:%M:%S")
+    } for i in inquiries]
+
     return jsonify(data)
 
 ### API endpoint to get user accounts for admin dashboard ###
@@ -33,22 +32,19 @@ def get_inquiries():
 def get_user_accounts():
     
     # Get all user accounts ordered by date created (newest first)
-    admin_user_accounts = db.session.execute(db.select(Users).order_by(Users.date_created.desc())).scalars().all()
+    user_accounts = db.session.execute(db.select(Users).order_by(Users.date_created.desc())).scalars().all()
 
-    data = []
-    for i in admin_user_accounts:
-        data.append({
-            "user_token_id": i.user_token_id,
-            "first_name": i.first_name,
-            "last_name": i.last_name,
-            "nickname": i.nickname,
-            "email": i.email,
-            "password": i.password,
-            "department": i.department,
-            "role": i.role,
-            "status": i.status,
-            "date_created": i.date_created.strftime("%Y-%m-%d %H:%M:%S")
-        })
+    data = [{
+        "user_token_id": i.user_token_id,
+        "first_name": i.first_name,
+        "last_name": i.last_name,
+        "nickname": i.nickname,
+        "email": i.email,
+        "department": i.department,
+        "role": i.role,
+        "status": i.status,
+        "date_created": i.date_created.strftime("%Y-%m-%d %H:%M:%S")
+    } for i in user_accounts]
     
     return jsonify(data)
 
@@ -89,19 +85,6 @@ def new_user():
         # Save to database
         db.session.add(new_user)
         db.session.commit()
-
-        # Emit a socket event for real-time updates
-        socketio.emit('new_user', {
-            "user_token_id": new_user.user_token_id,
-            "first_name": first_name,
-            "last_name": last_name,
-            "nickname": nickname,
-            "email": email,
-            "department": department,
-            "role": role,
-            "status": status,
-            "date_created": new_user.date_created.strftime("%Y-%m-%d %H:%M:%S")
-        }, namespace='/')
         
         return jsonify({"message": "User created successfully!"}), 200
     except Exception as e:
@@ -136,18 +119,6 @@ def edit_user():
         user.status = status
 
         db.session.commit()
-
-        # Emit real-time update to clients
-        socketio.emit('update_user', {
-            "user_token_id": user.user_token_id,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "nickname": user.nickname,
-            "email": user.email,
-            "department": user.department,
-            "role": user.role,
-            "status": user.status
-        }, namespace='/')
 
         return jsonify({"message": "User updated successfully"})
     except Exception as e:
@@ -201,9 +172,6 @@ def delete_user(user_token_id):
         
         db.session.delete(user)
         db.session.commit()
-
-        # I-emit ang event sa SocketIO
-        socketio.emit('delete_user', user_token_id)
         
         return jsonify({"message": f"Successfully deleted {user_fullname}"}), 200
     

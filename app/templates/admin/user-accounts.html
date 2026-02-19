@@ -437,7 +437,6 @@ document.addEventListener("click", function(e) {
 });
 </script>
 
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const table = document.getElementById("dataTable");
@@ -451,26 +450,28 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentPage = 1, rowsPerPage = parseInt(rowsPerPageSelect.value);
   let sortColumn = null, sortAsc = true;
 
-  const socket = io(window.location.origin);
-  socket.on("connect", () => console.log("Connected:", socket.id));
-  socket.on("new_user", user => handleSocketAdd(user, "table-success"));
-  socket.on("update_user", handleSocketUpdate);
-  socket.on("delete_user", user_token_id => {
-      allRows = allRows.filter(u => u.user_token_id !== user_token_id);
-      filteredRows = filteredRows.filter(u => u.user_token_id !== user_token_id);
-      displayTable();
-      setupPagination();
-  });
+// ===============================
+// AUTO-POLLING EVERY 5 SECONDS
+// ===============================
+function fetchUsers() {
+    fetch("/api/user/accounts")
+        .then(res => res.json())
+        .then(data => {
+            allRows = Array.isArray(data) ? data : [];
+            filteredRows = [...allRows];
+            currentPage = 1;
+            displayTable();
+            setupPagination();
 
-  fetch("/api/user/accounts")
-    .then(res => res.json())
-    .then(data => {
-      allRows = Array.isArray(data) ? data : [];
-      filteredRows = [...allRows];
-      displayTable();
-      setupPagination();
-    })
-    .catch(err => console.error("FETCH ERROR:", err));
+        })
+        .catch(err => console.error("Error fetching user accounts:", err));
+}
+
+// Initial load
+fetchUsers();
+
+// Poll every 5 seconds
+setInterval(fetchUsers, 5000);
 
   // ===============================
   // TABLE FUNCTIONS
@@ -691,7 +692,9 @@ document.addEventListener("DOMContentLoaded", function () {
       };
   }
 
+  // ===============================
   // LOGIC TO OPEN CHANGE PASSWORD MODAL
+  // ===============================
   const btnOpenChangePass = document.getElementById('btnOpenChangePass');
   if (btnOpenChangePass) {
       btnOpenChangePass.addEventListener('click', function() {
@@ -719,42 +722,6 @@ document.addEventListener("DOMContentLoaded", function () {
   ajaxFormHandler('editUserForm','editUserResponse');
   ajaxFormHandler('changePassForm', 'changePassResponse');
 
-  // ===============================
-  // SOCKET HELPERS
-  // ===============================
-  function handleSocketAdd(user, highlightClass) {
-      allRows.unshift(user);
-      filteredRows.unshift(user);
-      currentPage = 1;
-      displayTable();
-      setupPagination();
-
-      const firstRow = tbody.querySelector("tr");
-      if(firstRow){
-          firstRow.classList.add(highlightClass);
-          setTimeout(()=> firstRow.classList.remove(highlightClass), 2000);
-      }
-  }
-
-  function handleSocketUpdate(updatedUser){
-      const updateArray = arr => {
-          const idx = arr.findIndex(u => u.user_token_id === updatedUser.user_token_id);
-          if(idx !== -1) arr[idx] = updatedUser;
-      };
-      updateArray(allRows);
-      updateArray(filteredRows);
-
-      displayTable();
-
-      const start = (currentPage-1)*rowsPerPage;
-      filteredRows.slice(start,start+rowsPerPage).forEach((user,i)=>{
-          if(user.user_token_id === updatedUser.user_token_id){
-              const row = tbody.children[i];
-              row.classList.add("table-warning");
-              setTimeout(()=> row.classList.remove("table-warning"),2000);
-          }
-      });
-  }
 });
 </script>
 

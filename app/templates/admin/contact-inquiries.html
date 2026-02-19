@@ -157,7 +157,6 @@ td span {
 {% block scripts %}
 
 <!-- Fetch contact inquiries and populate the table -->
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
 const table = document.getElementById("dataTable");
 const tbody = document.getElementById("contactTable");
@@ -390,24 +389,24 @@ function setupPagination() {
     pagination.appendChild(nextLi);
 }
 
-// --- INITIAL FETCH ---
-fetch('/api/contact/inquiries')
-.then(res => res.json())
-.then(data => {
-    allRows = data; // store raw objects
-    filteredRows = [...allRows];
-    displayTable();
-    setupPagination();
-});
+// ===============================
+// AUTO-POLLING EVERY 5 SECONDS
+// ===============================
+function fetchContacts() {
+    fetch('/api/contact/inquiries')
+    .then(res => res.json())
+    .then(data => {
+        allRows = data;           // update global state
+        filterTable();            // filter, sort, paginate, display
+    })
+    .catch(err => console.error('Error fetching contacts:', err));
+}
 
-// --- SOCKET.IO REALTIME ---
-const socket = io();
-socket.on('new_contact', function(data){
-    allRows.unshift(data); // prepend new object
-    filteredRows = [...allRows];
-    displayTable();
-    setupPagination();
-});
+// Initial load
+fetchContacts();
+
+// Poll every 5 seconds (adjust interval as needed)
+setInterval(fetchContacts, 5000);
 
 // --- EVENT LISTENERS ---
 searchText.addEventListener("keyup", filterTable);

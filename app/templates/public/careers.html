@@ -1,71 +1,58 @@
 {% extends 'public/base.html' %}
 
-{% block title %} HMD Hermada HR Solution Corporation :: Careers  {% endblock %}
+{% block title %} HMD Hermada - Careers  {% endblock %}
 
 {% block head %}
 
-  <style>
-    :root{
-      --card-gap:1rem;
-      --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-      --heading-font: "Raleway",  sans-serif;
-      --nav-font: "Nunito",  sans-serif;
-    }
-    /* body{background:#f8fafc;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial} */
-    .job-card{transition:box-shadow .15s ease;border:0}
-    .job-card:hover{box-shadow:0 6px 18px rgba(20,40,60,.08)}
-    .job-badge{font-size:.8rem}
-    .controls-row .form-control{min-width:150px}
-    .pagination .page-link{cursor:pointer}
-    .card-title small{display:block;font-weight:600}
-    @media (max-width:575.98px){.card-meta{font-size:.9rem}}
+<style>
+  /* ================= HERO ================= */
+        .hero {
+            text-align: center;
+            padding: 120px 20px;
+        }
 
-    .job-card {
-        border: 1px solid #e9ecef !important; /* lighter gray */
-    }
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            color: #0a0a0a;
+        }
 
-  /* Custom font color control */
-    .job-team {
-      color: #000;
-      font-weight: 600;
-    }
+        .hero p {
+            max-width: 750px;
+            margin: 0 auto 20px auto;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #0a0a0a;
+        }
 
-    .job-type {
-      color: #000;
-    }
+        .cta {
+            margin-top: 20px;
+            font-size: 16px;
+        }
 
-    .job-title {
-      color: #2cc245;
-    }
+        .cta a {
+            text-decoration: none;
+            color: #0a0a0a;
+            font-weight: bold;
+        }
 
-    .job-desc {
-      color: #555;
-    }
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 20px;
+            }
 
-  /* Pagination color customization */
-    .pagination .page-link {
-      color: #2cc245; /* text color */
-      border-color: #2cc245; /* border color */
-    }
+            nav ul {
+                gap: 20px;
+            }
 
-    .pagination .page-link:hover {
-      color: #fff;
-      background-color: #2cc245;
-      border-color: #2cc245;
-    }
-
-    .pagination .page-item.active .page-link {
-      color: #fff;
-      background-color: #2cc245;
-      border-color: #2cc245;
-    }
-
-    .pagination .page-item.disabled .page-link {
-      color: #6c757d;
-      border-color: #dee2e6;
-      background-color: #fff;
-    }
-  </style>
+            .hero h1 {
+                font-size: 28px;
+            }
+        }
+</style>
 
 {% endblock %}
 
@@ -86,227 +73,70 @@
       </div>
     </div><!-- End Page Title -->
 
-  <section class="container py-5">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-      <div>
-        <div class="text-muted">Find your next role — #TheGoldStandard</div>
-      </div>
-    </div>
+    <!-- Careers Section -->
+    <section class="hero">
+      <h1 class="main-text">Only The <span class="gold-text">Gold Standard</span> in Everything We Do.</h1>
 
-    <!-- Controls -->
-    <div class="row g-2 align-items-center controls-row mb-3">
-      <!-- Search -->
-      <div class="col-md-4 col-sm-6">
-        <div class="input-group">
-          <span class="input-group-text" id="search-addon">🔎</span>
-          <input id="searchInput" type="search" class="form-control" placeholder="Search jobs, e.g. Sales" aria-label="Search jobs" aria-describedby="search-addon">
-        </div>
-      </div>
+      <p>
+        Our Career Pages are currently being updated, but we're still here to help you.
+        <br>
+        Ready to grow your career or strengthen your team?
+        <br>
+        Send us your resume, training requests, team building needs, or headhunting inquiries today.
+      </p>
 
-      <!-- Job Type -->
-      <div class="col-md-4 col-sm-6">
-        <select id="typeFilter" class="form-select" aria-label="Filter by job type">
-          <option value="">All types</option>
-          <option value="Full-time">Full-time</option>
-          <option value="Part-time">Part-time</option>
-          <option value="Contract">Contract</option>
-        </select>
-      </div>
-
-      <!-- Location -->
-      <div class="col-md-4 col-sm-6">
-        <select id="locationFilter" class="form-select" aria-label="Filter by location">
-          <option value="">All locations</option>
-          <option value="Remote">Remote</option>
-          <option value="Quezon City">Quezon City</option>
-          <option value="San Juan City">San Juan City</option>
-          <option value="Manila">Manila</option>
-          <option value="New York">New York</option>
-          <option value="London">London</option>
-        </select>
-      </div>
-
-      <div class="col-md-12 text-end">
-        <div id="resultsInfo" class="text-muted small mt-1"></div>
-      </div>
-    </div>
-
-    <!-- Job list -->
-    <div id="jobsContainer" class="row g-3"></div>
-
-    <!-- Pagination and Per Page -->
-    <div class="d-flex justify-content-center align-items-center mt-4 flex-wrap gap-2">
-      <nav aria-label="Job listings pagination">
-        <ul id="pagination" class="pagination mb-0"></ul>
-      </nav>
-      <div>
-        <select id="perPage" class="form-select form-select-md" style="width:auto" aria-label="Jobs per page">
-          <option value="5">5 / page</option>
-          <option value="8" selected>8 / page</option>
-          <option value="12">12 / page</option>
-        </select>
-      </div>
-    </div>
-  </section>
-
-  <template id="jobCardTpl">
-    <div class="col-12 col-md-6 col-lg-4">
-      <article class="card job-card h-100 p-3 border border-light rounded-3">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <div>
-            <h2 class="h6 mb-1 card-title">
-              <small class="job-team-type">
-                <span class="job-team text-uppercase"></span>
-                <span class="text-muted">•</span>
-                <span class="job-type text-uppercase"></span>
-              </small>
-              <span class="job-title fw-semibold d-block mt-1"></span>
-            </h2>
-            <div class="card-meta small text-muted job-meta"></div>
+      <div class="cta">
+          <div class="cta-item">
+              <strong>For Job Applications:</strong>
+              <p>
+                  Applicants may submit their CV or resume for employment opportunities
+                  by emailing
+                  <a href="mailto:ask@hmdhermada.com">ask@hmdhermada.com</a>.
+              </p>
           </div>
-          <div>
-            <span class="badge bg-light text-dark job-badge border"></span>
+        
+          <div class="cta-item">
+              <strong>For Service Inquiries:</strong>
+              <p>
+                  Training Programs, Team Building activities, or Headhunting &
+                  Recruitment services, kindly use our <br>
+                  <a href="#" id="openLetsTalk">Let’s Talk</a> or
+                  <a href="/contact">Contact</a> page.
+              </p>
           </div>
-        </div>
-        <p class="job-desc small"></p>
-        <div class="mt-auto d-flex justify-content-between align-items-center">
-          <div class="small text-muted job-apply">
-            Apply by <strong class="apply-date"></strong>
-          </div>
-        </div>
-      </article>
-    </div>
-  </template>
+      </div>
+    </section>
+    <!-- /Careers Section -->
+
+  </main>
 
 {% endblock %}
 
 {% block scripts %}
+
 <script>
-  const jobData = [
-    {id:1, title:'Sales Representative', location:'San Juan City', type:'Full-time', team:'Sales', date:'Nov 10, 2025', desc:'Serves customers by selling products and meeting customer needs.'},
-    {id:2, title:'HR Supervisor', location:'Quezon City', type:'Full-time', team:'Human Resources', date:'Nov 5, 2025', desc:'Recruitement & Onboarding: Oversee end-to-end recruitment, screening.'},
-    {id:3, title:'DevOps Engineer', location:'New York', type:'Full-time', team:'Platform', date:'Oct 31, 2025', desc:'Improve CI/CD and cloud infrastructure.'},
-    {id:4, title:'Sales Lead — APAC', location:'Manila', type:'Full-time', team:'Sales', date:'Nov 20, 2025', desc:'Drive regional sales and partnerships.'},
-    {id:5, title:'QA Engineer', location:'London', type:'Contract', team:'Engineering', date:'Nov 1, 2025', desc:'Implement automated testing frameworks.'},
-    {id:6, title:'Customer Success Manager', location:'Remote', type:'Full-time', team:'CS', date:'Dec 1, 2025', desc:'Manage enterprise accounts and onboarding.'},
-    {id:7, title:'Backend Engineer', location:'Manila', type:'Full-time', team:'Engineering', date:'Oct 29, 2025', desc:'Build resilient APIs and services.'},
-    {id:8, title:'HR Generalist', location:'Remote', type:'Full-time', team:'People', date:'Nov 15, 2025', desc:'Support hiring and employee programs.'},
-    {id:9, title:'Marketing Specialist', location:'London', type:'Part-time', team:'Marketing', date:'Nov 8, 2025', desc:'Campaigns, content, and analytics.'},
-    {id:10, title:'Data Analyst', location:'New York', type:'Full-time', team:'Data', date:'Nov 12, 2025', desc:'Analyze product data and build dashboards.'}
-  ];
+  document.addEventListener("DOMContentLoaded", function () {
 
-  let state = {
-    page: 1,
-    perPage: parseInt(document.getElementById('perPage').value, 10),
-    query: '',
-    location: '',
-    type: ''
-  };
+    const openLink = document.getElementById("openLetsTalk");
+    const letsTalkWrapper = document.getElementById("letsTalkWrapper");
 
-  const jobsContainer = document.getElementById('jobsContainer');
-  const paginationEl = document.getElementById('pagination');
-  const tpl = document.getElementById('jobCardTpl');
-  const searchInput = document.getElementById('searchInput');
-  const locationFilter = document.getElementById('locationFilter');
-  const typeFilter = document.getElementById('typeFilter');
-  const perPageSelect = document.getElementById('perPage');
-  const resultsInfo = document.getElementById('resultsInfo');
-
-  function filterJobs() {
-    const q = state.query.trim().toLowerCase();
-    const loc = state.location;
-    const type = state.type;
-    return jobData.filter(job => {
-      const matchQuery = q === '' || (job.title + job.desc + job.team).toLowerCase().includes(q);
-      const matchLoc = loc === '' || job.location === loc;
-      const matchType = type === '' || job.type === type;
-      return matchQuery && matchLoc && matchType;
-    });
-  }
-
-  function renderJobs() {
-    const filtered = filterJobs();
-    const total = filtered.length;
-    const per = state.perPage;
-    const pages = Math.max(1, Math.ceil(total / per));
-    if (state.page > pages) state.page = pages;
-    const start = (state.page - 1) * per;
-    const subset = filtered.slice(start, start + per);
-
-    jobsContainer.innerHTML = '';
-    for (const job of subset) {
-      const node = tpl.content.cloneNode(true);
-
-      // Make job title clickable (opens in new tab)
-      const titleEl = node.querySelector('.job-title');
-      const titleLink = document.createElement('a');
-      titleLink.href = '/careers/job';
-      titleLink.textContent = job.title;
-      titleLink.target = '_blank';
-      titleLink.rel = 'noopener noreferrer';
-      titleLink.classList.add('text-decoration-none', 'fw-semibold', 'job-title');
-      titleEl.replaceWith(titleLink);
-
-      node.querySelector('.job-team').textContent = job.team;
-      node.querySelector('.job-type').textContent = job.type;
-      node.querySelector('.job-desc').textContent = job.desc;
-      node.querySelector('.job-badge').textContent = job.location;
-      node.querySelector('.job-meta').textContent = job.location + ' • Posted ' + job.date;
-      node.querySelector('.apply-date').textContent = job.date;
-
-      jobsContainer.appendChild(node);
-    }
-
-    renderPagination(pages);
-    resultsInfo.textContent = `${total} result${total !== 1 ? 's' : ''}`;
-  }
-
-  function renderPagination(pages) {
-    paginationEl.innerHTML = '';
-    const createItem = (label, page, disabled = false, active = false, ariaLabel = '') => {
-      const li = document.createElement('li');
-      li.className = 'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : '');
-      const a = document.createElement('a');
-      a.className = 'page-link';
-      a.textContent = label;
-      a.href = '#';
-      if (ariaLabel) a.setAttribute('aria-label', ariaLabel);
-      a.addEventListener('click', e => {
+    if (openLink && letsTalkWrapper) {
+      openLink.addEventListener("click", function(e) {
         e.preventDefault();
-        if (!disabled) {
-          state.page = page;
-          renderJobs();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // TOGGLE open class
+        letsTalkWrapper.classList.toggle("open");
+
+        // If opening, scroll smoothly
+        if (letsTalkWrapper.classList.contains("open")) {
+          setTimeout(() => {
+            letsTalkWrapper.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }, 200);
         }
       });
-      li.appendChild(a);
-      return li;
-    };
-
-    paginationEl.appendChild(createItem('«', Math.max(1, state.page - 1), state.page === 1, false, 'Previous'));
-    const windowSize = 5;
-    let start = Math.max(1, state.page - Math.floor(windowSize / 2));
-    let end = Math.min(pages, start + windowSize - 1);
-    if (end - start < windowSize - 1) start = Math.max(1, end - windowSize + 1);
-
-    if (start > 1) {
-      paginationEl.appendChild(createItem('1', 1));
-      if (start > 2) paginationEl.appendChild(createItem('…', 0, true));
     }
-    for (let p = start; p <= end; p++) paginationEl.appendChild(createItem(p, p, false, p === state.page));
-    if (end < pages) {
-      if (end < pages - 1) paginationEl.appendChild(createItem('…', 0, true));
-      paginationEl.appendChild(createItem(pages, pages));
-    }
-    paginationEl.appendChild(createItem('»', Math.min(pages, state.page + 1), state.page === pages, false, 'Next'));
-  }
 
-  // Event listeners
-  searchInput.addEventListener('input', e => { state.query = e.target.value; state.page = 1; renderJobs(); });
-  locationFilter.addEventListener('change', e => { state.location = e.target.value; state.page = 1; renderJobs(); });
-  typeFilter.addEventListener('change', e => { state.type = e.target.value; state.page = 1; renderJobs(); });
-  perPageSelect.addEventListener('change', e => { state.perPage = parseInt(e.target.value, 10); state.page = 1; renderJobs(); });
-
-  renderJobs();
+  });
 </script>
+
 {% endblock %}
