@@ -14,20 +14,20 @@ def index():
 # About Us
 @pubroute.route('/about')
 def about():
-    return render_template('public/about.html', nav_active='about')
+    return render_template('public/about.html', nav_active='about', page='about')
 
 # Our Services
 @pubroute.route('/our-services')
 def services():
-    return render_template('public/our-services.html', nav_active='our-services')
+    return render_template('public/our-services.html', nav_active='our-services', page='services')
 
 # Careers
 @pubroute.route('/careers')
 def careers():
-    return render_template('public/careers.html', nav_active='careers')
+    return render_template('public/careers.html', nav_active='careers', page='careers')
 
 # Contact
 @pubroute.route('/contact')
 def contact():
 
-    return render_template('public/contact.html', nav_active='contact')
+    return render_template('public/contact.html', nav_active='contact', page='contact')

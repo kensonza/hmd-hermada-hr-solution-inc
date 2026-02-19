@@ -8,8 +8,6 @@
 <!-- Font Awesome (for eye icons) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<meta name="csrf-token" content="{{ csrf_token() }}">
-
 <style>
 th.sortable {
   cursor: pointer;
@@ -216,7 +214,7 @@ th.sortable.desc::after {
                       <label for="recipient-name" class="col-form-label">Nickname:</label>
                       <input type="text" class="form-control" name="txtNickName" required>
                     </div>
-                    <div class="col-12 col-md-6"
+                    <div class="col-12 col-md-6">
                       <label for="recipient-name" class="col-form-label">Email:</label>
                       <input type="email" class="form-control" name="txtEmail" autocomplete="email" required>
                     </div>
@@ -229,6 +227,7 @@ th.sortable.desc::after {
                       <input type="password" class="form-control password-input" id="txtnewpassword" name="txtPassword" autocomplete="new-password" required>
                       <i class="fas fa-eye toggle-password" toggle="#txtnewpassword"></i>
                     </div>
+                    <small class="text-muted">Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.</small>
                   </div>
                   <div class="col-12 col-md-6">
                     <label class="col-form-label">Password Confirmation:</label>
@@ -236,6 +235,7 @@ th.sortable.desc::after {
                       <input type="password" class="form-control password-input" id="txtconfirmpassword" name="txtPasswordConfirm" autocomplete="new-password" required>
                       <i class="fas fa-eye toggle-password" toggle="#txtconfirmpassword"></i>
                     </div>
+                    <small class="text-muted">Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.</small>
                   </div>
                 </div>
             
@@ -244,9 +244,18 @@ th.sortable.desc::after {
                       <label for="recipient-name" class="col-form-label">Department</label>
                       <select class="form-select" aria-label="Default select example" name="txtDepartment" required>
                         <option value="" disabled selected>Select Department</option>
+                        <option value="Operations">Operations / Operations Management</option>
+                        <option value="Human Resources">Human Resources (HR)</option>
                         <option value="Marketing">Marketing</option>
-                        <option value="Human Resources">Human Resources</option>
-                        <option value="Operation">Operation</option>
+                        <option value="Sales">Sales / Business Development</option>
+                        <option value="Finance">Finance / Accounting</option>
+                        <option value="IT">Information Technology (IT)</option>
+                        <option value="R&D">Research & Development (R&D)</option>
+                        <option value="Training">Training Department / Learning & Development (L&D)</option>
+                        <option value="Legal Compliance">Legal / Compliance</option>
+                        <option value="Purchasing">Procurement / Purchasing</option>
+                        <option value="Administration">Administration / Office Management</option>
+                        <option value="Logistics">Logistics / Supply Chain</option>
                       </select>
                     </div>
                     <div class="col-12 col-md-6">
@@ -254,7 +263,7 @@ th.sortable.desc::after {
                       <select class="form-select" aria-label="Default select example" name="txtRole" required>
                         <option value="" disabled selected>Select Role</option>
                         <option value="User">User</option>
-                        <option value="Admin">Admin</option>
+                        <option value="Administrator<">Administrator</option>
                       </select>
                     </div>
                   </div>
@@ -263,14 +272,14 @@ th.sortable.desc::after {
                     <div class="col-12 col-md-6">
                       <label for="recipient-name" class="col-form-label">Status</label>
                       <select class="form-select" aria-label="Default select example" name="txtStatus" required>
-                      <option value="" disabled selected>Select Status</option>
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                    </select>
+                        <option value="" disabled selected>Select Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
                     </div>
                 
                     <div class="col-12 col-md-6">
-                      <label for="formFile" class="form-label">Image</label>
+                      <label for="formFile" class="col-form-label">Image</label>
                       <input class="form-control" type="file" id="formFile">
                     </div>
                   </div>
@@ -325,10 +334,19 @@ th.sortable.desc::after {
                     <div class="col-12 col-md-6">
                       <label class="col-form-label">Department</label>
                       <select class="form-select" id="editDepartment" name="txtDepartment" required>
-                        <option value="" disabled>Select Department</option>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="Operations">Operations / Operations Management</option>
+                        <option value="Human Resources">Human Resources (HR)</option>
                         <option value="Marketing">Marketing</option>
-                        <option value="Human Resources">Human Resources</option>
-                        <option value="Operation">Operation</option>
+                        <option value="Sales">Sales / Business Development</option>
+                        <option value="Finance">Finance / Accounting</option>
+                        <option value="IT">Information Technology (IT)</option>
+                        <option value="R&D">Research & Development (R&D)</option>
+                        <option value="Training">Training Department / Learning & Development (L&D)</option>
+                        <option value="Legal Compliance">Legal / Compliance</option>
+                        <option value="Purchasing">Procurement / Purchasing</option>
+                        <option value="Administration">Administration / Office Management</option>
+                        <option value="Logistics">Logistics / Supply Chain</option>
                       </select>
                     </div>
                     <div class="col-12 col-md-6">
@@ -336,7 +354,7 @@ th.sortable.desc::after {
                       <select class="form-select" id="editRole" name="txtRole" required>
                         <option value="" disabled>Select Role</option>
                         <option value="User">User</option>
-                        <option value="Admin">Admin</option>
+                        <option value="Administrator">Administrator</option>
                       </select>
                     </div>
                   </div>
@@ -352,7 +370,7 @@ th.sortable.desc::after {
                     </div>
                   
                     <div class="col-12 col-md-6">
-                      <label for="editFormFile" class="form-label">Image</label>
+                      <label for="editFormFile" class="col-form-label">Image</label>
                       <input class="form-control" type="file" id="editFormFile" name="user_image">
                     </div>
                   </div>
@@ -389,6 +407,7 @@ th.sortable.desc::after {
                       <input type="password" class="form-control password-input" id="newPassInput" name="new_password" autocomplete="new-password" required>
                       <i class="fas fa-eye toggle-password" toggle="#newPassInput"></i>
                     </div>
+                    <small class="text-muted">Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.</small>
                   </div>
                 
                   <div class="mb-3">
@@ -397,6 +416,7 @@ th.sortable.desc::after {
                       <input type="password" class="form-control password-input" id="confirmPassInput" name="confirm_password" autocomplete="new-password" required>
                       <i class="fas fa-eye toggle-password" toggle="#confirmPassInput"></i>
                     </div>
+                    <small class="text-muted">Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.</small>
                   </div>
                 
                   <div class="modal-footer px-0 pb-0">
@@ -649,23 +669,64 @@ setInterval(fetchUsers, 5000);
       form.onsubmit = e => {
           e.preventDefault();
           
-          // --- PASSWORD VALIDATION ---
-          const passwordFields = form.querySelectorAll('input[type="password"]');
-          if (passwordFields.length >= 2) {
-              const pass = passwordFields[0].value;
-              const confirm = passwordFields[1].value;
-
-              // Check if passwords match
+          // ===============================
+          // STRONG PASSWORD VALIDATION
+          // ===============================
+          let pass = null;
+          let confirm = null;
+                
+          // Detect kung anong form ang gumagamit
+          if (formId === "addUserForm") {
+              pass = form.querySelector('input[name="txtPassword"]')?.value;
+              confirm = form.querySelector('input[name="txtPasswordConfirm"]')?.value;
+          }
+          
+          if (formId === "changePassForm") {
+              pass = form.querySelector('input[name="new_password"]')?.value;
+              confirm = form.querySelector('input[name="confirm_password"]')?.value;
+          }
+          
+          // If may password validation
+          if (pass !== null && confirm !== null) {
+          
+              const minLength = 8;
+          
+              const hasUpper = /[A-Z]/.test(pass);
+              const hasLower = /[a-z]/.test(pass);
+              const hasNumber = /[0-9]/.test(pass);
+              const hasSpecial = /[^A-Za-z0-9]/.test(pass); // mas safe special detection
+          
+              if (pass.length < minLength) {
+                  showAlert("Password must be at least 8 characters long.", "error");
+                  return;
+              }
+            
+              if (!hasUpper) {
+                  showAlert("Password must contain at least one uppercase letter.", "error");
+                  return;
+              }
+            
+              if (!hasLower) {
+                  showAlert("Password must contain at least one lowercase letter.", "error");
+                  return;
+              }
+            
+              if (!hasNumber) {
+                  showAlert("Password must contain at least one number.", "error");
+                  return;
+              }
+            
+              if (!hasSpecial) {
+                  showAlert("Password must contain at least one special character.", "error");
+                  return;
+              }
+            
               if (pass !== confirm) {
                   showAlert("Passwords do not match!", "error");
                   return;
               }
-              // Check if password is not empty (for Add and Change Pass)
-              if (pass.trim() === "") {
-                  showAlert("Password cannot be empty!", "error");
-                  return;
-              }
           }
+
 
           fetch(form.action, {
               method: 'POST',
