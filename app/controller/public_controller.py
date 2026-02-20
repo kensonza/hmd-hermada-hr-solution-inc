@@ -1,3 +1,4 @@
+import requests
 from flask import Blueprint, request, jsonify
 from app.models import Contact
 from app import db
@@ -27,7 +28,7 @@ def new_contact():
         'secret': secret_key,
         'response': recaptcha_token
     }
-    response = request.post(verify_url, data=payload)
+    response = requests.post(verify_url, data=payload)
     result = response.json()
 
     if not result.get("success") or result.get("score", 0) < 0.5:

@@ -51,7 +51,7 @@
   </script>
 
   <!-- Google reCaptcha v3 -->
-   <script src="https://www.google.com/recaptcha/api.js?render=6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT"></script>
 
   <!-- Google -->
   <meta name="google-site-verification" content="0eXbiBMQBKQ4IjnA8xJE1Hd--OV8dYWIs8Tujkraz60" />
@@ -286,11 +286,12 @@
   <script>
     grecaptcha.ready(function() {
       document.getElementById('letsTalkForm').addEventListener('submit', function(e) {
-          e.preventDefault(); // prevent default submit
-          grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'submit'}).then(function(token) {
-              document.getElementById('g-recaptcha-response').value = token;
-              e.target.submit();
-          });
+        e.preventDefault();
+        grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'letsTalk'})
+        .then(function(token) {
+          document.getElementById('g-recaptcha-response').value = token;
+          e.target.submit(); // or ajax fetch
+        });
       });
     });
   </script>
