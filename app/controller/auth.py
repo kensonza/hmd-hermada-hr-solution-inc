@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from app.controller.maintenance import maintenance
 from werkzeug.security import check_password_hash
 from app.models import Users
 
@@ -7,6 +8,7 @@ auth = Blueprint('auth', __name__)
 
 # Login
 @auth.route('/hidden/admin-panel/login', methods=['GET', 'POST'])
+@maintenance
 def login():
     if request.method == 'POST':
 

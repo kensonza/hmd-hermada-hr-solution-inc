@@ -1,6 +1,6 @@
 import os
 from app.extension import db
-from flask import Flask, request, render_template, redirect, session, jsonify
+from flask import Flask, request, render_template
 from flask_wtf import CSRFProtect
 from flask_migrate import Migrate
 from dotenv import load_dotenv
@@ -68,4 +68,4 @@ register_blueprints_routes(app)
 
 if __name__ == '__main__':
     #socketio.run(app, debug=True, host="127.0.0.1")
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="127.0.0.1")

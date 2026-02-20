@@ -5,7 +5,6 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>{% block title %} Base Template {% endblock %}</title>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Focus on growth while we handle HR. Contact us today for stress-free HR and people development!">
   <meta name="keywords" content="HR outsourcing, HR solutions, HR consultancy, HMD Hermada HR Solution Corporation, people development, HR Philippines">
@@ -40,6 +39,16 @@
   <meta property="og:image" content="{{ og_image }}">
   <meta property="og:url" content="{{ request.url }}">
   <meta property="og:type" content="website">
+
+   <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-48YBBWPB5K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  
+    gtag('config', 'G-48YBBWPB5K');
+  </script>
 
   <!-- Google -->
   <meta name="google-site-verification" content="0eXbiBMQBKQ4IjnA8xJE1Hd--OV8dYWIs8Tujkraz60" />

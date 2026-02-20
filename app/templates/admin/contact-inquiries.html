@@ -1,6 +1,6 @@
 {% extends 'admin/base.html' %}
 
-{% block title %} HMD Hermada - Contact List {% endblock %}
+{% block title %} HMD Hermada - Contact Inquiries {% endblock %}
 
 {% block head %}
 
@@ -57,55 +57,66 @@ td span {
         <hr>
         
         <div class="container">
-
-          <!-- Controls -->
-          <div class="row g-3 mb-3">
-            <div class="col-md-4">
-              <input type="text" id="searchText" class="form-control" placeholder="Search ID, Name, Subject">
+          
+          <div class="card mb-4">
+            <div class="card-header">
+                <!-- <i class="fas fa-table me-1"></i> -->
+                All contact inquiries submitted by users. Click on Token ID to view full details.
+                &nbsp;
             </div>
-            <div class="col-md-3">
-              <input type="date" id="searchDate" class="form-control">
-            </div>
-          </div>
-      
-          <!-- Table -->
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped align-middle" id="dataTable">
-              <thead class="table-light">
-                <tr>
-                  <th data-column="0" class="sortable">Token ID</th>
-                  <th data-column="1" class="sortable">Name</th>
-                  <th data-column="2" class="sortable">Email</th>
-                  <th data-column="3" class="sortable">Subject</th>
-                  <th data-column="4" class="sortable">Message</th>
-                  <th data-column="5" class="sortable">Date</th>
-                </tr>
-              </thead>
-              <tbody id="contactTable"></tbody>
-            </table>
-          </div>
-      
-          <!-- Showing Info -->
-          <div class="small text-muted" id="tableInfo"></div>
-      
-          <!-- Pagination + Rows -->
-          <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap">
-            <div></div> <!-- empty for spacing -->
-            <div class="d-flex align-items-center gap-3 mx-auto">
-              <nav>
-                <ul class="pagination mb-0" id="pagination"></ul>
-              </nav>
-              <div class="d-flex align-items-center gap-2">
-                <span class="small text-muted">Show</span>
-                <select id="rowsPerPage" class="form-select form-select-sm w-auto">
-                  <option value="5">5</option>
-                  <option value="10" selected>10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                </select>
+            <div class="card-body">
+              <!-- Search -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                  <input type="text" id="searchText" class="form-control" placeholder="Search ID, Name, Subject">
+                </div>
+                <div class="col-md-3">
+                  <input type="date" id="searchDate" class="form-control">
+                </div>
               </div>
+              <!-- /Search -->
+            
+              <!-- Table -->
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle" id="dataTable">
+                  <thead class="table-light">
+                    <tr>
+                      <th data-column="0" class="sortable">Token ID</th>
+                      <th data-column="1" class="sortable">Name</th>
+                      <th data-column="2" class="sortable">Email</th>
+                      <th data-column="3" class="sortable">Subject</th>
+                      <th data-column="4" class="sortable">Message</th>
+                      <th data-column="5" class="sortable">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="contactTable"></tbody>
+                </table>
+              </div>
+              <!-- /Table -->
+            
+              <!-- Showing Info -->
+              <div class="small text-muted" id="tableInfo"></div>
+            
+              <!-- Pagination + Rows -->
+              <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap">
+                <div></div> <!-- empty for spacing -->
+                <div class="d-flex align-items-center gap-3 mx-auto">
+                  <nav>
+                    <ul class="pagination mb-0" id="pagination"></ul>
+                  </nav>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="small text-muted">Show</span>
+                    <select id="rowsPerPage" class="form-select form-select-sm w-auto">
+                      <option value="5">5</option>
+                      <option value="10" selected>10</option>
+                      <option value="20">20</option>
+                      <option value="50">50</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <!-- /Pagination + Rows -->
             </div>
-          </div>
         </div>
     </div>
 

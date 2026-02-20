@@ -127,63 +127,73 @@ th.sortable.desc::after {
         <hr>
         
         <div class="container">
-         
-          <!-- Controls -->
-          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
         
-            <!-- LEFT: ADD BUTTON -->
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
-              Add User
-            </button>
-        
-            <!-- RIGHT: SEARCH -->
-            <div style="width: 300px;">
-              <input type="text" id="searchText" class="form-control" placeholder="Search User">
+          <div class="card mb-4">
+            <div class="card-header">
+                <!-- <i class="fas fa-table me-1"></i> -->
+                All user accounts registered in the system. Click on Edit to modify user details or change password.
+                &nbsp;
             </div>
-        
-          </div>
-      
-          <!-- Table -->
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped align-middle" id="dataTable">
-              <thead class="table-light">
-                <tr>
-                  <th data-column="0" class="sortable">Token ID</th>
-                  <th data-column="1" class="sortable">First Name</th>
-                  <th data-column="2" class="sortable">Last Name</th>
-                  <th data-column="3" class="sortable">Nickname</th>
-                  <th data-column="4" class="sortable">Email</th>
-                  <th data-column="5" class="sortable">Department</th>
-                  <th data-column="6" class="sortable">Role</th>
-                  <th data-column="7" class="sortable">Status</th>
-                  <th data-column="8" class="sortable"></th>
-                </tr>
-              </thead>
-              <tbody id="userTable"></tbody>
-            </table>
-          </div>
-      
-          <!-- Showing Info -->
-          <div class="small text-muted" id="tableInfo"></div>
-      
-          <!-- Pagination + Rows -->
-          <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap">
-            <div></div>
-            <div class="d-flex align-items-center gap-3 mx-auto">
-              <nav>
-                <ul class="pagination mb-0" id="pagination"></ul>
-              </nav>
-              <div class="d-flex align-items-center gap-2">
-                <span class="small text-muted">Show</span>
-                <select id="rowsPerPage" class="form-select form-select-sm w-auto">
-                  <option value="5">5</option>
-                  <option value="10" selected>10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                </select>
+            <div class="card-body">
+              <!-- Controls -->
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+              
+                <!-- LEFT: ADD BUTTON -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                  Add User
+                </button>
+              
+                <!-- RIGHT: SEARCH -->
+                <div style="width: 300px;">
+                  <input type="text" id="searchText" class="form-control" placeholder="Search User">
+                </div>
+              
+              </div>
+            
+              <!-- Table -->
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle" id="dataTable">
+                  <thead class="table-light">
+                    <tr>
+                      <th data-column="0" class="sortable">Token ID</th>
+                      <th data-column="1" class="sortable">First Name</th>
+                      <th data-column="2" class="sortable">Last Name</th>
+                      <th data-column="3" class="sortable">Nickname</th>
+                      <th data-column="4" class="sortable">Email</th>
+                      <th data-column="5" class="sortable">Department</th>
+                      <th data-column="6" class="sortable">Role</th>
+                      <th data-column="7" class="sortable">Status</th>
+                      <th data-column="8" class="sortable"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="userTable"></tbody>
+                </table>
+              </div>
+            
+              <!-- Showing Info -->
+              <div class="small text-muted" id="tableInfo"></div>
+            
+              <!-- Pagination + Rows -->
+              <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap">
+                <div></div>
+                <div class="d-flex align-items-center gap-3 mx-auto">
+                  <nav>
+                    <ul class="pagination mb-0" id="pagination"></ul>
+                  </nav>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="small text-muted">Show</span>
+                    <select id="rowsPerPage" class="form-select form-select-sm w-auto">
+                      <option value="5">5</option>
+                      <option value="10" selected>10</option>
+                      <option value="20">20</option>
+                      <option value="50">50</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
         </div>
 
         <!-- ADD USERS MODAL -->

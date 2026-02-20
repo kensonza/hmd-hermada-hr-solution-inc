@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maintenance</title>
+    <style>
+        body {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            font-family:Arial;
+            background:#f8f9fa;
+        }
+        .box {
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <img src="{{ url_for('static', filename='/public/images/hmd-logo.png') }}" alt="Maintenance" width="200">
+        <h1>🚧 On Maintenance</h1>
+        <p>We are currently updating our system. Please check back later.</p>
+    </div>
+</body>
+</html>
