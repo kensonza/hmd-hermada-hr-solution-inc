@@ -311,13 +311,23 @@ function displayTable() {
 function filterTable() {
     const text = searchText.value.toLowerCase();
     const date = searchDate.value;
+    const previousPage = currentPage; // save current page
+
     filteredRows = allRows.filter(item => {
         const rowText = `${item.token_id} ${item.name} ${item.email} ${item.subject}`.toLowerCase();
         const matchText = rowText.includes(text);
         const matchDate = date ? item.date_created.startsWith(date) : true;
         return matchText && matchDate;
     });
-    currentPage = 1;
+
+    // Check if previous page is still valid
+    const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+    if(previousPage <= pageCount){
+        currentPage = previousPage;
+    } else {
+        currentPage = pageCount || 1; // fallback to last page or 1
+    }
+
     displayTable();
     setupPagination();
 }

@@ -284,110 +284,115 @@
 
   <!-- Google reCaptcha v3 JS -->
   <script>
-    grecaptcha.ready(function() {
-      document.getElementById('letsTalkForm').addEventListener('submit', function(e) {
+  /**
+   * Universal function for submitting a form via AJAX.
+   * This is called after obtaining the reCAPTCHA token.
+   */
+  function handleAjaxSubmission(form, responseId, baseClass, successClass, errorClass) {
+    const responseDiv = document.getElementById(responseId);
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    // Disable button to avoid double click while loading.
+    if (submitBtn) submitBtn.disabled = true;
+
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      responseDiv.style.display = 'block';
+      responseDiv.className = baseClass;
+
+      if (data.message) {
+        // SUCCESS Case
+        responseDiv.classList.add(successClass);
+        responseDiv.innerText = data.message;
+        form.reset();
+      } else {
+        // ERROR Case (reCAPTCHA failed or validation error)
+        responseDiv.classList.add(errorClass);
+        responseDiv.innerText = data.error || "An error occurred.";
+      }
+
+      // Itago ulit ang alert pagkatapos ng 4 seconds
+      setTimeout(() => {
+        responseDiv.style.display = 'none';
+        if (submitBtn) submitBtn.disabled = false;
+      }, 4000);
+    })
+    .catch(() => {
+      responseDiv.style.display = 'block';
+      responseDiv.className = baseClass + " " + errorClass;
+      responseDiv.innerText = "Something went wrong. Please try again.";
+      if (submitBtn) submitBtn.disabled = false;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // 1. LETS TALK TOGGLE LOGIC
+    const letsTalk = document.getElementById('letsTalkWrapper');
+    const tab = document.getElementById('letsTalkTab');
+    if (letsTalk && tab) {
+      tab.addEventListener('click', () => {
+        letsTalk.classList.toggle('open');
+      });
+    }
+
+    // 2. LETS TALK FORM SUBMISSION (With reCAPTCHA)
+    const letsTalkForm = document.getElementById('letsTalkForm');
+    if (letsTalkForm) {
+      letsTalkForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'letsTalk'})
-        .then(function(token) {
-          document.getElementById('g-recaptcha-response').value = token;
-          e.target.submit(); // or ajax fetch
+        
+        grecaptcha.ready(function() {
+          grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'submit'})
+          .then(function(token) {
+            // Ilagay ang token sa hidden input
+            document.getElementById('g-recaptcha-response').value = token;
+            
+            // Tawagin ang AJAX handler
+            handleAjaxSubmission(
+              letsTalkForm, 
+              'letsTalkResponse', 
+              'lets-talk-alert', 
+              'lets-talk-success', 
+              'lets-talk-error'
+            );
+          });
         });
       });
-    });
-  </script>
+    }
 
-  <!-- LetsTalk JS -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    
-      // ===============================
-      // LETS TALK TOGGLE (unchanged)
-      // ===============================
-      const letsTalk = document.getElementById('letsTalkWrapper');
-      const tab = document.getElementById('letsTalkTab');
-    
-      if (letsTalk && tab) {
-        tab.addEventListener('click', () => {
-          letsTalk.classList.toggle('open');
-        });
-      }
-    
-      // ===============================
-      // GENERIC AJAX FORM HANDLER
-      // ===============================
-      function ajaxFormHandler(formId, responseId, baseClass, successClass, errorClass) {
-        const form = document.getElementById(formId);
-        const responseDiv = document.getElementById(responseId);
-      
-        if (!form || !responseDiv) return;
-      
-        function showAlert(message, type) {
-          responseDiv.className = baseClass;
-          responseDiv.style.display = 'block';
-          responseDiv.innerText = message;
+    // 3. CONTACT PAGE FORM SUBMISSION (Optional: Kung meron kang hiwalay na form sa contact page)
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+      contactForm.addEventListener('submit', function (e) {
+        e.preventDefault();
         
-          if (type === 'success') {
-            responseDiv.classList.add(successClass);
-          } else {
-            responseDiv.classList.add(errorClass);
-          }
-        
-          setTimeout(() => {
-            responseDiv.style.display = 'none';
-          }, 4000);
-        }
-      
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-        
-          const formData = new FormData(form);
-        
-          fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.message) {
-              showAlert(data.message, 'success');
-              form.reset();
-            } else if (data.error) {
-              showAlert(data.error, 'error');
-            }
-          })
-          .catch(() => {
-            showAlert("Something went wrong. Try again.", 'error');
+        grecaptcha.ready(function() {
+          grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'submit'})
+          .then(function(token) {
+            // Siguraduhin na may hidden input din ang contactForm na may tamang ID o name
+            const hiddenInput = contactForm.querySelector('[name="g-recaptcha-response"]');
+            if (hiddenInput) hiddenInput.value = token;
+            
+            handleAjaxSubmission(
+              contactForm, 
+              'contactResponse', 
+              'contact-alert', 
+              'contact-success', 
+              'contact-error'
+            );
           });
-        
         });
-      }
-    
-      // ===============================
-      // ACTIVATE BOTH FORMS
-      // ===============================
-    
-      // Lets Talk
-      ajaxFormHandler(
-        'letsTalkForm',
-        'letsTalkResponse',
-        'lets-talk-alert',
-        'lets-talk-success',
-        'lets-talk-error'
-      );
-    
-      // Contact
-      ajaxFormHandler(
-        'contactForm',
-        'contactResponse',
-        'contact-alert',
-        'contact-success',
-        'contact-error'
-      );
-    
-    });
+      });
+    }
+  });
   </script>
 
   {% block scripts %}
