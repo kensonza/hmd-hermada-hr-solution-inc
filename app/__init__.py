@@ -42,6 +42,11 @@ csrf = CSRFProtect(app)
 # SocketIO
 # socketio.init_app(app)
 
+# Route for sitemap.xml (static folder)
+@app.route('/sitemap.xml')
+def sitemap():
+    return app.send_static_file('sitemap.xml')
+
 # Checking Invalid Route
 @app.errorhandler(404)
 def invalid_route(e):

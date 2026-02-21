@@ -5,12 +5,34 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>{% block title %} Base Template {% endblock %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Focus on growth while we handle HR. Contact us today for stress-free HR and people development!">
-  <meta name="keywords" content="HR outsourcing, HR solutions, HR consultancy, HMD Hermada HR Solution Corporation, people development, HR Philippines">
-  <meta name="author" content="HMD Hermada HR Solution Corporation">
-  <meta name="robots" content="index,follow,noodp,noydir" />
 
+  <!-- Meta Tags SEO -->
+  {% set default_meta_description = "Focus on growth while we handle HR. Contact us today for stress-free HR and people development!" %}
+  {% set default_meta_keywords = "HR outsourcing, HR solutions, HR consultancy, HMD Hermada HR Solution Corporation, people development, HR Philippines" %}
+  {% set default_meta_author = "HMD Hermada HR Solution Corporation" %}
+  {% set default_meta_robots = "index,follow,noodp,noydir" %}
+
+  {% if page == "about" %}
+    {% set meta_description = "Deliver #TheGoldStandard in speed, quality, and impact." %}
+    {% set meta_keywords = "About HMD Hermada, HR solutions, Corporate training, Team building" %}
+  {% elif page == "services" %}
+      {% set meta_description = "HR Solutions | Creative Solutions | Service Programs for 2026." %}
+      {% set meta_keywords = "HR services, People development, HMD Hermada services" %}
+  {% elif page == "contact" %}
+      {% set meta_description = "Get in touch! We’re here to help. Tell us what you’re looking for, and we’ll help you find the right solution." %}
+      {% set meta_keywords = "Contact HMD Hermada, HR support, inquiries" %}
+  {% else %}
+      {% set meta_description = default_meta_description %}
+      {% set meta_keywords = default_meta_keywords %}
+  {% endif %}
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ meta_description }}">
+  <meta name="keywords" content="{{ meta_keywords }}">
+  <meta name="author" content="{{ default_meta_author }}">
+  <meta name="robots" content="{{ default_meta_robots }}">
+
+  <!-- Open Graph Meta Tags -->
   {% set default_title = "HMD Hermada HR Solution Corporation - The Gold Standard in People Solutions" %}
   {% set default_desc = "HMD Hermada - Corporate Training | Motivation | Team Building." %}
   {% set default_image = url_for('static', filename='public/images/hmd-index-logo.png', _external=True) %}
