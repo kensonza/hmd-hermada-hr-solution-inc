@@ -42,6 +42,11 @@ csrf = CSRFProtect(app)
 # SocketIO
 # socketio.init_app(app)
 
+# Route for robots.txt
+@app.route('/robots.txt')
+def robots_txt():
+    return app.send_static_file('robots.txt')
+
 # Route for sitemap.xml (static folder)
 @app.route('/sitemap.xml')
 def sitemap():
