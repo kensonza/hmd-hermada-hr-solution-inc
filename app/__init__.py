@@ -41,7 +41,7 @@ app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('RECAPTCHA_SECRET_KEY')
 # Hostinger
 app.config.update(
     MAIL_SERVER='smtp.hostinger.com',             # Gmail SMTP server
-    MAIL_PORT=465,
+    MAIL_PORT=2525,
     MAIL_USE_SSL=True,
     MAIL_USE_TLS=False,
     MAIL_USERNAME=os.getenv('EMAIL'),         # Your email
