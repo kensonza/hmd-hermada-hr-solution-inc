@@ -40,7 +40,7 @@ app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('RECAPTCHA_SECRET_KEY')
 # Configure Flask-Mail
 # Hostinger
 app.config.update(
-    MAIL_SERVER='smtp.hostinger.com',             # Gmail SMTP server
+    MAIL_SERVER='smtp.hostinger.ph',             # Gmail SMTP server
     MAIL_PORT=587,
     MAIL_USE_SSL=False,
     MAIL_USE_TLS=True,
