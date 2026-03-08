@@ -1,4 +1,5 @@
 
+import os
 import requests
 import re
 import logging
@@ -8,7 +9,6 @@ from flask import Blueprint, request, jsonify, current_app, url_for
 from wtforms.validators import email
 from app.models import Contact, Newsletter, NewsletterSubscribers
 from app import db
-from app import mail, app
 from flask_mail import Message
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -16,6 +16,40 @@ from zoneinfo import ZoneInfo
 pubcontroller = Blueprint('public_controller', __name__, template_folder='templates/public')
 
 VERIFY_URL = "https://www.google.com/recaptcha/api/siteverify"
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+
+# --- REUSABLE BREVO SEND FUNCTION ---
+def send_via_brevo(subject, html_content, to_email, to_name=None, reply_to=None):
+    api_key = os.getenv('BREVO_API_KEY')
+    if not api_key:
+        logging.error("BREVO_API_KEY not found in environment variables.")
+        return False
+
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+
+    payload = {
+        "sender": {"name": "HMD Hermada", "email": "ask@hmdhermada.com"},
+        "to": [{"email": to_email, "name": to_name or to_email}],
+        "subject": subject,
+        "htmlContent": html_content
+    }
+
+    if reply_to:
+        payload["replyTo"] = {"email": reply_to}
+
+    try:
+        response = requests.post(BREVO_API_URL, json=payload, headers=headers, timeout=10)
+        if response.status_code in [200, 201, 202]:
+            return True
+        logging.error(f"Brevo API Error: {response.text}")
+        return False
+    except Exception as e:
+        logging.error(f"Network Error during Brevo send: {e}")
+        return False
 
 # Let's Talk / Contact (Contact Form Submission).
 # Manager or Concerned Personnel Email Template.
@@ -157,6 +191,7 @@ def new_contact():
     if not all([name, email, subject, message, recaptcha_token]):
         return jsonify({"error": "All fields, including reCAPTCHA, are required"}), 400
     
+    # reCAPTCHA Verification
     try:
         payload = {
             'secret': current_app.config.get('RECAPTCHA_SECRET_KEY'),
@@ -165,57 +200,34 @@ def new_contact():
         }
         response = requests.post(VERIFY_URL, data=payload, timeout=10)
         result = response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"reCAPTCHA Connection Error: {e}")
-        return jsonify({"error": "Internal server error during verification"}), 500
+    except Exception as e:
+        return jsonify({"error": "reCAPTCHA connection error"}), 500
 
     if not result.get("success") or result.get("score", 0) < 0.5:
-        return jsonify({
-            "error": "reCAPTCHA verification failed. Too many bot-like signals.",
-            "details": result.get("error-codes", [])
-        }), 400
+        return jsonify({"error": "Bot-like activity detected."}), 400
 
     try:
         # 1. SAVE TO DATABASE
-        contact_entry = Contact(
-            name=name,
-            email=email,
-            subject=subject,
-            message=message
-        )
+        contact_entry = Contact(name=name, email=email, subject=subject, message=message)
         db.session.add(contact_entry)
         db.session.commit()
 
-        # Send Email to the Manager or Concerned Personnel.
+        # 2. SEND EMAILS VIA BREVO
         manager_email = "ask@hmdhermada.com"
-        #manager_email = "kensonza@gmail.com"
-
-        html_content_for_manager = generate_contact_html(name, email, subject, message)
-        msg_to_manager = Message(
-            subject=f"New Contact Inquiry: {subject}",
-            sender=current_app.config['MAIL_USERNAME'],
-            recipients=[manager_email],
-            html=html_content_for_manager
-        )
         
-        # AUTO-REPLY to the client.
-        html_content_for_client = generate_client_reply_html(name, subject)
-        msg_to_client = Message(
-            subject="Thank you for reaching out to HMD Hermada HR Solutions Corporation",
-            sender=current_app.config['MAIL_USERNAME'],
-            recipients=[email],
-            html=html_content_for_client
-        )
-
-        # Execute email sending.
-        mail.send(msg_to_manager)
-        mail.send(msg_to_client)
+        # Email to Manager
+        html_manager = generate_contact_html(name, email, subject, message)
+        send_via_brevo(f"New Inquiry: {subject}", html_manager, manager_email, "HMD Admin", reply_to=email)
+        
+        # Auto-reply to Client
+        html_client = generate_client_reply_html(name, subject)
+        send_via_brevo("Thank you for reaching out to HMD Hermada", html_client, email, name)
 
         return jsonify({"message": "Message sent successfully!"}), 200
 
     except Exception as e:
         db.session.rollback()
-        logging.error(f"DATABASE OR MAIL ERROR: {str(e)}")
+        logging.error(f"ERROR: {str(e)}")
         return jsonify({"error": "Failed to process your request"}), 500
     
 # Our Newsletter (Newsletter Subscription Form Submission).
@@ -337,16 +349,16 @@ def send_newsletter():
     recipient = request.get_json().get('email') if request.is_json else request.form.get('email')
     logging.debug(f"Recipient detected: {recipient}")
 
-    if not recipient or not re.match(EMAIL_REGEX, recipient):
+    if not recipient or not re.match(r'^[^@]+@[^@]+\.[^@]+$', recipient):
         return jsonify({'status': 'error', 'message': 'Valid email is required.'}), 400
 
     try:
         latest_nl = Newsletter.query.filter_by(nl_status="Active").order_by(Newsletter.date_created.desc()).first()
-        
         newsletter_html_content = latest_nl.nl_description if latest_nl else "<p>Welcome to our newsletter!</p>"
         email_subject = latest_nl.nl_subject if latest_nl else "Welcome to HMD Hermada Newsletter"
 
         existing_sub = NewsletterSubscribers.query.filter_by(ns_email=recipient).first()
+        new_subscription = None
 
         if not existing_sub:
             new_subscription = NewsletterSubscribers(
@@ -368,24 +380,27 @@ def send_newsletter():
                 logging.info(f"Email {recipient} already subscribed.")
                 return jsonify({'status': 'error', 'message': f'{recipient} is already subscribed.'}), 400
 
-        # --- 3. GENERATE HTML & SEND EMAIL ---
+        # token-based unsubscribe link
         unsubscribe_link = url_for('public_controller.unsubscribe', token=new_subscription.ns_token_id, _external=True)
-
-        # I-pass ang content.
+        
         email_content = generate_newsletter_html(unsubscribe_link, content=newsletter_html_content)
 
-        msg = Message(
-            subject=email_subject,
-            sender=current_app.config['MAIL_USERNAME'],
-            recipients=[recipient],
-            html=email_content
+        is_sent = send_via_brevo(
+            subject=email_subject, 
+            html_content=email_content, 
+            to_email=recipient
         )
-        mail.send(msg)
 
-        return jsonify({
-            'status': 'success',
-            'message': f'Thank you! Your subscription has been saved and a welcome email was sent to {recipient}.'
-        })
+        if is_sent:
+            return jsonify({
+                'status': 'success',
+                'message': f'Thank you! Your subscription has been saved and a welcome email was sent to {recipient}.'
+            })
+        else:
+            return jsonify({
+                'status': 'error', 
+                'message': 'Subscription saved but failed to send welcome email.'
+            }), 500
 
     except Exception as e:
         db.session.rollback()

@@ -4,7 +4,7 @@ from flask import Flask, request, render_template
 from flask_wtf import CSRFProtect
 from flask_migrate import Migrate
 from dotenv import load_dotenv
-from flask_mail import Mail
+#from flask_mail import Mail
 
 # Absolute import after db is initialized
 from app.models import Users
@@ -37,19 +37,30 @@ migrate = Migrate(app, db)
 # ReCAPTCHA Secret Key
 app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('RECAPTCHA_SECRET_KEY')
 
+# Brevo API Config
+app.config['BREVO_API_KEY'] = os.getenv('BREVO_API_KEY')
+
 # Configure Flask-Mail
 # Hostinger
 app.config.update(
     MAIL_SERVER='smtp.hostinger.com',             # Gmail SMTP server
-    MAIL_PORT=2525,
+    MAIL_PORT=465,
     MAIL_USE_SSL=True,
     MAIL_USE_TLS=False,
     MAIL_USERNAME=os.getenv('EMAIL'),         # Your email
     MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')  # Your email password or app-specific password
 )
+# GMAIL
+#app.config.update(
+#    MAIL_SERVER='smtp.gmail.com',             # Gmail SMTP server
+#    MAIL_PORT=587,
+#    MAIL_USE_SSL=False,
+#    MAIL_USE_TLS=True,
+#    MAIL_USERNAME=os.getenv('EMAIL'),         # Your email
+#    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')  # Your email password or app-specific password
+#)
 app.config['MAIL_DEBUG'] = True
-
-mail = Mail(app)
+#mail = Mail(app)
 
 # Security Key
 app.secret_key = os.urandom(32)
