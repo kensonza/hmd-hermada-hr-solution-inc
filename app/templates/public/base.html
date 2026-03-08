@@ -7,7 +7,7 @@
   <title>{% block title %} Base Template {% endblock %}</title>
 
   <!-- Meta Tags SEO -->
-  {% set default_meta_description = "Focus on growth while we handle HR. Contact us today for stress-free HR and people development!" %}
+  {% set default_meta_description = "We set the Gold Standard in people solutions. Professional Development Training | Team Building Events | Organization Development & Human Resources Consultancy | Corporate Events and Activations | Talent Acquisition & Executive Headhunting | Creative Employer Branding Solutions" %}
   {% set default_meta_keywords = "HR outsourcing, HR solutions, HR consultancy, HMD Hermada HR Solution Corporation, people development, HR Philippines" %}
   {% set default_meta_author = "HMD Hermada HR Solution Corporation" %}
   {% set default_meta_robots = "index,follow,noodp,noydir" %}
@@ -172,6 +172,25 @@
     </div>
   </header>
 
+  <!-- Cookie Banner -->
+  <div id="cookieBanner" class="fixed-bottom p-4 bg-dark text-light border-top shadow-lg" style="display: none; z-index: 9999;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8 col-sm-12">
+                <p class="mb-md-0">
+                    We are committed to delivering <strong>#TheGoldStandard</strong> experience. This website uses cookies to ensure you get the best browsing experience with HMD Hermada. 
+                    <a href="/privacy-policy" class="text-warning text-decoration-none">Learn more in our <b>Privacy Policy</b>.</a>
+                </p>
+            </div>
+            <div class="col-md-4 col-sm-12 text-md-end mt-3 mt-md-0">
+                <button id="acceptCookies" class="btn btn-warning btn-sm px-4 fw-bold">Accept</button>
+                <button id="closeBanner" class="btn btn-outline-light btn-sm ms-2">Close</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- /Cookie Banner -->
+
   {% block content %}
 
   {% endblock %}
@@ -200,7 +219,12 @@
         <textarea name="message" rows="4" required></textarea>
 
         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
-        <button type="submit">SEND MESSAGE</button>
+        <button type="submit" id="letsTalkSubmitBtn">
+          <span id="btnText">SEND MESSAGE</span>
+          <span id="btnSpinner" class="d-none">
+            <i class="fas fa-spinner fa-spin"></i> Sending...
+          </span>
+        </button>
       </form>
 
     </div>
@@ -245,8 +269,8 @@
             <!-- <li><a href="#">Blog</a></li> -->
             <li><a href="/contact">Contact</a></li>
             <!-- <li><a href="#">Book A Free Consultation</a></li> -->
-            <li><a href="#">Terms of service</a></li>
-            <li><a href="#">Privacy policy</a></li>
+            <li><a href="/terms-of-service">Terms of service</a></li>
+            <li><a href="/privacy-policy">Privacy policy</a></li>
           </ul>
         </div>
 
@@ -261,14 +285,19 @@
 
         <div class="col-lg-4 col-md-12 footer-newsletter">
           <h4>Our Newsletter</h4>
-          <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
-          <form action="/newsletter" method="post" class="php-email-form">
-            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
-            <div class="loading">Loading</div>
+          <p>Experience <span class="gold-text">#TheGoldStandard</span>. Join our newsletter for strategic HR consultancy, team building innovations, and talent solutions.</p>
+          <form id="newsletter-form" method="post" action="{{ url_for('public_controller.send_newsletter') }}" class="flask-email-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="newsletter-form">
+              <input type="email" name="email" placeholder="Enter your email" required>
+              <input type="submit" value="Subscribe">
+            </div>
+            <div class="loading">Loading...</div>
             <div class="error-message"></div>
-            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+            <div class="sent-message"></div>
           </form>
         </div>
+
 
       </div>
     </div>
@@ -301,6 +330,80 @@
   <script src="{{ url_for('static', filename='public/assets/vendor/waypoints/noframework.waypoints.js') }}"></script>
   <script src="{{ url_for('static', filename='public/assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
 
+  <!-- Newsletter JS -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const newsletterForm = document.getElementById('newsletter-form');
+    if (!newsletterForm) return;
+
+    newsletterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const loading = newsletterForm.querySelector('.loading');
+      const error = newsletterForm.querySelector('.error-message');
+      const success = newsletterForm.querySelector('.sent-message');
+
+      // Get the input values
+      const emailInput = newsletterForm.querySelector('input[name="email"]');
+      const csrfInput = newsletterForm.querySelector('input[name="csrf_token"]');
+
+      // Reset state: Hide the previous messages for now and show the loading
+      error.style.display = 'none';
+      success.style.display = 'none';
+      error.textContent = '';
+      success.textContent = '';
+      loading.style.display = 'block';
+
+      const dataToSend = {
+        email: emailInput.value
+      };
+
+      fetch(newsletterForm.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRFToken': csrfInput.value
+        },
+        body: JSON.stringify(dataToSend)
+      })
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Server Error');
+        return data;
+      })
+      .then(data => {
+        loading.style.display = 'none';
+
+        // Show the success message
+        success.textContent = data.message;
+        success.style.display = 'block';
+
+        newsletterForm.reset();
+
+        // Auto-hide success message after 5 seconds
+        setTimeout(() => {
+          success.style.display = 'none';
+        }, 5000);
+      })
+      .catch((err) => {
+        loading.style.display = 'none';
+
+        // Show the error message
+        error.textContent = err.message;
+        error.style.display = 'block';
+
+        console.error("Newsletter Error:", err);
+
+        // Auto-hide error message after 8 seconds
+        setTimeout(() => {
+          error.style.display = 'none';
+        }, 8000);
+      });
+    });
+  });
+  </script>
+
   <!-- Main JS File -->
   <script src="{{ url_for('static', filename='public/assets/js/main.js') }}"></script>
 
@@ -311,52 +414,70 @@
    * This is called after obtaining the reCAPTCHA token.
    */
   function handleAjaxSubmission(form, responseId, baseClass, successClass, errorClass) {
-    const responseDiv = document.getElementById(responseId);
-    const formData = new FormData(form);
-    const submitBtn = form.querySelector('button[type="submit"]');
+  const responseDiv = document.getElementById(responseId);
+  const formData = new FormData(form);
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const csrfToken = form.querySelector('input[name="csrf_token"]').value;
 
-    // Disable button to avoid double click while loading.
-    if (submitBtn) submitBtn.disabled = true;
+  // Kunin ang text at spinner elements
+  const btnText = submitBtn.querySelector('#btnText');
+  const btnSpinner = submitBtn.querySelector('#btnSpinner');
 
-    fetch(form.action, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-    .then(res => res.json())
-    .then(data => {
-      responseDiv.style.display = 'block';
-      responseDiv.className = baseClass;
-
-      if (data.message) {
-        // SUCCESS Case
-        responseDiv.classList.add(successClass);
-        responseDiv.innerText = data.message;
-        form.reset();
-      } else {
-        // ERROR Case (reCAPTCHA failed or validation error)
-        responseDiv.classList.add(errorClass);
-        responseDiv.innerText = data.error || "An error occurred.";
-      }
-
-      // Itago ulit ang alert pagkatapos ng 4 seconds
-      setTimeout(() => {
-        responseDiv.style.display = 'none';
-        if (submitBtn) submitBtn.disabled = false;
-      }, 4000);
-    })
-    .catch(() => {
-      responseDiv.style.display = 'block';
-      responseDiv.className = baseClass + " " + errorClass;
-      responseDiv.innerText = "Something went wrong. Please try again.";
-      if (submitBtn) submitBtn.disabled = false;
-    });
+  // LOADING STATE: I-disable ang button at ipakita ang spinner
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    if (btnText) btnText.classList.add('d-none');
+    if (btnSpinner) btnSpinner.classList.remove('d-none');
   }
 
+  fetch(form.action, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRFToken': csrfToken
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    responseDiv.style.display = 'block';
+    responseDiv.className = baseClass;
+
+    if (data.message) {
+      responseDiv.classList.add(successClass);
+      responseDiv.innerText = data.message;
+      form.reset();
+    } else {
+      responseDiv.classList.add(errorClass);
+      responseDiv.innerText = data.error || "An error occurred.";
+    }
+
+    setTimeout(() => {
+      responseDiv.style.display = 'none';
+      
+      // RESET STATE: Balik sa dati ang button
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        if (btnText) btnText.classList.remove('d-none');
+        if (btnSpinner) btnSpinner.classList.add('d-none');
+      }
+    }, 4000);
+  })
+  .catch(() => {
+    responseDiv.style.display = 'block';
+    responseDiv.className = baseClass + " " + errorClass;
+    responseDiv.innerText = "Something went wrong. Please try again.";
+    
+    // RESET STATE: Kahit nag-error, dapat bumalik ang button
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      if (btnText) btnText.classList.remove('d-none');
+      if (btnSpinner) btnSpinner.classList.add('d-none');
+    }
+  });
+}
+
   document.addEventListener("DOMContentLoaded", function () {
-    // 1. LETS TALK TOGGLE LOGIC
     const letsTalk = document.getElementById('letsTalkWrapper');
     const tab = document.getElementById('letsTalkTab');
     if (letsTalk && tab) {
@@ -365,7 +486,6 @@
       });
     }
 
-    // 2. LETS TALK FORM SUBMISSION (With reCAPTCHA)
     const letsTalkForm = document.getElementById('letsTalkForm');
     if (letsTalkForm) {
       letsTalkForm.addEventListener('submit', function (e) {
@@ -374,10 +494,10 @@
         grecaptcha.ready(function() {
           grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'submit'})
           .then(function(token) {
-            // Ilagay ang token sa hidden input
+            // Input the token in hidden input
             document.getElementById('g-recaptcha-response').value = token;
             
-            // Tawagin ang AJAX handler
+            // Call AJAX handler
             handleAjaxSubmission(
               letsTalkForm, 
               'letsTalkResponse', 
@@ -390,7 +510,6 @@
       });
     }
 
-    // 3. CONTACT PAGE FORM SUBMISSION (Optional: Kung meron kang hiwalay na form sa contact page)
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
       contactForm.addEventListener('submit', function (e) {
@@ -399,7 +518,6 @@
         grecaptcha.ready(function() {
           grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'submit'})
           .then(function(token) {
-            // Siguraduhin na may hidden input din ang contactForm na may tamang ID o name
             const hiddenInput = contactForm.querySelector('[name="g-recaptcha-response"]');
             if (hiddenInput) hiddenInput.value = token;
             
@@ -415,6 +533,35 @@
       });
     }
   });
+  </script>
+
+  <!-- HMD Hermada HR Solutions Corporations JS Cookies -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cookieBanner = document.getElementById('cookieBanner');
+        const acceptBtn = document.getElementById('acceptCookies');
+        const closeBtn = document.getElementById('closeBanner');
+
+        // 1. Check kung "accepted" na dati
+        if (!localStorage.getItem('hmd_cookie_accepted')) {
+            // Ipakita ang banner after 2 seconds para smooth ang dating
+            setTimeout(() => {
+                cookieBanner.style.display = 'block';
+                cookieBanner.classList.add('animate__animated', 'animate__fadeInUp'); // Kung may animation library ka
+            }, 2000);
+        }
+
+        // 2. Kapag kinlik ang 'Tanggapin'
+        acceptBtn.addEventListener('click', function () {
+            localStorage.setItem('hmd_cookie_accepted', 'true');
+            cookieBanner.style.display = 'none';
+        });
+
+        // 3. Kapag 'Isara' lang (pero lalabas ulit next time)
+        closeBtn.addEventListener('click', function () {
+            cookieBanner.style.display = 'none';
+        });
+    });
   </script>
 
   {% block scripts %}

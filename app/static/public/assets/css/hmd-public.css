@@ -31,6 +31,19 @@ Base HTML (base.html)
   border: 1px solid #dc3545;
 }
 
+#letsTalkSubmitBtn {
+  min-width: 150px; /* Para hindi nagbabago ang size ng button */
+  transition: all 0.3s ease;
+}
+    
+#letsTalkSubmitBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.fa-spin {
+  margin-right: 5px;
+}
 /* ========================================
 Index HTML (index.html)
 ======================================== */
@@ -1427,4 +1440,20 @@ Contact HTML (contact.html)
 .alert-message {
     color: #dec55d;
     line-height: 1.5;
+}
+
+/* Submit Button Spinner */
+#contactSubmitBtn {
+  background: var(--accent-color);
+  color: #fff;
+  border: 0;
+  padding: 10px 30px;
+  transition: 0.4s;
+  border-radius: 4px;
+  min-width: 180px;
+}
+
+#contactSubmitBtn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
 }

@@ -202,7 +202,7 @@ function createRow(item) {
 
     tr.innerHTML = `
         <td>
-            <a href="#" class="view-details text-primary fw-bold" 
+            <a href="#" class="view-details text-decoration-none fw-bold" 
                data-token="${item.token_id}"
                style="cursor:pointer;">
                ${item.token_id}
@@ -283,26 +283,40 @@ document.addEventListener("click", function(e){
 // --- DISPLAY TABLE ---
 function displayTable() {
     tbody.innerHTML = "";
+
+    // Check kung may data sa filteredRows
+    if (filteredRows.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No records found.</td></tr>`;
+        tbody.appendChild(tr);
+        
+        // I-reset ang table info
+        tableInfo.innerHTML = "Showing <strong>0</strong> to <strong>0</strong> of <strong>0</strong> entries";
+        return; // Stop execution
+    }
+
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     const paginatedItems = filteredRows.slice(start, end);
-    paginatedItems.forEach(item => {
-      const row = createRow(item);
-      tbody.appendChild(row);
 
-      // Restore expanded messages
-      const messageId = "msg-" + item.token_id;
+    paginatedItems.forEach(item => {
+        const row = createRow(item);
+        tbody.appendChild(row);
+
+        // Restore expanded messages
+        const messageId = "msg-" + item.token_id;
         if (expandedMessages.has(messageId)) {
             const span = document.getElementById(messageId);
             const button = span.nextElementSibling;
-            span.innerText = span.getAttribute("data-full");
-            if(button) button.innerText = "Show Less";
+            if (span) {
+                span.innerText = span.getAttribute("data-full");
+                if (button) button.innerText = "Show Less";
+            }
         }
     });
 
-
     const total = filteredRows.length;
-    const showingStart = total === 0 ? 0 : start + 1;
+    const showingStart = start + 1;
     const showingEnd = Math.min(end, total);
     tableInfo.innerHTML = `Showing <strong>${showingStart}</strong> to <strong>${showingEnd}</strong> of <strong>${total}</strong> entries`;
 }
@@ -368,6 +382,8 @@ function sortTable(colIndex) {
 function setupPagination() {
     pagination.innerHTML = "";
     const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+    
+    // Kung walang pages, huwag nang ipakita ang pagination buttons
     if (pageCount <= 1) return;
 
     const range = 1;

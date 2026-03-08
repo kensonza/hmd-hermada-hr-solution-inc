@@ -102,9 +102,9 @@ h6 {
   font-family: var(--heading-font);
 }
 
-/* PHP Email Form Messages
+/* Flask Email Form Messages
 ------------------------------*/
-.php-email-form .error-message {
+.flask-email-form .error-message {
   display: none;
   background: #df1529;
   color: #ffffff;
@@ -114,7 +114,7 @@ h6 {
   font-weight: 600;
 }
 
-.php-email-form .sent-message {
+.flask-email-form .sent-message {
   display: none;
   color: #ffffff;
   background: #059652;
@@ -124,7 +124,7 @@ h6 {
   font-weight: 600;
 }
 
-.php-email-form .loading {
+.flask-email-form .loading {
   display: none;
   background: var(--surface-color);
   text-align: center;
@@ -132,7 +132,7 @@ h6 {
   margin-bottom: 24px;
 }
 
-.php-email-form .loading:before {
+.flask-email-form .loading:before {
   content: "";
   display: inline-block;
   border-radius: 50%;
@@ -141,10 +141,10 @@ h6 {
   margin: 0 10px -6px 0;
   border: 3px solid var(--accent-color);
   border-top-color: var(--surface-color);
-  animation: php-email-form-loading 1s linear infinite;
+  animation: flask-email-form-loading 1s linear infinite;
 }
 
-@keyframes php-email-form-loading {
+@keyframes flask-email-form-loading {
   0% {
     transform: rotate(0deg);
   }

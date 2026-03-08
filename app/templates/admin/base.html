@@ -9,9 +9,12 @@
         <title>{% block title %} HMD Hermada Admin Base Template {% endblock %}</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
         <link href="{{ url_for('static', filename='admin/css/styles.css') }}" rel="stylesheet" />
-        
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
+        <!-- Favicons -->
+        <link href="{{ url_for('static', filename='admin/images/favicon/favicon-96x96.png') }}" rel="icon" sizes="96x96">
+        <link href="{{ url_for('static', filename='admin/images/favicon/apple-touch-icon.png') }}" rel="apple-touch-icon">
+        
         <!-- for AJAX/fetch requests -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -88,10 +91,11 @@
                                             <a class="nav-link" href="500.html">500 Page</a>
                                         </nav>
                                     </div> -->
-                                    <a class="nav-link" href="#">Home</a>
-                                    <a class="nav-link" href="#">About</a>
-                                    <a class="nav-link" href="#">Our Services</a>
+                                    <!-- <a class="nav-link" href="#">Home</a> -->
+                                    <!-- <a class="nav-link" href="#">About</a> -->
+                                    <!-- <a class="nav-link" href="#">Our Services</a> -->
                                     <a class="nav-link {% if adnav_active == 'contact-inquiries' %} active {% endif %}" href="/hidden/admin-panel/contact-inquiries">Let's Talk / Contact</a>
+                                    <a class="nav-link {% if adnav_active == 'newsletter' %} active {% endif %}" href="/hidden/admin-panel/newsletter">Our Newsletter</a>
                                 </nav>
                             </div>
                             <!-- /Sites-->

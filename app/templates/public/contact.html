@@ -101,7 +101,14 @@
                 <textarea class="form-control" name="message" placeholder="Message" required=""></textarea>
               </div>
               <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
-              <div class="text-center"><button type="submit">Send Message</button></div>
+              <div class="text-center">
+                <button type="submit" id="contactSubmitBtn">
+                  <span id="btnText">Send Message</span>
+                  <span id="btnSpinner" class="d-none">
+                    <i class="fas fa-spinner fa-spin"></i> Sending...
+                  </span>
+                </button>
+              </div>
             </form>
           </div>
           <!-- End Contact Form -->

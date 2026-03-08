@@ -4,14 +4,13 @@ from flask import Flask, request, render_template
 from flask_wtf import CSRFProtect
 from flask_migrate import Migrate
 from dotenv import load_dotenv
-#from flask_socketio import SocketIO
-
-# SocketIO Initialization
-# socketio = SocketIO(cors_allowed_origins="*")
+from flask_mail import Mail
 
 # Absolute import after db is initialized
 from app.models import Users
 from app.models import Contact
+from app.models import Newsletter
+from app.models import NewsletterSubscribers
 
 # Load environment variables from .env file
 load_dotenv()
@@ -35,12 +34,35 @@ db.init_app(app)
 # Database Migration
 migrate = Migrate(app, db)
 
+# ReCAPTCHA Secret Key
+app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('RECAPTCHA_SECRET_KEY')
+
+# Configure Flask-Mail
+# Hostinger
+app.config.update(
+    MAIL_SERVER='smtp.hostinger.com',             # Gmail SMTP server
+    MAIL_PORT=465,
+    MAIL_USE_SSL=True,
+    MAIL_USE_TLS=False,
+    MAIL_USERNAME=os.getenv('EMAIL'),         # Your email
+    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')  # Your email password or app-specific password
+)
+# GMAIL
+#app.config.update(
+#    MAIL_SERVER='smtp.gmail.com',             # Gmail SMTP server
+#    MAIL_PORT=587,
+#    MAIL_USE_SSL=False,
+#    MAIL_USE_TLS=True,
+#    MAIL_USERNAME=os.getenv('EMAIL'),         # Your email
+#    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')  # Your email password or app-specific password
+#)
+app.config['MAIL_DEBUG'] = True
+
+mail = Mail(app)
+
 # Security Key
 app.secret_key = os.urandom(32)
 csrf = CSRFProtect(app)
-
-# SocketIO
-# socketio.init_app(app)
 
 # Route for robots.txt
 @app.route('/robots.txt')
@@ -57,14 +79,11 @@ def sitemap():
 def invalid_route(e):
     print("404 path:", request.path)
     
-    # If admin path starts with /hidden/admin-panel
     if request.path.startswith('/hidden/admin-panel'):
         
         return render_template('admin/404.html'), 404
 
-    # Otherwise public
     return render_template('public/404.html'), 404
-
 
 # Import blueprints (Controller, Routes)
 from app.controller import register_blueprints_controller
@@ -78,4 +97,4 @@ register_blueprints_routes(app)
 
 if __name__ == '__main__':
     #socketio.run(app, debug=True, host="127.0.0.1")
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="127.0.0.1")

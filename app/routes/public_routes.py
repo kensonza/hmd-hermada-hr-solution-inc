@@ -38,6 +38,20 @@ def contact():
 
     return render_template('public/contact.html', nav_active='contact', page='contact')
 
+# Privacy Policy
+@pubroute.route('/privacy-policy')
+@maintenance
+def privacy_policy():
+
+    return render_template('public/privacy-policy.html', nav_active='privacy-policy', page='privacy-policy')
+
+# Terms of Service
+@pubroute.route('/terms-of-service')
+@maintenance
+def terms_of_service():
+
+    return render_template('public/terms-of-service.html', nav_active='terms-of-service', page='terms-of-service')
+
 # Maintenance
 @pubroute.route('/maintenance')
 @maintenance

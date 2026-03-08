@@ -28,8 +28,18 @@ def admin_contact_inquiries():
     # Get member session
     user_session = session['nickname']
 
-
     return render_template('admin/contact-inquiries.html', parentnav_active='sites', adnav_active='contact-inquiries', user_session = user_session)
+
+# Our Newsletter Page
+@admroute.route('/hidden/admin-panel/newsletter')
+@login_required
+@maintenance
+def admin_newsletter():
+
+    # Get member session
+    user_session = session['nickname']
+
+    return render_template('admin/newsletter.html', parentnav_active='sites', adnav_active='newsletter', user_session = user_session)
 
 
 #### Settings ####
