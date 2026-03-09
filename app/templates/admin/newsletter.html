@@ -72,8 +72,15 @@ td span {
                 editor.mode.set('readonly');
             }
         });
-        editor.on('change keyup', function () {
-            editor.save();
+
+        // Dagdagan ito:
+        editor.on('change keyup input', function () {
+            editor.save(); 
+            // I-clear ang error kapag may laman na
+            const textarea = document.getElementById(editor.id);
+            if (editor.getContent().trim() !== "") {
+                textarea.setCustomValidity(""); 
+            }
         });
     },
     event_root: '#addModal',
@@ -198,7 +205,7 @@ td span {
                                 </div>
                                 <div class="mb-3">
                                     <label for="newsletter_description" class="form-label">Newsletter Description:</label>
-                                    <textarea id="editor" name="nl_description" required></textarea>
+                                    <textarea id="editor" name="nl_description"></textarea>
                                 </div>
                                 <div class="mb-3" id="editStatusContainer" style="display: none;">
                                     <label for="edit_nl_status" class="form-label">Status:</label>
@@ -369,8 +376,11 @@ window.addEventListener('DOMContentLoaded', () => {
             if (form) {
                 form.reset();
                 form.dataset.mode = "add";
+
+                // DAGDAG MO ITONG LINE NA ITO:
+                document.getElementById('editor').setCustomValidity(""); 
+
                 document.getElementById('addModalLabel').innerText = "Add New Newsletter Media";
-                // Itago ang status dropdown kapag bagong add
                 document.getElementById('editStatusContainer').style.display = "none";
                 tinymce.get('editor')?.setContent('');
             }
@@ -465,19 +475,29 @@ document.addEventListener('click', async function(e) {
 const addForm = document.getElementById('addNewsletterForm');
 if (addForm) {
     addForm.onsubmit = async function(e) {
+        e.preventDefault(); // Pigilan agad ang default submit
+
+        // 1. I-sync muna ang TinyMCE
         tinymce.triggerSave();
-        if (!this.checkValidity()) { this.reportValidity(); return; }
-        e.preventDefault();
+        
+        const editorContent = tinymce.get('editor').getContent({format: 'text'}).trim();
+        const title = document.getElementById('newsletter_title').value.trim();
+        const subject = document.getElementById('email_subject').value.trim();
+
+        // 2. MANUAL VALIDATION (Check Title, Subject, and Editor)
+        if (!title || !subject || editorContent === "") {
+            alert("Please fill out all required fields, including the Newsletter Description.");
+            return; // Stop execution dito
+        }
+
+        // 3. Ituloy ang request kung valid na lahat
         const isEdit = this.dataset.mode === "edit";
         const url = isEdit ? `/admin/update-newsletter/${this.dataset.editId}` : '/admin/add-newsletter';
-        
-        // Kunin ang CSRF token mula sa hidden input ng form
         const csrfToken = document.querySelector('input[name="csrf_token"]').value;
 
         let body, headers = {};
 
         if (isEdit) {
-            // Para sa PUT/JSON request, kailangan ang CSRF sa headers
             body = JSON.stringify({
                 nl_title: document.getElementById('newsletter_title').value,
                 nl_subject: document.getElementById('email_subject').value,
@@ -486,13 +506,10 @@ if (addForm) {
             });
             headers = { 
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken  // DITO NAWAWALA ANG TOKEN KANINA
+                'X-CSRFToken': csrfToken
             };
         } else {
-            // Para sa POST/FormData, kasama na dapat ang token sa loob ng FormData
             body = new FormData(this);
-            // Ang FormData ay hindi nangangailangan ng manual header for CSRF 
-            // basta't nandun yung <input type="hidden" name="csrf_token">
         }
 
         try {
