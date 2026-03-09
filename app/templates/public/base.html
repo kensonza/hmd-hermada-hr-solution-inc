@@ -73,7 +73,7 @@
   </script>
 
   <!-- Google reCaptcha v3 -->
-  <script src="https://www.google.com/recaptcha/api.js?render=6LfP0HEsAAAAAEk677hRISVXd7Eo4d6_h1p6G-2h"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT"></script>
 
   <!-- Google -->
   <meta name="google-site-verification" content="0eXbiBMQBKQ4IjnA8xJE1Hd--OV8dYWIs8Tujkraz60" />
@@ -492,7 +492,7 @@
         e.preventDefault();
         
         grecaptcha.ready(function() {
-          grecaptcha.execute('6LfP0HEsAAAAAEk677hRISVXd7Eo4d6_h1p6G-2h', {action: 'submit'})
+          grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'submit'})
           .then(function(token) {
             // Input the token in hidden input
             document.getElementById('g-recaptcha-response').value = token;
@@ -516,7 +516,7 @@
         e.preventDefault();
         
         grecaptcha.ready(function() {
-          grecaptcha.execute('6LfP0HEsAAAAAEk677hRISVXd7Eo4d6_h1p6G-2h', {action: 'submit'})
+          grecaptcha.execute('6LcwwHEsAAAAAKrMbqGlqGl6462Gii6btqZ1zSvT', {action: 'submit'})
           .then(function(token) {
             const hiddenInput = contactForm.querySelector('[name="g-recaptcha-response"]');
             if (hiddenInput) hiddenInput.value = token;
