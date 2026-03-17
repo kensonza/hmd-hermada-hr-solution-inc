@@ -16,29 +16,68 @@
         <!-- Font Awesome (for eye icons) -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <style>
+            /* Reset and Base Height */
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+        
+            .login-bg {
+                background-color: #dec55d;
+            }
+        
+            /* Authentication Layout Wrapper */
+            #layoutAuthentication {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh; /* Ensures it occupies the full screen height */
+            }
+        
+            #layoutAuthentication_content {
+                flex: 1;
+                display: flex;
+                align-items: center;       /* Vertical Center */
+                justify-content: center;   /* Horizontal Center */
+
+                /* SOLUTION FOR NEST HUB/SHORT SCREENS: */
+                /* Adds space at the top and bottom to prevent the card from touching the screen edges */
+                padding-top: 2.5rem;   
+                padding-bottom: 2.5rem; 
+            }
+        
+            /* Card Elements */
             .login-logo {
-                max-width: 150px;
+                max-width: 180px; /* Slightly increased for better scaling on iPad Pro */
                 height: auto;
                 display: block;
                 margin: 0 auto;
             }
-
-             /* Eye icon inside input */
+        
+            .card-body {
+                /* Generous padding for a premium look and better width on iPad */
+                padding: 2.5rem !important;
+            }
+        
+            /* Password Toggle Icon */
             .toggle-password {
-              position: absolute;
-              top: 75%;
-              right: 15px;
-              transform: translateY(-50%);
-              cursor: pointer;
-              color: #6c757d;
+                position: absolute;
+                top: 75%;
+                right: 15px;
+                transform: translateY(-50%);
+                cursor: pointer;
+                color: #6c757d;
+                z-index: 10; /* Ensures the icon remains clickable above other elements */
             }
         
             .toggle-password:hover {
-              color: #000;
+                color: #000;
             }
-
-            .login-bg {
-                background-color: #dec55d;
+        
+            /* Special Fix for very short screens (Landscape Mobile/Nest Hub) */
+            @media (max-height: 650px) {
+                #layoutAuthentication_content {
+                    align-items: flex-start; /* Aligns to top to allow for scrolling on short viewports */
+                }
             }
         </style>
     
@@ -46,11 +85,11 @@
     <body class="login-bg">
         <div id="layoutAuthentication">
             <div id="layoutAuthentication_content">
-                <main>
+                <main class="w-100">
                     <div class="container">
                         <div class="row justify-content-center">
-                            <div class="col-lg-5">
-                                <div class="card shadow-lg border-0 rounded-lg mt-5">
+                            <div class="col-11 col-sm-9 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
+                                <div class="card shadow-lg border-0 rounded-lg">
                                     <div class="card-header">
                                         <img src="{{ url_for('static', filename='public/images/hmd-logo-banner-3.png') }}" 
                                              alt="HMD Logo Banner" 
