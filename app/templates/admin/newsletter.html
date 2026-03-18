@@ -40,68 +40,18 @@ td span {
   word-break: break-word;
 }
 
-/* TinyMCE Textarea Validation */
-/* Hanapin ang .mb-3 na may loob na textarea at gawing relative */
-.mb-3 {
-    position: relative;
-}
+/* Summernote customization para magmukhang malinis */
+.note-editor.note-frame { border: 1px solid #dee2e6; background: white; }
+.note-editable { background: white !important; min-height: 300px; }
 
-/* I-target ang textarea para pumuwesto sa gitna ng TinyMCE */
-#editor, #view_nl_description {
-    display: block !important;
-    position: absolute;
-    bottom: 50%;    /* Itatapat nito ang invisible textarea sa gitna ng editor */
-    left: 50%;
-    z-index: -1;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
-    pointer-events: none;
+/* Para sa validation, itatago ang textarea pero nandyan pa rin */
+.summernote-hidden-textarea {
+  visibility: hidden; position: absolute; height: 0; padding: 0; margin: 0;
 }
 </style>
 
-<!-- TinyMCE -->
-<script src="https://cdn.tiny.cloud/1/nio2kmynl0cfvkzb7c082bex1i2ysz9suvvekkpma0uo5ucq/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
-
-<script>
-  tinymce.init({
-    selector: '#editor, #view_nl_description',
-    setup: function (editor) {
-        editor.on('init', function (e) {
-            if (editor.id === 'view_nl_description') {
-                editor.mode.set('readonly');
-            }
-        });
-
-        // Dagdagan ito:
-        editor.on('change keyup input', function () {
-            editor.save(); 
-            // I-clear ang error kapag may laman na
-            const textarea = document.getElementById(editor.id);
-            if (editor.getContent().trim() !== "") {
-                textarea.setCustomValidity(""); 
-            }
-        });
-    },
-    event_root: '#addModal',
-    plugins: [
-      // Core editing features
-      'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-      // Your account includes a free trial of TinyMCE premium features
-      // Try the most popular premium features until Mar 17, 2026:
-      'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
-    ],
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-    tinycomments_mode: 'embedded',
-    tinycomments_author: 'Author name',
-    mergetags_list: [
-      { value: 'First.Name', title: 'First Name' },
-      { value: 'Email', title: 'Email' },
-    ],
-    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-    uploadcare_public_key: '11392c6ea8355ed89644',
-  });
-</script>
+<!-- Summernote -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 
 {% endblock %}
 
@@ -204,8 +154,8 @@ td span {
                                     <input type="text" class="form-control" id="email_subject" name="nl_subject" placeholder="e.g. Welcome to HMD Hermada's Newsletter!" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="newsletter_description" class="form-label">Newsletter Description:</label>
-                                    <textarea id="editor" name="nl_description"></textarea>
+                                    <label class="form-label">Newsletter Description:</label>
+                                    <textarea name="nl_description" id="summernote_editor" required></textarea>
                                 </div>
                                 <div class="mb-3" id="editStatusContainer" style="display: none;">
                                     <label for="edit_nl_status" class="form-label">Status:</label>
@@ -243,8 +193,8 @@ td span {
                       <input type="text" id="view_nl_subject" class="form-control" disabled>
                     </div>
                     <div class="mb-3">
-                      <label class="form-label fw-bold">Description:</label>
-                      <textarea id="view_nl_description" class="form-control"></textarea>
+                      <label class="form-label fw-bold">Description Preview:</label>
+                      <div id="view-editor-container" style="border: 1px solid #dee2e6; padding: 15px; min-height: 200px; background-color: #f9f9f9; border-radius: 5px; overflow-y: auto;"></div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Status:</label>
@@ -270,8 +220,12 @@ td span {
 
 {% block scripts %}
 
+<!-- Summernote JS -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
 <script>
-// Configurations
+// 1. Configurations & Global Variables
 const nsConfig = {
     apiUrl: '/api/newsletter-subscribers',
     tbodyId: 'subTableBody',
@@ -289,7 +243,7 @@ const nlConfig = {
 
 let subAllRows = [], nlAllRows = [];
 
-// Fetch Functions
+// 2. Fetch Functions
 async function fetchSubscribers() {
     try {
         const res = await fetch(nsConfig.apiUrl);
@@ -306,7 +260,7 @@ async function fetchNewsletters() {
     } catch (err) { console.error("Error fetching newsletters:", err); }
 }
 
-// 3. Row Creators
+// 3. Row Creators (Walang pagbabago rito)
 function createSubRow(item) {
     return `<tr>
         <td>${item.ns_token_id}</td>
@@ -332,7 +286,7 @@ function createNlRow(item) {
     </tr>`;
 }
 
-// 4. Rendering Engine
+// 4. Rendering Engine (Walang pagbabago rito)
 function renderTable(data, config, rowFunc) {
     const tbody = document.getElementById(config.tbodyId);
     if (!tbody) return;
@@ -359,88 +313,87 @@ function renderTable(data, config, rowFunc) {
 }
 
 // 5. Initial Load & Listeners
-window.addEventListener('DOMContentLoaded', () => {
+$(document).ready(function() {
+    // INITIALIZE SUMMERNOTE
+    $('#summernote_editor').summernote({
+        placeholder: 'Write your newsletter here...',
+        height: 400,
+        minHeight: null, // set minimum height of editor
+        maxHeight: null, // set maximum height of editor
+        focus: true, // set focus to editable area after initializing summernote
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']], // Built-in Line Spacing!
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
+
     fetchSubscribers();
     fetchNewsletters();
 
     // Event Listeners for Search
-    document.getElementById('subSearchText')?.addEventListener('input', () => renderTable(subAllRows, nsConfig, createSubRow));
-    document.getElementById('subSearchStatus')?.addEventListener('change', () => renderTable(subAllRows, nsConfig, createSubRow));
-    document.getElementById('nlSearchText')?.addEventListener('input', () => renderTable(nlAllRows, nlConfig, createNlRow));
+    $('#subSearchText').on('input', () => renderTable(subAllRows, nsConfig, createSubRow));
+    $('#subSearchStatus').on('change', () => renderTable(subAllRows, nsConfig, createSubRow));
+    $('#nlSearchText').on('input', () => renderTable(nlAllRows, nlConfig, createNlRow));
 
-    // Fix for Add Button Reset
-    const addBtn = document.querySelector('[data-bs-target="#addModal"]');
-    if (addBtn) {
-        addBtn.addEventListener('click', function() {
-            const form = document.getElementById('addNewsletterForm');
-            if (form) {
-                form.reset();
-                form.dataset.mode = "add";
-
-                // DAGDAG MO ITONG LINE NA ITO:
-                document.getElementById('editor').setCustomValidity(""); 
-
-                document.getElementById('addModalLabel').innerText = "Add New Newsletter Media";
-                document.getElementById('editStatusContainer').style.display = "none";
-                tinymce.get('editor')?.setContent('');
-            }
-        });
-    }
-
-    document.addEventListener('focusin', function (e) {
-      if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
-        e.stopImmediatePropagation();
-      }
+    // Add Button Reset
+    $('[data-bs-target="#addModal"]').on('click', function() {
+        const form = document.getElementById('addNewsletterForm');
+        if (form) {
+            form.reset();
+            form.dataset.mode = "add";
+            $('#addModalLabel').text("Add New Newsletter Media");
+            $('#editStatusContainer').hide();
+            $('#summernote_editor').summernote('code', ''); // Clear Summernote
+        }
     });
 
     setInterval(() => {
-        if(!document.querySelector('.modal.show')){
+        if(!$('.modal.show').length){
             fetchSubscribers();
             fetchNewsletters();
         }
     }, 5000);
 });
 
-// 6. Unified Click Handlers (View, Edit, Delete)
-document.addEventListener('click', async function(e) {
-    const viewBtn = e.target.closest('.view-nl');
-    const editBtn = e.target.closest('.edit-btn');
-    const deleteBtn = e.target.closest('.delete-btn');
+// 6. Click Handlers (View, Edit, Delete)
+$(document).on('click', '.view-nl, .edit-btn, .delete-btn', async function(e) {
+    const target = $(e.currentTarget);
 
     // VIEW
-    if (viewBtn) {
+    if (target.hasClass('view-nl')) {
         e.preventDefault();
-        const newsletter = nlAllRows.find(n => n.nl_token_id === viewBtn.dataset.id);
+        const newsletter = nlAllRows.find(n => n.nl_token_id === target.data('id'));
         if (!newsletter) return;
 
-        document.getElementById('view_nl_title').value = newsletter.nl_title;
-        document.getElementById('view_nl_subject').value = newsletter.nl_subject;
-        document.getElementById('view_nl_status').value = newsletter.nl_status; // I-set ang status
-
-        tinymce.get('view_nl_description')?.setContent(newsletter.nl_description || '');
+        $('#view_nl_title').val(newsletter.nl_title);
+        $('#view_nl_subject').val(newsletter.nl_subject);
+        $('#view_nl_status').val(newsletter.nl_status);
+        // Para sa view modal, pwede kang gumamit ng simple div para sa read-only
+        $('#view-editor-container').html(newsletter.nl_description || ''); 
+        
         new bootstrap.Modal(document.getElementById('viewNlModal')).show();
     }
 
     // EDIT
-    if (editBtn) {
-        const newsletter = nlAllRows.find(n => n.nl_token_id === editBtn.dataset.id);
+    if (target.hasClass('edit-btn')) {
+        const newsletter = nlAllRows.find(n => n.nl_token_id === target.data('id'));
         if (!newsletter) return;
 
-        document.getElementById('addModalLabel').innerText = "Edit Newsletter";
-        document.getElementById('newsletter_title').value = newsletter.nl_title;
-        document.getElementById('email_subject').value = newsletter.nl_subject;
-        
-        document.getElementById('editStatusContainer').style.display = "block";
-        document.getElementById('edit_nl_status').value = newsletter.nl_status;
+        $('#addModalLabel').text("Edit Newsletter");
+        $('#newsletter_title').val(newsletter.nl_title);
+        $('#email_subject').val(newsletter.nl_subject);
+        $('#editStatusContainer').show();
+        $('#edit_nl_status').val(newsletter.nl_status);
 
-        // 1. Ilagay ang content sa TinyMCE
-        const content = newsletter.nl_description || '';
-        tinymce.get('editor')?.setContent(content);
-        
-        // 2. ITO ANG SOLUSYON: I-sync agad sa textarea para 'di lumabas ang "Please fill out"
-        const textarea = document.getElementById('editor');
-        textarea.value = content; // Diretsong lagyan ang textarea
-        tinymce.triggerSave();    // I-confirm sa TinyMCE na synced na sila
+        // Load content to Summernote
+        $('#summernote_editor').summernote('code', newsletter.nl_description || '');
         
         const form = document.getElementById('addNewsletterForm');
         form.dataset.mode = "edit";
@@ -449,91 +402,67 @@ document.addEventListener('click', async function(e) {
     }
 
     // DELETE
-    if (deleteBtn) {
-        const tokenId = deleteBtn.dataset.id;
+    if (target.hasClass('delete-btn')) {
+        const tokenId = target.data('id');
         if (!confirm("Are you sure you want to delete this?")) return;
         try {
             const res = await fetch(`/admin/delete-newsletter/${tokenId}`, { 
                 method: 'DELETE',
                 headers: {
-                    'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+                    'X-CSRFToken': $('input[name="csrf_token"]').val()
                 }
             });
-            
-            const result = await res.json();
-            if (res.ok) { 
-                alert(result.message || "Deleted!"); 
-                fetchNewsletters(); 
-            } else {
-                alert(result.error || "Failed to delete.");
-            }
+            if (res.ok) { fetchNewsletters(); } 
+            else { alert("Failed to delete."); }
         } catch (err) { console.error(err); }
     }
 });
 
-// Form Submission
-const addForm = document.getElementById('addNewsletterForm');
-if (addForm) {
-    addForm.onsubmit = async function(e) {
-        e.preventDefault(); // Pigilan agad ang default submit
+// 7. Unified Form Submission
+$(document).on('submit', '#addNewsletterForm', async function(e) {
+    e.preventDefault();
 
-        // 1. I-sync muna ang TinyMCE
-        tinymce.triggerSave();
-        
-        const editorContent = tinymce.get('editor').getContent({format: 'text'}).trim();
-        const title = document.getElementById('newsletter_title').value.trim();
-        const subject = document.getElementById('email_subject').value.trim();
+    const title = $('#newsletter_title').val().trim();
+    const subject = $('#email_subject').val().trim();
+    const description = $('#summernote_editor').summernote('code');
+    
+    // Validation
+    if (!title || !subject || $('#summernote_editor').summernote('isEmpty')) {
+        alert("Please fill out all required fields.");
+        return;
+    }
 
-        // 2. MANUAL VALIDATION (Check Title, Subject, and Editor)
-        if (!title || !subject || editorContent === "") {
-            alert("Please fill out all required fields, including the Newsletter Description.");
-            return; // Stop execution dito
+    const isEdit = this.dataset.mode === "edit";
+    const url = isEdit ? `/admin/update-newsletter/${this.dataset.editId}` : '/admin/add-newsletter';
+    const csrfToken = $('input[name="csrf_token"]').val();
+
+    let body, headers = { 'X-CSRFToken': csrfToken };
+
+    if (isEdit) {
+        body = JSON.stringify({
+            nl_title: title,
+            nl_subject: subject,
+            nl_description: description,
+            nl_status: $('#edit_nl_status').val()
+        });
+        headers['Content-Type'] = 'application/json';
+    } else {
+        body = new FormData(this);
+        // I-sync ang summernote value sa FormData
+        body.set('nl_description', description);
+    }
+
+    try {
+        const res = await fetch(url, { method: isEdit ? 'PUT' : 'POST', headers: headers, body: body });
+        const result = await res.json();
+        if (res.ok) { 
+            alert(result.message || "Success!"); 
+            location.reload(); 
+        } else { 
+            alert(result.error || "Failed"); 
         }
-
-        // 3. Ituloy ang request kung valid na lahat
-        const isEdit = this.dataset.mode === "edit";
-        const url = isEdit ? `/admin/update-newsletter/${this.dataset.editId}` : '/admin/add-newsletter';
-        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
-
-        let body, headers = {};
-
-        if (isEdit) {
-            body = JSON.stringify({
-                nl_title: document.getElementById('newsletter_title').value,
-                nl_subject: document.getElementById('email_subject').value,
-                nl_description: tinymce.get('editor').getContent(),
-                nl_status: document.getElementById('edit_nl_status').value
-            });
-            headers = { 
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            };
-        } else {
-            body = new FormData(this);
-        }
-
-        try {
-            const res = await fetch(url, { 
-                method: isEdit ? 'PUT' : 'POST', 
-                headers: headers, 
-                body: body 
-            });
-            
-            const result = await res.json();
-
-            if (res.ok) { 
-                alert(result.message || "Operation successful!"); 
-                location.reload(); 
-            } else { 
-                alert(result.error || "Failed"); 
-            }
-            
-        } catch (err) { 
-            console.error(err); 
-            alert("An error occurred.");
-        }
-    };
-}
+    } catch (err) { console.error(err); }
+});
 </script>
 
 {% endblock %}

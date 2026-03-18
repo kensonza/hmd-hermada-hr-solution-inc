@@ -1,8 +1,16 @@
 {% extends 'admin/base.html' %}
 
-{% block title %} HMD Hermada - Administrator Portal V 1.0.0 {% endblock %}
+{% block title %} HMD Hermada - Administrator Panel V 1.0.0 {% endblock %}
 
 {% block head %}
+
+<style> 
+    .callout-gold { 
+        background:#fff9e6; 
+        border-left:4px solid #d4af37; /* gold color */ 
+        border-radius:6px; 
+    } 
+</style>
 
 {% endblock %}
 
@@ -12,15 +20,13 @@
     <div class="container-fluid px-4">
         <h1 class="mt-4">Welcome to HMD Hermada Admin Panel.</h1>
         <hr>
-        <div class="card mb-4">
-            <div class="card-body">
-                <p class="mb-0">
-                    This page is a dedicated component of the <strong>HMD Hermada Admin Panel</strong>. 
-                    Access to this platform is strictly restricted to authorized employees and users of 
-                    <strong>HMD Hermada HR Solutions</strong>. All information contained herein is confidential 
-                    and must not be shared, disclosed, or distributed to any unauthorized parties.
-                </p>
-            </div>
+        
+       
+        <div class="callout-gold p-4 mb-4"> 
+            This page is a dedicated component of the <strong>HMD Hermada Admin Panel</strong>. 
+            Access to this platform is strictly restricted to authorized employees and users of 
+            <strong>HMD Hermada HR Solutions Corporation</strong>. All information contained herein is confidential 
+            and must not be shared, disclosed, or distributed to any unauthorized parties. 
         </div>
     </div>
 </main>
