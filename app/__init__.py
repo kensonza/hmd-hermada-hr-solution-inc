@@ -1,4 +1,5 @@
 import os
+import redis
 from app.extension import db
 from flask import Flask, request, render_template
 from flask_wtf import CSRFProtect
@@ -14,6 +15,16 @@ from app.models import NewsletterSubscribers
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Upstash Redis URL from an environment variable
+REDIS_URL = os.getenv("REDIS_URL")
+
+# Global Redis client for use with decorators and controllers
+redis_client = redis.Redis.from_url(
+    REDIS_URL,
+    decode_responses=True,
+    ssl_cert_reqs=None # Remove this if you want to implement it in Render.
+)
 
 app = Flask(__name__)
 

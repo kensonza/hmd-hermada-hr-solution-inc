@@ -5,6 +5,7 @@ import re
 import logging
 import uuid
 from os import name
+from app.controller.invalidate_cache import invalidate_cache
 from flask import Blueprint, request, jsonify, current_app, url_for
 from wtforms.validators import email
 from app.models import Contact, Newsletter, NewsletterSubscribers
@@ -181,6 +182,7 @@ def generate_client_reply_html(name, subject):
     return template.format(name=name, subject=subject)
 
 @pubcontroller.route('/new-contact', methods=['POST'])
+@invalidate_cache(pattern="cache:*api/contact/inquiries*")
 def new_contact():
     name = request.form.get('name')
     email = request.form.get('email')
@@ -207,12 +209,12 @@ def new_contact():
         return jsonify({"error": "Bot-like activity detected."}), 400
 
     try:
-        # 1. SAVE TO DATABASE
+        # Save to Database
         contact_entry = Contact(name=name, email=email, subject=subject, message=message)
         db.session.add(contact_entry)
         db.session.commit()
 
-        # 2. SEND EMAILS VIA BREVO
+        # Send Emails Via BREVO
         manager_email = "ask@hmdhermada.com"
         
         # Email to Manager
@@ -345,6 +347,7 @@ def generate_newsletter_html(unsubscribe_link, content):
 """
 
 @pubcontroller.route('/send-newsletter', methods=['POST'])
+@invalidate_cache(pattern="cache:*api/newsletters*")
 def send_newsletter():
     recipient = request.get_json().get('email') if request.is_json else request.form.get('email')
     logging.debug(f"Recipient detected: {recipient}")
@@ -408,6 +411,7 @@ def send_newsletter():
         return jsonify({'status': 'error', 'message': 'Something went wrong. Please try again later.'}), 500
 
 @pubcontroller.route('/unsubscribe/<token>')
+@invalidate_cache(pattern="cache:*api/newsletter-subscribers*")
 def unsubscribe(token):
     sub = NewsletterSubscribers.query.filter_by(ns_token_id=token).first()
     

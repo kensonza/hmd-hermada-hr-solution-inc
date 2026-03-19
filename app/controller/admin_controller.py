@@ -1,5 +1,7 @@
 import os
 import uuid
+from app.controller.cache_response import cache_response
+from app.controller.invalidate_cache import invalidate_cache
 from flask import Blueprint, request, jsonify, current_app
 from app.models import Contact
 from app.models import Users
@@ -15,6 +17,7 @@ admcontroller = Blueprint('admin_controller', __name__, template_folder='templat
 
 # Let's Talk / Contact (Contact Inquiries).
 @admcontroller.route('/api/contact/inquiries')
+@cache_response(timeout=120)
 def get_inquiries():
     
     inquiries = db.session.execute(db.select(Contact).order_by(Contact.date_created.desc())).scalars().all()
@@ -28,11 +31,12 @@ def get_inquiries():
         "date_created": i.date_created.strftime("%Y-%m-%d %H:%M:%S")
     } for i in inquiries]
 
-    return jsonify(data)
-
+    #return jsonify(data)
+    return data
 
 # Our Newsletter (Newsletter Subscribers).
 @admcontroller.route('/api/newsletter-subscribers')
+@cache_response(timeout=120)
 def get_newsletter_subscriber():
     
     newsletter_subscriber = db.session.execute(db.select(NewsletterSubscribers).order_by(NewsletterSubscribers.date_created.desc())).scalars().all()
@@ -44,10 +48,12 @@ def get_newsletter_subscriber():
         "date_created": i.date_created.strftime("%Y-%m-%d %H:%M:%S")
     } for i in newsletter_subscriber]
 
-    return jsonify(data)
+    #return jsonify(data)
+    return data
 
 # Our Newsletter (HMD Newsletter).
 @admcontroller.route('/api/newsletters')
+@cache_response(timeout=120)
 def get_newsletters():
     newsletters = db.session.execute(db.select(Newsletter).order_by(Newsletter.date_created.desc())).scalars().all()
 
@@ -60,9 +66,11 @@ def get_newsletters():
         "date_created": n.date_created.strftime("%Y-%m-%d %H:%M:%S")
     } for n in newsletters]
 
-    return jsonify(data)
+    #return jsonify(data)
+    return data
 
 @admcontroller.route('/admin/add-newsletter', methods=['POST'])
+@invalidate_cache(pattern="cache:*api/newsletters*")
 def add_newsletter():
     try:
         nl_title = request.form.get('nl_title')
@@ -90,6 +98,7 @@ def add_newsletter():
         return jsonify({"error": str(e)}), 500
 
 @admcontroller.route('/admin/update-newsletter/<nl_token_id>', methods=['PUT'])
+@invalidate_cache(pattern="cache:*api/newsletters*")
 def update_newsletter(nl_token_id):
     try:
         data = request.get_json()
@@ -114,6 +123,7 @@ def update_newsletter(nl_token_id):
         return jsonify({"error": str(e)}), 500
 
 @admcontroller.route('/admin/delete-newsletter/<nl_token_id>', methods=['DELETE'])
+@invalidate_cache(pattern="cache:*api/newsletters*")
 def delete_newsletter(nl_token_id):
     try:
         newsletter = Newsletter.query.filter_by(nl_token_id=nl_token_id).first()
@@ -133,6 +143,7 @@ def delete_newsletter(nl_token_id):
 
 # User Accounts (Users).
 @admcontroller.route('/api/user/accounts')
+@cache_response(timeout=120)
 def get_user_accounts():
     
     user_accounts = db.session.execute(db.select(Users).order_by(Users.date_created.desc())).scalars().all()
@@ -149,9 +160,11 @@ def get_user_accounts():
         "date_created": i.date_created.strftime("%Y-%m-%d %H:%M:%S")
     } for i in user_accounts]
     
-    return jsonify(data)
+    #return jsonify(data)
+    return data
 
 @admcontroller.route('/admin/new-user', methods=['POST'])
+@invalidate_cache(pattern="cache:*api/user/accounts*")
 def new_user():
 
     first_name = request.form.get('txtFName')
@@ -191,6 +204,7 @@ def new_user():
         return jsonify({"error": str(e)}), 500
 
 @admcontroller.route('/admin/edit-user', methods=['POST'])
+@invalidate_cache(pattern="cache:*api/user/accounts*")
 def edit_user():
     user_id = request.form.get('user_id')
     first_name = request.form.get('txtFName')
@@ -222,6 +236,7 @@ def edit_user():
         return jsonify({"error": str(e)})
 
 @admcontroller.route('/admin/change-password', methods=['POST'])
+@invalidate_cache(pattern="cache:*api/user/accounts*")
 def change_password_user():
     user_id = request.form.get('user_id')
     new_password = request.form.get('new_password')
@@ -251,6 +266,7 @@ def change_password_user():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
 @admcontroller.route("/admin/delete-user/<user_token_id>", methods=["POST"])
+@invalidate_cache(pattern="cache:*api/user/accounts*")
 def delete_user(user_token_id):
     try:
         user = Users.query.filter_by(user_token_id=user_token_id).first()
