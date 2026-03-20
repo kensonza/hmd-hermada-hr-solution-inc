@@ -28,39 +28,47 @@ redis_client = redis.Redis.from_url(
 
 app = Flask(__name__)
 
-# To avoid iframe embedding
+# Iframe Embedding / Security
 @app.after_request
 def add_security_headers(response):
-    # Block all iframe embedding
-    # response.headers['X-Frame-Options'] = 'DENY'
-    # Or you can be more flexible:
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Referrer-Policy'] = 'no-referrer-when-downgrade'
+    
     return response
 
-# SQLAlachemy Connection
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
-
-# Database Migration
-migrate = Migrate(app, db)
-
-# ReCAPTCHA Secret Key
-app.config['RECAPTCHA_SECRET_KEY'] = os.getenv('RECAPTCHA_SECRET_KEY')
-
-# Brevo API Config
-app.config['BREVO_API_KEY'] = os.getenv('BREVO_API_KEY')
-
-# Configure Flask-Mail
-# Hostinger
+# Core Security Config
 app.config.update(
-    MAIL_SERVER='smtp.hostinger.com',             # Gmail SMTP server
+    # Session Cookies
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+
+    # SQLAlachemy Connection
+    SQLALCHEMY_DATABASE_URI=os.getenv('DATABASE_URL'),
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    
+    # ReCAPTCHA Secret Key
+    RECAPTCHA_SECRET_KEY=os.getenv('RECAPTCHA_SECRET_KEY'),
+    
+    # Brevo API Config
+    BREVO_API_KEY=os.getenv('BREVO_API_KEY'),
+
+    # Configure Flask-Mail (Hostinger)
+    MAIL_SERVER='smtp.hostinger.com',
     MAIL_PORT=465,
     MAIL_USE_SSL=True,
     MAIL_USE_TLS=False,
     MAIL_USERNAME=os.getenv('EMAIL'),         # Your email
     MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')  # Your email password or app-specific password
+    
 )
+
+db.init_app(app)
+migrate = Migrate(app, db)
+
 # GMAIL
 #app.config.update(
 #    MAIL_SERVER='smtp.gmail.com',             # Gmail SMTP server
@@ -70,11 +78,11 @@ app.config.update(
 #    MAIL_USERNAME=os.getenv('EMAIL'),         # Your email
 #    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')  # Your email password or app-specific password
 #)
-app.config['MAIL_DEBUG'] = True
 #mail = Mail(app)
 
 # Security Key
-app.secret_key = os.urandom(32)
+# app.secret_key = os.urandom(32)
+app.secret_key = os.getenv('SECRET_KEY')
 csrf = CSRFProtect(app)
 
 # Route for robots.txt
@@ -102,11 +110,8 @@ def invalid_route(e):
 from app.controller import register_blueprints_controller
 from app.routes import register_blueprints_routes
 
-# Blueprint Registration (Public, Template Link, Admin)
-register_blueprints_controller(app)
-
-# Blueprint Registration (Public, Template Link, Admin)
-register_blueprints_routes(app)
+register_blueprints_controller(app)  # Controller Blueprint Registration (Public, Template Link, Admin)
+register_blueprints_routes(app)      # Routes Blueprint Registration (Public, Template Link, Admin)
 
 if __name__ == '__main__':
     #socketio.run(app, debug=True, host="127.0.0.1")

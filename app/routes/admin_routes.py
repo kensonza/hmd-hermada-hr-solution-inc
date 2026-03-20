@@ -44,19 +44,6 @@ def admin_newsletter():
 
 #### Settings ####
 
-# Google Analytics
-@admroute.route('/hidden/admin-panel/google-analytics')
-@login_required
-@maintenance
-def admin_google_analytics():
-
-    # Get member session
-    user_session = session['nickname']
-
-
-    return render_template('admin/google-analytics.html', adnav_active='google-analytics', user_session = user_session)
-
-
 # User Accounts
 @admroute.route('/hidden/admin-panel/user-accounts')
 @login_required

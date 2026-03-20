@@ -1,8 +1,5 @@
 from flask import Blueprint, render_template
 from app.controller.maintenance import maintenance
-#from app.extension import db
-#from app.models import Users, PhotoSlider, NewsFeed, YouTube, Gallery, GalleryAlbum
-#import feedparser
 
 # Flask Blueprint (Public Route)
 pubroute = Blueprint('public_route', __name__, template_folder='templates/public')    
