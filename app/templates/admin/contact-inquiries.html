@@ -76,8 +76,14 @@ td span {
               </div>
               <!-- /Search -->
             
-              <!-- Table -->
-              <div class="table-responsive">
+              <!-- Loading muna -->
+              <div id="loadingState" class="text-center py-4">
+                <div class="spinner-border text-primary"></div>
+                <div class="mt-2">Loading contact inquiries...</div>
+              </div>
+
+              <!-- Table (hidden muna) -->
+              <div id="tableWrapper" class="table-responsive" style="display:none;">
                 <table class="table table-bordered table-striped align-middle" id="dataTable">
                   <thead class="table-light">
                     <tr>
@@ -449,8 +455,16 @@ function fetchContacts() {
     fetch('/api/contact/inquiries')
     .then(res => res.json())
     .then(data => {
-        allRows = data;           // update global state
-        filterTable();            // filter, sort, paginate, display
+        allRows = data;
+        filterTable();
+
+        const tableWrapper = document.getElementById("tableWrapper");
+
+        // 🔥 show only if naka-hidden pa
+        if (tableWrapper.style.display === "none") {
+            document.getElementById("loadingState").style.display = "none";
+            tableWrapper.style.display = "block";
+        }
     })
     .catch(err => console.error('Error fetching contacts:', err));
 }

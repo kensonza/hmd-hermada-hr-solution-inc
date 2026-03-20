@@ -84,7 +84,15 @@ td span {
                             </select>
                         </div>
                     </div>
-                    <div class="table-responsive">
+                    
+                    <!-- Loading -->
+                    <div id="nlLoading" class="text-center py-3">
+                      <div class="spinner-border text-primary"></div>
+                      <div class="mt-2">Loading newsletters...</div>
+                    </div>
+
+                    <!-- Table -->
+                    <div id="nlWrapper" class="table-responsive" style="display:none;">
                         <table class="table table-bordered table-striped align-middle" id="subDataTable">
                             <thead class="table-light">
                                 <tr>
@@ -113,7 +121,15 @@ td span {
                             <input type="text" id="nlSearchText" class="form-control" placeholder="Search Filename">
                         </div>
                     </div>
-                    <div class="table-responsive">
+                    
+                    <!-- Loading -->
+                    <div id="subLoading" class="text-center py-3">
+                      <div class="spinner-border text-primary"></div>
+                      <div class="mt-2">Loading subscribers...</div>
+                    </div>
+
+                    <!-- Table -->
+                    <div id="subWrapper" class="table-responsive" style="display:none;">
                         <table class="table table-bordered table-striped align-middle" id="nlDataTable">
                             <thead class="table-light">
                                 <tr>
@@ -249,7 +265,16 @@ async function fetchSubscribers() {
         const res = await fetch(nsConfig.apiUrl);
         subAllRows = await res.json();
         renderTable(subAllRows, nsConfig, createSubRow);
-    } catch (err) { console.error("Error fetching subscribers:", err); }
+
+        const wrapper = document.getElementById("subWrapper");
+        if (wrapper.style.display === "none") {
+            document.getElementById("subLoading").style.display = "none";
+            wrapper.style.display = "block";
+        }
+
+    } catch (err) { 
+        console.error("Error fetching subscribers:", err); 
+    }
 }
 
 async function fetchNewsletters() {
@@ -257,7 +282,16 @@ async function fetchNewsletters() {
         const res = await fetch(nlConfig.apiUrl);
         nlAllRows = await res.json();
         renderTable(nlAllRows, nlConfig, createNlRow);
-    } catch (err) { console.error("Error fetching newsletters:", err); }
+
+        const wrapper = document.getElementById("nlWrapper");
+        if (wrapper.style.display === "none") {
+            document.getElementById("nlLoading").style.display = "none";
+            wrapper.style.display = "block";
+        }
+
+    } catch (err) { 
+        console.error("Error fetching newsletters:", err); 
+    }
 }
 
 // 3. Row Creators (Walang pagbabago rito)

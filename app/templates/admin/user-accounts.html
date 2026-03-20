@@ -149,9 +149,15 @@ th.sortable.desc::after {
                 </div>
               
               </div>
+
+              <!-- Loading Table -->
+              <div id="loadingState" class="text-center py-4">
+                <div class="spinner-border text-primary"></div>
+                <div class="mt-2">Loading users...</div>
+              </div>
             
               <!-- Table -->
-              <div class="table-responsive">
+              <div id="tableWrapper" class="table-responsive" style="display:none;">
                 <table class="table table-bordered table-striped align-middle" id="dataTable">
                   <thead class="table-light">
                     <tr>
@@ -490,11 +496,17 @@ function fetchUsers() {
             allRows = Array.isArray(data) ? data : [];
             filteredRows = [...allRows];
             currentPage = 1;
+
             displayTable();
             setupPagination();
 
+            // 🔥 SHOW TABLE, HIDE LOADING
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("tableWrapper").style.display = "block";
         })
-        .catch(err => console.error("Error fetching user accounts:", err));
+        .catch(err => {
+            console.error("Error fetching user accounts:", err);
+        });
 }
 
 // Initial load
