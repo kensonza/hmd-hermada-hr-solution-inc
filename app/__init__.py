@@ -35,13 +35,15 @@ def add_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Referrer-Policy'] = 'no-referrer-when-downgrade'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
     
     return response
 
 # Core Security Config
 app.config.update(
     # Session Cookies
+    SESSION_COOKIE_NAME='__Host-session',
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
