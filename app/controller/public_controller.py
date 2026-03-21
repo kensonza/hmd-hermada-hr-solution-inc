@@ -347,7 +347,7 @@ def generate_newsletter_html(unsubscribe_link, content):
 """
 
 @pubcontroller.route('/send-newsletter', methods=['POST'])
-@invalidate_cache(pattern="cache:*api/newsletters*")
+@invalidate_cache(pattern="cache:*api/newsletter-subscribers*")
 def send_newsletter():
     recipient = request.get_json().get('email') if request.is_json else request.form.get('email')
     logging.debug(f"Recipient detected: {recipient}")

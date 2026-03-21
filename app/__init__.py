@@ -69,17 +69,6 @@ app.config.update(
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# GMAIL
-#app.config.update(
-#    MAIL_SERVER='smtp.gmail.com',             # Gmail SMTP server
-#    MAIL_PORT=587,
-#    MAIL_USE_SSL=False,
-#    MAIL_USE_TLS=True,
-#    MAIL_USERNAME=os.getenv('EMAIL'),         # Your email
-#    MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')  # Your email password or app-specific password
-#)
-#mail = Mail(app)
-
 # Security Key
 # app.secret_key = os.urandom(32)
 app.secret_key = os.getenv('SECRET_KEY')
@@ -110,8 +99,9 @@ def invalid_route(e):
 from app.controller import register_blueprints_controller
 from app.routes import register_blueprints_routes
 
-register_blueprints_controller(app)  # Controller Blueprint Registration (Public, Template Link, Admin)
-register_blueprints_routes(app)      # Routes Blueprint Registration (Public, Template Link, Admin)
+# Controller, Routes Blueprint Registration (Public, Template Link, Admin)
+register_blueprints_controller(app)
+register_blueprints_routes(app)  
 
 if __name__ == '__main__':
     #socketio.run(app, debug=True, host="127.0.0.1")
