@@ -149,15 +149,9 @@ th.sortable.desc::after {
                 </div>
               
               </div>
-
-              <!-- Loading Table -->
-              <div id="loadingState" class="text-center py-4">
-                <div class="spinner-border text-primary"></div>
-                <div class="mt-2">Loading users...</div>
-              </div>
             
               <!-- Table -->
-              <div id="tableWrapper" class="table-responsive" style="display:none;">
+              <div id="tableWrapper" class="table-responsive">
                 <table class="table table-bordered table-striped align-middle" id="dataTable">
                   <thead class="table-light">
                     <tr>
@@ -172,7 +166,14 @@ th.sortable.desc::after {
                       <th data-column="8" class="sortable"></th>
                     </tr>
                   </thead>
-                  <tbody id="userTable"></tbody>
+                  <tbody id="userTable">
+                    <tr id="loadingState">
+                      <td colspan="9" class="text-center py-3">
+                        <div class="spinner-border spinner-border-sm text-primary"></div>
+                        <span class="ms-2">Loading users...</span>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             
@@ -490,6 +491,13 @@ document.addEventListener("DOMContentLoaded", function () {
 // AUTO-POLLING EVERY 5 SECONDS
 // ===============================
 function fetchUsers() {
+    const loadingRow = document.getElementById("loadingState");
+
+    // Show spinner ONLY if first load
+    if (allRows.length === 0 && loadingRow) {
+        loadingRow.style.display = "";
+    }
+
     fetch("/api/user/accounts")
         .then(res => res.json())
         .then(data => {
@@ -500,9 +508,7 @@ function fetchUsers() {
             displayTable();
             setupPagination();
 
-            // 🔥 SHOW TABLE, HIDE LOADING
-            document.getElementById("loadingState").style.display = "none";
-            document.getElementById("tableWrapper").style.display = "block";
+            if (loadingRow) loadingRow.style.display = "none";
         })
         .catch(err => {
             console.error("Error fetching user accounts:", err);
@@ -541,6 +547,17 @@ setInterval(fetchUsers, 5000);
 
   function displayTable() {
       tbody.innerHTML = "";
+
+      // Check kung may data sa filteredRows
+      if (filteredRows.length === 0) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td colspan="9" class="text-center text-muted">No records found.</td>`;
+          tbody.appendChild(tr);
+
+          tableInfo.innerHTML = "Showing <strong>0</strong> to <strong>0</strong> of <strong>0</strong> entries";
+          return; // Stop execution
+      }
+
       const start = (currentPage - 1) * rowsPerPage;
       const end = start + rowsPerPage;
       const paginatedItems = filteredRows.slice(start, end);

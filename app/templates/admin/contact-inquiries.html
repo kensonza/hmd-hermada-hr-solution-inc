@@ -75,15 +75,9 @@ td span {
                 </div>
               </div>
               <!-- /Search -->
-            
-              <!-- Loading muna -->
-              <div id="loadingState" class="text-center py-4">
-                <div class="spinner-border text-primary"></div>
-                <div class="mt-2">Loading contact inquiries...</div>
-              </div>
 
               <!-- Table (hidden muna) -->
-              <div id="tableWrapper" class="table-responsive" style="display:none;">
+              <div id="tableWrapper" class="table-responsive"">
                 <table class="table table-bordered table-striped align-middle" id="dataTable">
                   <thead class="table-light">
                     <tr>
@@ -95,7 +89,14 @@ td span {
                       <th data-column="5" class="sortable">Date</th>
                     </tr>
                   </thead>
-                  <tbody id="contactTable"></tbody>
+                  <tbody id="contactTable">
+                    <tr id="loadingRow">
+                      <td colspan="6" class="text-center py-4">
+                        <div class="spinner-border text-primary"></div>
+                        <span class="mt-2">Loading contact inquiries...</span>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
               <!-- /Table -->
@@ -452,19 +453,22 @@ function setupPagination() {
 // AUTO-POLLING EVERY 5 SECONDS
 // ===============================
 function fetchContacts() {
+    const loadingRow = document.getElementById("loadingRow");
+
+    // Show loading row ONLY if walang data pa
+    if (allRows.length === 0 && loadingRow) {
+        loadingRow.style.display = "";
+    }
+
     fetch('/api/contact/inquiries')
     .then(res => res.json())
     .then(data => {
         allRows = data;
-        filterTable();
 
-        const tableWrapper = document.getElementById("tableWrapper");
+        filterTable(); // re-render table
 
-        // 🔥 show only if naka-hidden pa
-        if (tableWrapper.style.display === "none") {
-            document.getElementById("loadingState").style.display = "none";
-            tableWrapper.style.display = "block";
-        }
+        // Hide loading row after load
+        if (loadingRow) loadingRow.style.display = "none";
     })
     .catch(err => console.error('Error fetching contacts:', err));
 }

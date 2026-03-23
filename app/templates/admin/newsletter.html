@@ -85,14 +85,8 @@ td span {
                         </div>
                     </div>
                     
-                    <!-- Loading -->
-                    <div id="nlLoading" class="text-center py-3">
-                      <div class="spinner-border text-primary"></div>
-                      <div class="mt-2">Loading subscribers...</div>
-                    </div>
-
                     <!-- Table -->
-                    <div id="nlWrapper" class="table-responsive" style="display:none;">
+                    <div id="nlWrapper" class="table-responsive">
                         <table class="table table-bordered table-striped align-middle" id="subDataTable">
                             <thead class="table-light">
                                 <tr>
@@ -102,7 +96,14 @@ td span {
                                     <th class="sortable" data-col="date_created">Date</th>
                                 </tr>
                             </thead>
-                            <tbody id="subTableBody"></tbody>
+                            <tbody id="subTableBody">
+                              <tr id="subLoadingRow">
+                                <td colspan="4" class="text-center py-3">
+                                  <div class="spinner-border spinner-border-sm text-primary"></div>
+                                  <span class="ms-2">Loading subscribers...</span>
+                                </td>
+                              </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="small text-muted" id="subTableInfo"></div>
@@ -122,14 +123,8 @@ td span {
                         </div>
                     </div>
                     
-                    <!-- Loading -->
-                    <div id="subLoading" class="text-center py-3">
-                      <div class="spinner-border text-primary"></div>
-                      <div class="mt-2">Loading newsletter...</div>
-                    </div>
-
                     <!-- Table -->
-                    <div id="subWrapper" class="table-responsive" style="display:none;">
+                    <div id="subWrapper" class="table-responsive">
                         <table class="table table-bordered table-striped align-middle" id="nlDataTable">
                             <thead class="table-light">
                                 <tr>
@@ -138,9 +133,17 @@ td span {
                                     <th class="sortable" data-col="nl_subject">Subject</th>
                                     <th class="sortable" data-col="nl_status">Status</th>
                                     <th class="sortable" data-col="date_created">Date</th>
-                                    <th>Actions</th> </tr>
+                                    <th></th> 
+                                </tr>
                             </thead>
-                            <tbody id="nlTableBody"></tbody>
+                            <tbody id="nlTableBody">
+                              <tr id="nlLoadingRow">
+                                <td colspan="6" class="text-center py-3">
+                                  <div class="spinner-border spinner-border-sm text-primary"></div>
+                                  <span class="ms-2">Loading newsletter...</span>
+                                </td>
+                              </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="small text-muted" id="nlTableInfo"></div>
@@ -261,16 +264,19 @@ let subAllRows = [], nlAllRows = [];
 
 // 2. Fetch Functions
 async function fetchSubscribers() {
+    const loadingRow = document.getElementById("subLoadingRow");
+
+    if (subAllRows.length === 0 && loadingRow) {
+        loadingRow.style.display = "";
+    }
+
     try {
         const res = await fetch(nsConfig.apiUrl);
         subAllRows = await res.json();
+
         renderTable(subAllRows, nsConfig, createSubRow);
 
-        const wrapper = document.getElementById("subWrapper");
-        if (wrapper.style.display === "none") {
-            document.getElementById("subLoading").style.display = "none";
-            wrapper.style.display = "block";
-        }
+        if (loadingRow) loadingRow.style.display = "none";
 
     } catch (err) { 
         console.error("Error fetching subscribers:", err); 
@@ -278,16 +284,19 @@ async function fetchSubscribers() {
 }
 
 async function fetchNewsletters() {
+    const loadingRow = document.getElementById("nlLoadingRow");
+
+    if (nlAllRows.length === 0 && loadingRow) {
+        loadingRow.style.display = "";
+    }
+
     try {
         const res = await fetch(nlConfig.apiUrl);
         nlAllRows = await res.json();
+
         renderTable(nlAllRows, nlConfig, createNlRow);
 
-        const wrapper = document.getElementById("nlWrapper");
-        if (wrapper.style.display === "none") {
-            document.getElementById("nlLoading").style.display = "none";
-            wrapper.style.display = "block";
-        }
+        if (loadingRow) loadingRow.style.display = "none";
 
     } catch (err) { 
         console.error("Error fetching newsletters:", err); 
