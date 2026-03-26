@@ -1,27 +1,28 @@
-# app/invalidate_cache.py
 from functools import wraps
 from app import redis_client
 
 def invalidate_cache(pattern="cache:*"):
-    """
-    Decorator to invalidate Redis cache matching the given pattern.
-    Use pattern to target cached GET routes (e.g., 'cache:*api/users*').
-    """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)  # Execute the route function
+            result = func(*args, **kwargs)
+
             try:
-                # Get all keys matching the pattern
-                keys = redis_client.keys(pattern)
-                if keys:
-                    redis_client.delete(*keys)
-                    print(f"🗑 Cleared {len(keys)} cache keys matching '{pattern}'")
-                    print(f"Cleared keys: {keys}")  # verbose log to see actual keys
+                keys_to_delete = []
+
+                # Use SCAN (safe for production)
+                for key in redis_client.scan_iter(pattern):
+                    keys_to_delete.append(key)
+
+                if keys_to_delete:
+                    redis_client.delete(*keys_to_delete)
+                    print(f"🗑 Cleared {len(keys_to_delete)} cache keys matching '{pattern}'")
                 else:
-                    print(f"⚠️ No cache keys matched the pattern '{pattern}'")
+                    print(f"⚠️ No cache keys matched '{pattern}'")
+
             except Exception as e:
                 print("Cache invalidation error:", e)
+
             return result
         return wrapper
     return decorator
