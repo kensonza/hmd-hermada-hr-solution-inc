@@ -3,6 +3,8 @@
 {% block title %} HMD Hermada - Contact Inquiries {% endblock %}
 
 {% block head %}
+/* Style the Bootstrap pagination arrow anchor links with a gray color. */
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
 /* Sorting arrows style */
@@ -78,7 +80,7 @@ td span {
 
               <!-- Table (hidden muna) -->
               <div id="tableWrapper" class="table-responsive"">
-                <table class="table table-bordered table-striped align-middle" id="dataTable">
+                <table class="table table-bordered table-striped align-middle mb-0" id="dataTable">
                   <thead class="table-light">
                     <tr>
                       <th data-column="0" class="sortable">Token ID</th>
@@ -101,28 +103,32 @@ td span {
               </div>
               <!-- /Table -->
             
-              <!-- Showing Info -->
-              <div class="small text-muted" id="tableInfo"></div>
-            
-              <!-- Pagination + Rows -->
-              <div class="d-flex justify-content-between align-items-center mt-1 flex-wrap">
-                <div></div> <!-- empty for spacing -->
-                <div class="d-flex align-items-center gap-3 mx-auto">
-                  <nav>
-                    <ul class="pagination mb-0" id="pagination"></ul>
-                  </nav>
-                  <div class="d-flex align-items-center gap-2">
-                    <span class="small text-muted">Show</span>
-                    <select id="rowsPerPage" class="form-select form-select-sm w-auto">
-                      <option value="5">5</option>
-                      <option value="10" selected>10</option>
-                      <option value="20">20</option>
-                      <option value="50">50</option>
-                    </select>
+              <!-- Integrated Footer para sa Contact Inquiries -->
+              <div class="d-flex flex-column flex-md-row align-items-center mt-2 pt-1 gap-3 gap-md-0" style="width: 100%;">
+                  
+                  <!-- 1. Left: Showing info (Center sa mobile, Left sa desktop) -->
+                  <div class="small text-muted flex-fill text-center text-md-start" id="tableInfo" style="flex-basis: 0; line-height: 1;">
+                      <!-- Dito lalabas ang "Showing X to Y of Z entries" -->
                   </div>
-                </div>
+                                  
+                  <!-- 2. Center: Pagination (Laging nasa gitna) -->
+                  <div class="d-flex justify-content-center flex-fill" style="flex-basis: 0;">
+                      <nav>
+                          <ul class="pagination pagination-sm mb-0" id="pagination"></ul>
+                      </nav>
+                  </div>
+                
+                  <!-- 3. Right: Dropdown (Center sa mobile, Right sa desktop) -->
+                  <div class="d-flex justify-content-center justify-content-md-end align-items-center gap-2 flex-fill" style="flex-basis: 0;">
+                      <span class="small text-muted" style="line-height: 1;">Show</span>
+                      <select id="rowsPerPage" class="form-select form-select-sm w-auto">
+                          <option value="5">5</option>
+                          <option value="10" selected>10</option>
+                          <option value="20">20</option>
+                          <option value="50">50</option>
+                      </select>
+                  </div>
               </div>
-              <!-- /Pagination + Rows -->
             </div>
         </div>
     </div>
@@ -390,23 +396,35 @@ function setupPagination() {
     pagination.innerHTML = "";
     const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
     
-    // Kung walang pages, huwag nang ipakita ang pagination buttons
+    // Kung walang data o isa lang ang page, huwag ipakita ang pagination
     if (pageCount <= 1) return;
 
     const range = 1;
     let pages = [];
 
-    // Previous
+    // ==========================================
+    // Previous Button («)
+    // ==========================================
     const prevLi = document.createElement("li");
+    // Dito natin chine-check kung page 1, para maging kulay gray (disabled)
     prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `<a class="page-link" href="#">&laquo;</a>`;
+    
+    // Siguraduhin na ang <a> tag ay may tamang style para maging gray talaga pag disabled
+    prevLi.innerHTML = `<a class="page-link" href="#" ${currentPage === 1 ? 'tabindex="-1" aria-disabled="true"' : ''}>&laquo;</a>`;
+    
     prevLi.addEventListener("click", e => {
         e.preventDefault();
-        if(currentPage > 1){ currentPage--; displayTable(); setupPagination(); }
+        if(currentPage > 1){ 
+            currentPage--; 
+            displayTable(); 
+            setupPagination(); 
+        }
     });
     pagination.appendChild(prevLi);
 
-    // Pages + ellipsis
+    // ==========================================
+    // Page Numbers + Ellipsis Logic
+    // ==========================================
     for(let i=1; i<=pageCount; i++){
         if(i===1 || i===pageCount || (i >= currentPage-range && i <= currentPage+range)){
             pages.push(i);
@@ -415,21 +433,22 @@ function setupPagination() {
         }
     }
 
-    pages.forEach(page=>{
+    pages.forEach(page => {
         const li = document.createElement("li");
         li.classList.add("page-item");
-        if(page==="..."){
+        
+        if(page === "...") {
             li.classList.add("disabled");
-            li.innerHTML=`<span class="page-link">...</span>`;
+            li.innerHTML = `<span class="page-link">...</span>`;
         } else {
-            if(page===currentPage) li.classList.add("active");
-            const a=document.createElement("a");
+            if(page === currentPage) li.classList.add("active");
+            const a = document.createElement("a");
             a.classList.add("page-link");
-            a.href="#";
-            a.innerText=page;
-            a.addEventListener("click", e=>{
+            a.href = "#";
+            a.innerText = page;
+            a.addEventListener("click", e => {
                 e.preventDefault();
-                currentPage=page;
+                currentPage = page;
                 displayTable();
                 setupPagination();
             });
@@ -438,13 +457,22 @@ function setupPagination() {
         pagination.appendChild(li);
     });
 
-    // Next
-    const nextLi=document.createElement("li");
-    nextLi.className=`page-item ${currentPage===pageCount ? 'disabled':''}`;
-    nextLi.innerHTML=`<a class="page-link" href="#">&raquo;</a>`;
-    nextLi.addEventListener("click", e=>{
+    // ==========================================
+    // Next Button (»)
+    // ==========================================
+    const nextLi = document.createElement("li");
+    // Dito natin chine-check kung nasa huling page na para mag-gray
+    nextLi.className = `page-item ${currentPage === pageCount ? 'disabled' : ''}`;
+    
+    nextLi.innerHTML = `<a class="page-link" href="#" ${currentPage === pageCount ? 'tabindex="-1" aria-disabled="true"' : ''}>&raquo;</a>`;
+    
+    nextLi.addEventListener("click", e => {
         e.preventDefault();
-        if(currentPage<pageCount){ currentPage++; displayTable(); setupPagination(); }
+        if(currentPage < pageCount){ 
+            currentPage++; 
+            displayTable(); 
+            setupPagination(); 
+        }
     });
     pagination.appendChild(nextLi);
 }

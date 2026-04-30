@@ -4,6 +4,7 @@ import requests
 import re
 import logging
 import uuid
+import time
 from os import name
 from app.controller.invalidate_cache import invalidate_cache
 from flask import Blueprint, request, jsonify, current_app, url_for
@@ -182,7 +183,7 @@ def generate_client_reply_html(name, subject):
     return template.format(name=name, subject=subject)
 
 @pubcontroller.route('/new-contact', methods=['POST'])
-@invalidate_cache(pattern="cache:*api/contact/inquiries*")
+@invalidate_cache(pattern="cache:*:/api/contact/inquiries*")
 def new_contact():
     name = request.form.get('name')
     email = request.form.get('email')
@@ -347,8 +348,26 @@ def generate_newsletter_html(unsubscribe_link, content):
 """
 
 @pubcontroller.route('/send-newsletter', methods=['POST'])
-@invalidate_cache(pattern="cache:*api/newsletter-subscribers*")
+@invalidate_cache(pattern="cache:*:/api/newsletter-subscribers*")
 def send_newsletter():
+    # 1. Honeypot Check
+    honeypot = request.form.get('honeypot')
+    if honeypot:  # Kung may laman, malamang bot ito
+        logging.warning("Spam detected via honeypot.")
+        return jsonify({'status': 'error', 'message': 'Spam detected.'}), 400
+
+    # 2. Timestamp Check
+    try:
+        current_time = time.time()
+        form_time = float(request.form.get('timestamp', 0))
+        
+        # Kung mas mabilis sa 3 seconds ang pag-submit, i-reject
+        if current_time - form_time < 3:
+            logging.warning("Spam detected via fast submission.")
+            return jsonify({'status': 'error', 'message': 'Too fast. Are you a robot?'}), 400
+    except (ValueError, TypeError):
+        return jsonify({'status': 'error', 'message': 'Invalid submission.'}), 400
+
     recipient = request.get_json().get('email') if request.is_json else request.form.get('email')
     logging.debug(f"Recipient detected: {recipient}")
 
@@ -411,7 +430,7 @@ def send_newsletter():
         return jsonify({'status': 'error', 'message': 'Something went wrong. Please try again later.'}), 500
 
 @pubcontroller.route('/unsubscribe/<token>')
-@invalidate_cache(pattern="cache:*api/newsletter-subscribers*")
+@invalidate_cache(pattern="cache:*:/api/newsletter-subscribers*")
 def unsubscribe(token):
     sub = NewsletterSubscribers.query.filter_by(ns_token_id=token).first()
     

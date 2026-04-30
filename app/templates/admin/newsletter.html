@@ -3,6 +3,8 @@
 {% block title %} HMD Hermada - Our Newsletter {% endblock %}
 
 {% block head %}
+Style the Bootstrap pagination arrow anchor links with a gray color.
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
 /* Sorting arrows style */
@@ -87,7 +89,7 @@ td span {
                     
                     <!-- Table -->
                     <div id="nlWrapper" class="table-responsive">
-                        <table class="table table-bordered table-striped align-middle" id="subDataTable">
+                        <table class="table table-bordered table-striped align-middle mb-0" id="subDataTable">
                             <thead class="table-light">
                                 <tr>
                                     <th class="sortable" data-col="ns_token_id">Token ID</th>
@@ -106,9 +108,30 @@ td span {
                             </tbody>
                         </table>
                     </div>
-                    <div class="small text-muted" id="subTableInfo"></div>
-                    <div id="subPaginationContainer" class="d-flex justify-content-center mt-2">
-                        <ul class="pagination mb-0" id="subPagination"></ul>
+                    <!-- Integrated Footer: Responsive layout -->
+                    <div class="d-flex flex-column flex-md-row align-items-center mt-2 pt-1 gap-3 gap-md-0" style="width: 100%;">
+
+                        <!-- 1. Left: Showing info (Naka-center sa mobile, left sa desktop) -->
+                        <div class="small text-muted flex-fill text-center text-md-start" id="subTableInfo" style="flex-basis: 0; line-height: 1;">
+                        </div>
+
+                        <!-- 2. Center: Pagination (Laging nasa center) -->
+                        <div class="d-flex justify-content-center flex-fill" style="flex-basis: 0;">
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0" id="subPagination"></ul>
+                            </nav>
+                        </div>
+                    
+                        <!-- 3. Right: Dropdown (Naka-center sa mobile, right sa desktop) -->
+                        <div class="d-flex justify-content-center justify-content-md-end align-items-center gap-2 flex-fill" style="flex-basis: 0;">
+                            <span class="small text-muted" style="line-height: 1;">Show</span>
+                            <select id="subRowsPerPage" class="form-select form-select-sm w-auto">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -119,13 +142,13 @@ td span {
                     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Add Newsletter</button>
                         <div style="width: 300px;">
-                            <input type="text" id="nlSearchText" class="form-control" placeholder="Search Filename">
+                            <input type="text" id="nlSearchText" class="form-control" placeholder="Search Newsletter...">
                         </div>
                     </div>
                     
                     <!-- Table -->
                     <div id="subWrapper" class="table-responsive">
-                        <table class="table table-bordered table-striped align-middle" id="nlDataTable">
+                        <table class="table table-bordered table-striped align-middle mb-0" id="nlDataTable">
                             <thead class="table-light">
                                 <tr>
                                     <th class="sortable" data-col="nl_token_id">Token ID</th>
@@ -146,9 +169,31 @@ td span {
                             </tbody>
                         </table>
                     </div>
-                    <div class="small text-muted" id="nlTableInfo"></div>
-                    <div id="nlPaginationContainer" class="d-flex justify-content-center mt-2">
-                        <ul class="pagination mb-0" id="nlPagination"></ul>
+                    <!-- Integrated Footer para sa Newsletter Media Table -->
+                    <div class="d-flex flex-column flex-md-row align-items-center mt-2 pt-1 gap-3 gap-md-0" style="width: 100%;">
+
+                        <!-- 1. Left: Showing info (Naka-center sa mobile, left sa desktop) -->
+                        <div class="small text-muted flex-fill text-center text-md-start" id="nlTableInfo" style="flex-basis: 0; line-height: 1;">
+                            <!-- Dito lalabas yung "Showing X to Y of Z entries" -->
+                        </div>
+
+                        <!-- 2. Center: Pagination (Laging nasa gitna) -->
+                        <div class="d-flex justify-content-center flex-fill" style="flex-basis: 0;">
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0" id="nlPagination"></ul>
+                            </nav>
+                        </div>
+                    
+                        <!-- 3. Right: Dropdown (Naka-center sa mobile, right sa desktop) -->
+                        <div class="d-flex justify-content-center justify-content-md-end align-items-center gap-2 flex-fill" style="flex-basis: 0;">
+                            <span class="small text-muted" style="line-height: 1;">Show</span>
+                            <select id="nlRowsPerPage" class="form-select form-select-sm w-auto">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -244,66 +289,57 @@ td span {
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 
 <script>
-// 1. Configurations & Global Variables
+// Configurations & Global Variables
+// We added currentPage and rowsPerPage to each config
 const nsConfig = {
     apiUrl: '/api/newsletter-subscribers',
     tbodyId: 'subTableBody',
     searchId: 'subSearchText',
     statusId: 'subSearchStatus',
-    infoId: 'subTableInfo'
+    infoId: 'subTableInfo',
+    paginationId: 'subPagination',
+    rowsPerPageId: 'subRowsPerPage',
+    currentPage: 1
 };
 
 const nlConfig = {
     apiUrl: '/api/newsletters',
     tbodyId: 'nlTableBody',
     searchId: 'nlSearchText',
-    infoId: 'nlTableInfo'
+    infoId: 'nlTableInfo',
+    paginationId: 'nlPagination',
+    rowsPerPageId: 'nlRowsPerPage',
+    currentPage: 1
 };
 
 let subAllRows = [], nlAllRows = [];
 
-// 2. Fetch Functions
+// Fetch Functions
 async function fetchSubscribers() {
     const loadingRow = document.getElementById("subLoadingRow");
-
-    if (subAllRows.length === 0 && loadingRow) {
-        loadingRow.style.display = "";
-    }
+    if (subAllRows.length === 0 && loadingRow) loadingRow.style.display = "";
 
     try {
         const res = await fetch(nsConfig.apiUrl);
         subAllRows = await res.json();
-
         renderTable(subAllRows, nsConfig, createSubRow);
-
         if (loadingRow) loadingRow.style.display = "none";
-
-    } catch (err) { 
-        console.error("Error fetching subscribers:", err); 
-    }
+    } catch (err) { console.error("Error fetching subscribers:", err); }
 }
 
 async function fetchNewsletters() {
     const loadingRow = document.getElementById("nlLoadingRow");
-
-    if (nlAllRows.length === 0 && loadingRow) {
-        loadingRow.style.display = "";
-    }
+    if (nlAllRows.length === 0 && loadingRow) loadingRow.style.display = "";
 
     try {
         const res = await fetch(nlConfig.apiUrl);
         nlAllRows = await res.json();
-
         renderTable(nlAllRows, nlConfig, createNlRow);
-
         if (loadingRow) loadingRow.style.display = "none";
-
-    } catch (err) { 
-        console.error("Error fetching newsletters:", err); 
-    }
+    } catch (err) { console.error("Error fetching newsletters:", err); }
 }
 
-// 3. Row Creators (Walang pagbabago rito)
+// Row Creators
 function createSubRow(item) {
     return `<tr>
         <td>${item.ns_token_id}</td>
@@ -329,11 +365,15 @@ function createNlRow(item) {
     </tr>`;
 }
 
-// 4. Rendering Engine (Walang pagbabago rito)
+// Integrated Rendering Engine (Now with Pagination)
 function renderTable(data, config, rowFunc) {
     const tbody = document.getElementById(config.tbodyId);
+    const tableInfo = document.getElementById(config.infoId);
+    const rowsPerPage = parseInt(document.getElementById(config.rowsPerPageId).value);
+
     if (!tbody) return;
 
+    // Filter Logic
     const searchTerm = document.getElementById(config.searchId)?.value.toLowerCase() || "";
     const statusSelect = config.statusId ? document.getElementById(config.statusId) : null;
     const statusValue = statusSelect ? statusSelect.value : "";
@@ -347,30 +387,74 @@ function renderTable(data, config, rowFunc) {
         return matchesSearch && matchesStatus;
     });
 
-    tbody.innerHTML = filtered.length === 0 
-        ? `<tr><td colspan="6" class="text-center text-muted">No records found.</td></tr>`
-        : filtered.map(item => rowFunc(item)).join('');
-    
-    const infoElem = document.getElementById(config.infoId);
-    if (infoElem) infoElem.innerText = `Showing ${filtered.length} entries`;
+    // Pagination Calculation
+    const total = filtered.length;
+    if (total === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted">No records found.</td></tr>`;
+        if (tableInfo) tableInfo.innerHTML = "Showing <strong>0</strong> to <strong>0</strong> of <strong>0</strong> entries";
+        document.getElementById(config.paginationId).innerHTML = "";
+        return;
+    }
+
+    const maxPage = Math.ceil(total / rowsPerPage);
+    if (config.currentPage > maxPage) config.currentPage = maxPage || 1;
+
+    const start = (config.currentPage - 1) * rowsPerPage;
+    const end = Math.min(start + rowsPerPage, total);
+    const paginatedItems = filtered.slice(start, end);
+
+    // Update Display
+    tbody.innerHTML = paginatedItems.map(item => rowFunc(item)).join('');
+    if (tableInfo) {
+        tableInfo.innerHTML = `Showing <strong>${start + 1}</strong> to <strong>${end}</strong> of <strong>${total}</strong> entries`;
+    }
+
+    setupPagination(total, rowsPerPage, config, () => renderTable(data, config, rowFunc));
 }
 
-// 5. Initial Load & Listeners
+// Pagination Logic
+function setupPagination(total, rowsPerPage, config, reRenderFunc) {
+    const pagination = document.getElementById(config.paginationId);
+    pagination.innerHTML = "";
+    const pageCount = Math.ceil(total / rowsPerPage);
+    if (pageCount <= 1) return;
+
+    // Previous
+    const prevLi = document.createElement("li");
+    prevLi.className = `page-item ${config.currentPage === 1 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `<a class="page-link" href="#">&laquo;</a>`;
+    prevLi.onclick = (e) => { e.preventDefault(); if(config.currentPage > 1) { config.currentPage--; reRenderFunc(); } };
+    pagination.appendChild(prevLi);
+
+    // Pages
+    for(let i=1; i<=pageCount; i++) {
+        const li = document.createElement("li");
+        li.className = `page-item ${config.currentPage === i ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.onclick = (e) => { e.preventDefault(); config.currentPage = i; reRenderFunc(); };
+        pagination.appendChild(li);
+    }
+
+    // Next
+    const nextLi = document.createElement("li");
+    nextLi.className = `page-item ${config.currentPage === pageCount ? 'disabled' : ''}`;
+    nextLi.innerHTML = `<a class="page-link" href="#">&raquo;</a>`;
+    nextLi.onclick = (e) => { e.preventDefault(); if(config.currentPage < pageCount) { config.currentPage++; reRenderFunc(); } };
+    pagination.appendChild(nextLi);
+}
+
+// 6. Initial Load & Listeners
 $(document).ready(function() {
-    // INITIALIZE SUMMERNOTE
     $('#summernote_editor').summernote({
         placeholder: 'Write your newsletter here...',
         height: 400,
-        minHeight: null, // set minimum height of editor
-        maxHeight: null, // set maximum height of editor
-        focus: true, // set focus to editable area after initializing summernote
         toolbar: [
             ['style', ['style']],
             ['font', ['bold', 'underline', 'clear']],
             ['fontsize', ['fontsize']],
             ['color', ['color']],
             ['para', ['ul', 'ol', 'paragraph']],
-            ['height', ['height']], // Built-in Line Spacing!
+            ['height', ['height']],
             ['table', ['table']],
             ['insert', ['link', 'picture', 'video']],
             ['view', ['fullscreen', 'codeview', 'help']]
@@ -380,22 +464,12 @@ $(document).ready(function() {
     fetchSubscribers();
     fetchNewsletters();
 
-    // Event Listeners for Search
-    $('#subSearchText').on('input', () => renderTable(subAllRows, nsConfig, createSubRow));
-    $('#subSearchStatus').on('change', () => renderTable(subAllRows, nsConfig, createSubRow));
-    $('#nlSearchText').on('input', () => renderTable(nlAllRows, nlConfig, createNlRow));
-
-    // Add Button Reset
-    $('[data-bs-target="#addModal"]').on('click', function() {
-        const form = document.getElementById('addNewsletterForm');
-        if (form) {
-            form.reset();
-            form.dataset.mode = "add";
-            $('#addModalLabel').text("Add New Newsletter Media");
-            $('#editStatusContainer').hide();
-            $('#summernote_editor').summernote('code', ''); // Clear Summernote
-        }
-    });
+    // Event Listeners for Search & Rows Dropdown
+    $('#subSearchText, #subSearchStatus').on('input change', () => { nsConfig.currentPage = 1; renderTable(subAllRows, nsConfig, createSubRow); });
+    $('#nlSearchText').on('input', () => { nlConfig.currentPage = 1; renderTable(nlAllRows, nlConfig, createNlRow); });
+    
+    $('#subRowsPerPage').on('change', () => { nsConfig.currentPage = 1; renderTable(subAllRows, nsConfig, createSubRow); });
+    $('#nlRowsPerPage').on('change', () => { nlConfig.currentPage = 1; renderTable(nlAllRows, nlConfig, createNlRow); });
 
     setInterval(() => {
         if(!$('.modal.show').length){
@@ -405,55 +479,40 @@ $(document).ready(function() {
     }, 5000);
 });
 
-// 6. Click Handlers (View, Edit, Delete)
+// Click Handlers (View, Edit, Delete)
 $(document).on('click', '.view-nl, .edit-btn, .delete-btn', async function(e) {
     const target = $(e.currentTarget);
-
-    // VIEW
     if (target.hasClass('view-nl')) {
         e.preventDefault();
         const newsletter = nlAllRows.find(n => n.nl_token_id === target.data('id'));
         if (!newsletter) return;
-
         $('#view_nl_title').val(newsletter.nl_title);
         $('#view_nl_subject').val(newsletter.nl_subject);
         $('#view_nl_status').val(newsletter.nl_status);
-        // Para sa view modal, pwede kang gumamit ng simple div para sa read-only
         $('#view-editor-container').html(newsletter.nl_description || ''); 
-        
         new bootstrap.Modal(document.getElementById('viewNlModal')).show();
     }
-
-    // EDIT
     if (target.hasClass('edit-btn')) {
         const newsletter = nlAllRows.find(n => n.nl_token_id === target.data('id'));
         if (!newsletter) return;
-
         $('#addModalLabel').text("Edit Newsletter");
         $('#newsletter_title').val(newsletter.nl_title);
         $('#email_subject').val(newsletter.nl_subject);
         $('#editStatusContainer').show();
         $('#edit_nl_status').val(newsletter.nl_status);
-
-        // Load content to Summernote
         $('#summernote_editor').summernote('code', newsletter.nl_description || '');
-        
         const form = document.getElementById('addNewsletterForm');
         form.dataset.mode = "edit";
         form.dataset.editId = newsletter.nl_token_id;
         new bootstrap.Modal(document.getElementById('addModal')).show();
     }
-
-    // DELETE
     if (target.hasClass('delete-btn')) {
         const tokenId = target.data('id');
         if (!confirm("Are you sure you want to delete this?")) return;
         try {
             const res = await fetch(`/admin/delete-newsletter/${tokenId}`, { 
                 method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': $('input[name="csrf_token"]').val()
-                }
+                headers: { 'X-CSRFToken': $('input[name="csrf_token"]').val() }
             });
             if (res.ok) { fetchNewsletters(); } 
             else { alert("Failed to delete."); }
@@ -461,49 +520,34 @@ $(document).on('click', '.view-nl, .edit-btn, .delete-btn', async function(e) {
     }
 });
 
-// 7. Unified Form Submission
+// Unified Form Submission
 $(document).on('submit', '#addNewsletterForm', async function(e) {
     e.preventDefault();
-
     const title = $('#newsletter_title').val().trim();
     const subject = $('#email_subject').val().trim();
     const description = $('#summernote_editor').summernote('code');
-    
-    // Validation
     if (!title || !subject || $('#summernote_editor').summernote('isEmpty')) {
         alert("Please fill out all required fields.");
         return;
     }
-
     const isEdit = this.dataset.mode === "edit";
     const url = isEdit ? `/admin/update-newsletter/${this.dataset.editId}` : '/admin/add-newsletter';
     const csrfToken = $('input[name="csrf_token"]').val();
-
     let body, headers = { 'X-CSRFToken': csrfToken };
-
     if (isEdit) {
         body = JSON.stringify({
-            nl_title: title,
-            nl_subject: subject,
-            nl_description: description,
-            nl_status: $('#edit_nl_status').val()
+            nl_title: title, nl_subject: subject, nl_description: description, nl_status: $('#edit_nl_status').val()
         });
         headers['Content-Type'] = 'application/json';
     } else {
         body = new FormData(this);
-        // I-sync ang summernote value sa FormData
         body.set('nl_description', description);
     }
-
     try {
         const res = await fetch(url, { method: isEdit ? 'PUT' : 'POST', headers: headers, body: body });
         const result = await res.json();
-        if (res.ok) { 
-            alert(result.message || "Success!"); 
-            location.reload(); 
-        } else { 
-            alert(result.error || "Failed"); 
-        }
+        if (res.ok) { alert(result.message || "Success!"); location.reload(); } 
+        else { alert(result.error || "Failed"); }
     } catch (err) { console.error(err); }
 });
 </script>
