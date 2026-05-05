@@ -369,7 +369,7 @@ function createNlRow(item) {
 function renderTable(data, config, rowFunc) {
     const tbody = document.getElementById(config.tbodyId);
     const tableInfo = document.getElementById(config.infoId);
-    const rowsPerPage = parseInt(document.getElementById(config.rowsPerPageId).value);
+    const rowsPerPage = parseInt(document.getElementById(config.rowsPerPageId).value) || 10;
 
     if (!tbody) return;
 
@@ -398,6 +398,7 @@ function renderTable(data, config, rowFunc) {
 
     const maxPage = Math.ceil(total / rowsPerPage);
     if (config.currentPage > maxPage) config.currentPage = maxPage || 1;
+    if (config.currentPage < 1) config.currentPage = 1;
 
     const start = (config.currentPage - 1) * rowsPerPage;
     const end = Math.min(start + rowsPerPage, total);
@@ -412,35 +413,93 @@ function renderTable(data, config, rowFunc) {
     setupPagination(total, rowsPerPage, config, () => renderTable(data, config, rowFunc));
 }
 
-// Pagination Logic
+// Pagination
 function setupPagination(total, rowsPerPage, config, reRenderFunc) {
     const pagination = document.getElementById(config.paginationId);
     pagination.innerHTML = "";
+
     const pageCount = Math.ceil(total / rowsPerPage);
     if (pageCount <= 1) return;
 
-    // Previous
-    const prevLi = document.createElement("li");
-    prevLi.className = `page-item ${config.currentPage === 1 ? 'disabled' : ''}`;
-    prevLi.innerHTML = `<a class="page-link" href="#">&laquo;</a>`;
-    prevLi.onclick = (e) => { e.preventDefault(); if(config.currentPage > 1) { config.currentPage--; reRenderFunc(); } };
-    pagination.appendChild(prevLi);
+    const maxVisible = 5;
+    let startPage = 1;
+    let endPage = pageCount;
 
-    // Pages
-    for(let i=1; i<=pageCount; i++) {
-        const li = document.createElement("li");
-        li.className = `page-item ${config.currentPage === i ? 'active' : ''}`;
-        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-        li.onclick = (e) => { e.preventDefault(); config.currentPage = i; reRenderFunc(); };
-        pagination.appendChild(li);
+    if (pageCount > maxVisible) {
+        const half = Math.floor(maxVisible / 2);
+
+        if (config.currentPage <= half) {
+            startPage = 1;
+            endPage = maxVisible;
+        } else if (config.currentPage + half >= pageCount) {
+            startPage = pageCount - maxVisible + 1;
+            endPage = pageCount;
+        } else {
+            startPage = config.currentPage - half;
+            endPage = config.currentPage + half - 1;
+        }
     }
 
-    // Next
-    const nextLi = document.createElement("li");
-    nextLi.className = `page-item ${config.currentPage === pageCount ? 'disabled' : ''}`;
-    nextLi.innerHTML = `<a class="page-link" href="#">&raquo;</a>`;
-    nextLi.onclick = (e) => { e.preventDefault(); if(config.currentPage < pageCount) { config.currentPage++; reRenderFunc(); } };
-    pagination.appendChild(nextLi);
+    function createPageItem(label, page, disabled = false, active = false) {
+        const li = document.createElement("li");
+        li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#">${label}</a>`;
+
+        li.onclick = (e) => {
+            e.preventDefault();
+            if (disabled) return;
+
+            const newPage = Math.max(1, Math.min(pageCount, page));
+
+            if (config.currentPage !== newPage) {
+                config.currentPage = newPage;
+                reRenderFunc();
+            }
+        };
+
+        return li;
+    }
+
+    // <<
+    pagination.appendChild(
+        createPageItem("«", config.currentPage - 1, config.currentPage === 1)
+    );
+
+    // first page + ...
+    if (startPage > 1) {
+        pagination.appendChild(createPageItem(1, 1));
+
+        if (startPage > 2) {
+            const dots = document.createElement("li");
+            dots.className = "page-item disabled";
+            dots.innerHTML = `<span class="page-link">...</span>`;
+            pagination.appendChild(dots);
+        }
+    }
+
+    // middle pages (max 20 lang)
+    for (let i = startPage; i <= endPage; i++) {
+        pagination.appendChild(
+            createPageItem(i, i, false, config.currentPage === i)
+        );
+    }
+
+    // ... + last page
+    if (endPage < pageCount) {
+        if (endPage < pageCount - 1) {
+            const dots = document.createElement("li");
+            dots.className = "page-item disabled";
+            dots.innerHTML = `<span class="page-link">...</span>`;
+            pagination.appendChild(dots);
+        }
+
+        pagination.appendChild(createPageItem(pageCount, pageCount));
+    }
+
+    // >>
+    pagination.appendChild(
+        createPageItem("»", config.currentPage + 1, config.currentPage === pageCount)
+    );
 }
 
 // 6. Initial Load & Listeners

@@ -391,90 +391,93 @@ function sortTable(colIndex) {
     setupPagination();
 }
 
-// --- PAGINATION ---
+// Pagination
 function setupPagination() {
     pagination.innerHTML = "";
+
     const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
-    
-    // Kung walang data o isa lang ang page, huwag ipakita ang pagination
     if (pageCount <= 1) return;
 
-    const range = 1;
-    let pages = [];
+    const maxVisible = 5;
+    let startPage = 1;
+    let endPage = pageCount;
 
-    // ==========================================
-    // Previous Button («)
-    // ==========================================
-    const prevLi = document.createElement("li");
-    // Dito natin chine-check kung page 1, para maging kulay gray (disabled)
-    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-    
-    // Siguraduhin na ang <a> tag ay may tamang style para maging gray talaga pag disabled
-    prevLi.innerHTML = `<a class="page-link" href="#" ${currentPage === 1 ? 'tabindex="-1" aria-disabled="true"' : ''}>&laquo;</a>`;
-    
-    prevLi.addEventListener("click", e => {
-        e.preventDefault();
-        if(currentPage > 1){ 
-            currentPage--; 
-            displayTable(); 
-            setupPagination(); 
-        }
-    });
-    pagination.appendChild(prevLi);
+    if (pageCount > maxVisible) {
+        const half = Math.floor(maxVisible / 2);
 
-    // ==========================================
-    // Page Numbers + Ellipsis Logic
-    // ==========================================
-    for(let i=1; i<=pageCount; i++){
-        if(i===1 || i===pageCount || (i >= currentPage-range && i <= currentPage+range)){
-            pages.push(i);
-        } else if(pages[pages.length-1] !== "..."){
-            pages.push("...");
+        if (currentPage <= half) {
+            startPage = 1;
+            endPage = maxVisible;
+        } else if (currentPage + half >= pageCount) {
+            startPage = pageCount - maxVisible + 1;
+            endPage = pageCount;
+        } else {
+            startPage = currentPage - half;
+            endPage = currentPage + half;
         }
     }
 
-    pages.forEach(page => {
+    function createPageItem(label, page, disabled = false, active = false) {
         const li = document.createElement("li");
-        li.classList.add("page-item");
-        
-        if(page === "...") {
-            li.classList.add("disabled");
-            li.innerHTML = `<span class="page-link">...</span>`;
-        } else {
-            if(page === currentPage) li.classList.add("active");
-            const a = document.createElement("a");
-            a.classList.add("page-link");
-            a.href = "#";
-            a.innerText = page;
-            a.addEventListener("click", e => {
-                e.preventDefault();
-                currentPage = page;
+        li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#">${label}</a>`;
+
+        li.onclick = (e) => {
+            e.preventDefault();
+            if (disabled) return;
+
+            const newPage = Math.max(1, Math.min(pageCount, page));
+
+            if (currentPage !== newPage) {
+                currentPage = newPage;
                 displayTable();
                 setupPagination();
-            });
-            li.appendChild(a);
-        }
-        pagination.appendChild(li);
-    });
+            }
+        };
 
-    // ==========================================
-    // Next Button (»)
-    // ==========================================
-    const nextLi = document.createElement("li");
-    // Dito natin chine-check kung nasa huling page na para mag-gray
-    nextLi.className = `page-item ${currentPage === pageCount ? 'disabled' : ''}`;
-    
-    nextLi.innerHTML = `<a class="page-link" href="#" ${currentPage === pageCount ? 'tabindex="-1" aria-disabled="true"' : ''}>&raquo;</a>`;
-    
-    nextLi.addEventListener("click", e => {
-        e.preventDefault();
-        if(currentPage < pageCount){ 
-            currentPage++; 
-            displayTable(); 
-            setupPagination(); 
+        return li;
+    }
+
+    // « prev
+    pagination.appendChild(
+        createPageItem("«", currentPage - 1, currentPage === 1)
+    );
+
+    // first + ...
+    if (startPage > 1) {
+        pagination.appendChild(createPageItem(1, 1));
+
+        if (startPage > 2) {
+            const dots = document.createElement("li");
+            dots.className = "page-item disabled";
+            dots.innerHTML = `<span class="page-link">...</span>`;
+            pagination.appendChild(dots);
         }
-    });
-    pagination.appendChild(nextLi);
+    }
+
+    // pages
+    for (let i = startPage; i <= endPage; i++) {
+        pagination.appendChild(
+            createPageItem(i, i, false, currentPage === i)
+        );
+    }
+
+    // ... + last
+    if (endPage < pageCount) {
+        if (endPage < pageCount - 1) {
+            const dots = document.createElement("li");
+            dots.className = "page-item disabled";
+            dots.innerHTML = `<span class="page-link">...</span>`;
+            pagination.appendChild(dots);
+        }
+
+        pagination.appendChild(createPageItem(pageCount, pageCount));
+    }
+
+    // » next
+    pagination.appendChild(
+        createPageItem("»", currentPage + 1, currentPage === pageCount)
+    );
 }
 
 // ===============================

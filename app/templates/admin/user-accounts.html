@@ -461,8 +461,6 @@ th.sortable.desc::after {
 
 {% block scripts %}
 
-
-
 <!-- Script to toggle password visibility -->
 <script>
 document.addEventListener("click", function(e) {
@@ -492,45 +490,43 @@ document.addEventListener("DOMContentLoaded", function () {
   const tableInfo = document.getElementById("tableInfo");
 
   let allRows = [], filteredRows = [];
-  let currentPage = 1, rowsPerPage = parseInt(rowsPerPageSelect.value);
+  let currentPage = 1;
+  let rowsPerPage = rowsPerPageSelect ? parseInt(rowsPerPageSelect.value) : 10;
   let sortColumn = null, sortAsc = true;
 
-// ===============================
-// AUTO-POLLING EVERY 5 SECONDS
-// ===============================
-function fetchUsers() {
+  // ===============================
+  // AUTO-POLLING EVERY 5 SECONDS
+  // ===============================
+  function fetchUsers() {
     const loadingRow = document.getElementById("loadingState");
 
     if (allRows.length === 0 && loadingRow) {
-        loadingRow.style.display = "";
+      loadingRow.style.display = "";
     }
 
     fetch("/api/user/accounts")
-        .then(res => res.json())
-        .then(data => {
-            allRows = Array.isArray(data) ? data : [];
-            filteredRows = [...allRows];
-            
-            // Note: Hindi na natin rereset ang currentPage sa 1 para hindi mag-jump ang view habang nag-popoll
-            displayTable();
-            setupPagination();
+      .then(res => res.json())
+      .then(data => {
+        allRows = Array.isArray(data) ? data : [];
+        // Apply current filters to the new data
+        applyFilterAndSort();
+        
+        if (loadingRow) loadingRow.style.display = "none";
+      })
+      .catch(err => {
+        console.error("Error fetching user accounts:", err);
+      });
+  }
 
-            if (loadingRow) loadingRow.style.display = "none";
-        })
-        .catch(err => {
-            console.error("Error fetching user accounts:", err);
-        });
-}
-
-fetchUsers();
-setInterval(fetchUsers, 5000);
+  fetchUsers();
+  setInterval(fetchUsers, 5000);
 
   // ===============================
   // TABLE FUNCTIONS
   // ===============================
   function createRow(user) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
           <td>${user.user_token_id}</td>
           <td>${user.first_name}</td>
           <td>${user.last_name}</td>
@@ -546,295 +542,240 @@ setInterval(fetchUsers, 5000);
             </div>
           </td>
       `;
-      return tr;
+    return tr;
   }
 
   function displayTable() {
-      tbody.innerHTML = "";
+    if (!tbody) return;
+    tbody.innerHTML = "";
 
-      if (filteredRows.length === 0) {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td colspan="9" class="text-center text-muted">No records found.</td>`;
-          tbody.appendChild(tr);
-          tableInfo.innerHTML = "Showing <strong>0</strong> to <strong>0</strong> of <strong>0</strong> entries";
-          return;
-      }
+    if (filteredRows.length === 0) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="9" class="text-center text-muted">No records found.</td>`;
+      tbody.appendChild(tr);
+      tableInfo.innerHTML = "Showing <strong>0</strong> to <strong>0</strong> of <strong>0</strong> entries";
+      return;
+    }
 
-      const start = (currentPage - 1) * rowsPerPage;
-      const end = start + rowsPerPage;
-      const paginatedItems = filteredRows.slice(start, end);
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const paginatedItems = filteredRows.slice(start, end);
 
-      const fragment = document.createDocumentFragment();
-      paginatedItems.forEach(user => fragment.appendChild(createRow(user)));
-      tbody.appendChild(fragment);
+    const fragment = document.createDocumentFragment();
+    paginatedItems.forEach(user => fragment.appendChild(createRow(user)));
+    tbody.appendChild(fragment);
 
-      const total = filteredRows.length;
-      const showingStart = total === 0 ? 0 : start + 1;
-      const showingEnd = Math.min(end, total);
-      tableInfo.innerHTML = `Showing <strong>${showingStart}</strong> to <strong>${showingEnd}</strong> of <strong>${total}</strong> entries`;
+    const total = filteredRows.length;
+    const showingStart = total === 0 ? 0 : start + 1;
+    const showingEnd = Math.min(end, total);
+    tableInfo.innerHTML = `Showing <strong>${showingStart}</strong> to <strong>${showingEnd}</strong> of <strong>${total}</strong> entries`;
   }
 
-  // ===============================
-  // EVENT DELEGATION for Edit/Delete
-  // ===============================
-  tbody.onclick = function(e) {
-      const editBtn = e.target.closest(".edit-btn");
-      if(editBtn){
-          const row = editBtn.closest("tr");
-          const tokenId = row.cells[0].innerText.trim();
-          const user = allRows.find(u => String(u.user_token_id) === String(tokenId));
+  function applyFilterAndSort() {
+    const text = searchText.value.toLowerCase().trim();
+    filteredRows = allRows.filter(user => 
+        Object.values(user).some(val => String(val).toLowerCase().includes(text))
+    );
+    
+    // Maintain sort if any
+    if (sortColumn !== null) {
+      const keys = ["user_token_id","first_name","last_name","nickname","email","department","role","status"];
+      filteredRows.sort((a,b) => {
+          let aVal = (a[keys[sortColumn]] || "").toString().toLowerCase();
+          let bVal = (b[keys[sortColumn]] || "").toString().toLowerCase();
+          return (aVal > bVal ? 1 : aVal < bVal ? -1 : 0) * (sortAsc ? 1 : -1);
+      });
+    }
 
-          if(!user) return;
-
-          document.getElementById("editUserId").value = user.user_token_id;
-          document.getElementById("editFName").value = user.first_name;
-          document.getElementById("editLName").value = user.last_name;
-          document.getElementById("editNickName").value = user.nickname;
-          document.getElementById("editEmail").value = user.email;
-          document.getElementById("editDepartment").value = user.department;
-          document.getElementById("editRole").value = user.role;
-          document.getElementById("editStatus").value = user.status;
-
-          new bootstrap.Modal(document.getElementById("editModal")).show();
-          return;
-      }
-
-      const deleteBtn = e.target.closest(".delete-btn");
-      if(deleteBtn){
-          const row = deleteBtn.closest("tr");
-          const tokenId = row.cells[0].innerText.trim();
-          const fullName = `${row.cells[1].innerText} ${row.cells[2].innerText}`;
-          if (!confirm(`Are you sure you want to delete ${fullName}?`)) return;
-
-          fetch(`/admin/delete-user/${tokenId}`, {
-              method: 'POST',
-              headers: {
-                  'X-Requested-With': 'XMLHttpRequest',
-                  'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
-              }
-          })
-          .then(res => res.ok ? res.json() : res.json().then(err => { throw err; }))
-          .then(data => {
-              if (data.message) {
-                  alert(data.message);
-                  allRows = allRows.filter(u => u.user_token_id !== tokenId);
-                  filteredRows = filteredRows.filter(u => u.user_token_id !== tokenId);
-                  displayTable();
-                  setupPagination();
-              }
-          })
-          .catch(err => alert("Error: " + (err.error || "Server Error")));
-      }
-  };
-
-  // ===============================
-  // DEBOUNCED SEARCH
-  // ===============================
-  function debounce(fn, delay) {
-      let timer;
-      return function(...args){
-          clearTimeout(timer);
-          timer = setTimeout(() => fn.apply(this, args), delay);
-      }
+    displayTable();
+    setupPagination();
   }
 
-  searchText.addEventListener("input", debounce(() => {
-      const text = searchText.value.toLowerCase().trim();
-      filteredRows = allRows.filter(user => Object.values(user).join(" ").toLowerCase().includes(text));
-      currentPage = 1;
-      displayTable();
-      setupPagination();
-  }, 250));
-
-  // ===============================
-  // SORT
-  // ===============================
-  table.querySelectorAll("th.sortable").forEach((header, colIndex) => {
-      header.onclick = () => {
-          sortColumn = colIndex;
-          sortAsc = !sortAsc;
-
-          table.querySelectorAll("th.sortable").forEach(h => h.classList.remove("asc","desc"));
-          header.classList.add(sortAsc ? "asc" : "desc");
-
-          const keys = ["user_token_id","first_name","last_name","nickname","email","department","role","status"];
-          filteredRows.sort((a,b) => {
-              let aVal = (a[keys[colIndex]] || "").toString().toLowerCase();
-              let bVal = (b[keys[colIndex]] || "").toString().toLowerCase();
-              return (aVal > bVal ? 1 : aVal < bVal ? -1 : 0) * (sortAsc ? 1 : -1);
-          });
-
-          currentPage = 1;
-          displayTable();
-          setupPagination();
-      };
-  });
-
-  // ===============================
-  // UPDATED PAGINATION (Gaya ng Contact Inquiries)
-  // ===============================
+  // Pagination
   function setupPagination() {
-      pagination.innerHTML = "";
-      const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
-      
-      if (pageCount <= 1) return;
+    if (!pagination) return;
+    pagination.innerHTML = "";
 
-      const range = 1;
-      let pages = [];
+    const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+    if (pageCount <= 1) return;
 
-      // Previous Button («)
-      const prevLi = document.createElement("li");
-      prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-      prevLi.innerHTML = `<a class="page-link" href="#">&laquo;</a>`;
-      prevLi.addEventListener("click", e => {
-          e.preventDefault();
-          if(currentPage > 1){ currentPage--; displayTable(); setupPagination(); }
-      });
-      pagination.appendChild(prevLi);
+    const maxVisible = 5;
+    let startPage = 1;
+    let endPage = pageCount;
 
-      // Page numbers with Ellipsis logic
-      for(let i=1; i<=pageCount; i++){
-          if(i===1 || i===pageCount || (i >= currentPage-range && i <= currentPage+range)){
-              pages.push(i);
-          } else if(pages[pages.length-1] !== "..."){
-              pages.push("...");
-          }
-      }
+    // Dynamic Range Calculation
+    if (pageCount > maxVisible) {
+        const half = Math.floor(maxVisible / 2);
 
-      pages.forEach(page=>{
-          const li = document.createElement("li");
-          li.classList.add("page-item");
-          if(page==="..."){
-              li.classList.add("disabled");
-              li.innerHTML=`<span class="page-link">...</span>`;
-          } else {
-              if(page===currentPage) li.classList.add("active");
-              const a=document.createElement("a");
-              a.classList.add("page-link");
-              a.href="#";
-              a.innerText=page;
-              a.addEventListener("click", e=>{
-                  e.preventDefault();
-                  currentPage=page;
-                  displayTable();
-                  setupPagination();
-              });
-              li.appendChild(a);
-          }
-          pagination.appendChild(li);
-      });
+        if (currentPage <= half) {
+            startPage = 1;
+            endPage = maxVisible;
+        } else if (currentPage + half >= pageCount) {
+            startPage = pageCount - maxVisible + 1;
+            endPage = pageCount;
+        } else {
+            startPage = currentPage - half;
+            endPage = currentPage + half;
+        }
+    }
 
-      // Next Button (»)
-      const nextLi=document.createElement("li");
-      nextLi.className=`page-item ${currentPage===pageCount ? 'disabled':''}`;
-      nextLi.innerHTML=`<a class="page-link" href="#">&raquo;</a>`;
-      nextLi.addEventListener("click", e=>{
-          e.preventDefault();
-          if(currentPage<pageCount){ currentPage++; displayTable(); setupPagination(); }
-      });
-      pagination.appendChild(nextLi);
+    function createPageItem(label, page, disabled = false, active = false) {
+        const li = document.createElement("li");
+        li.className = `page-item ${disabled ? 'disabled' : ''} ${active ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#">${label}</a>`;
+
+        li.onclick = (e) => {
+            e.preventDefault();
+            if (disabled) return;
+            const newPage = Math.max(1, Math.min(pageCount, parseInt(page)));
+            if (currentPage !== newPage) {
+                currentPage = newPage;
+                displayTable();
+                setupPagination();
+            }
+        };
+        return li;
+    }
+
+    // « prev
+    pagination.appendChild(createPageItem("«", currentPage - 1, currentPage === 1));
+
+    // first + ...
+    if (startPage > 1) {
+        pagination.appendChild(createPageItem(1, 1));
+        if (startPage > 2) {
+            const dots = document.createElement("li");
+            dots.className = "page-item disabled";
+            dots.innerHTML = `<span class="page-link">...</span>`;
+            pagination.appendChild(dots);
+        }
+    }
+
+    // middle pages (yung gumagalaw na 1 2 3 4 5)
+    for (let i = startPage; i <= endPage; i++) {
+        pagination.appendChild(createPageItem(i, i, false, currentPage === i));
+    }
+
+    // ... + last
+    if (endPage < pageCount) {
+        if (endPage < pageCount - 1) {
+            const dots = document.createElement("li");
+            dots.className = "page-item disabled";
+            dots.innerHTML = `<span class="page-link">...</span>`;
+            pagination.appendChild(dots);
+        }
+        pagination.appendChild(createPageItem(pageCount, pageCount));
+    }
+
+    // » next
+    pagination.appendChild(createPageItem("»", currentPage + 1, currentPage === pageCount));
   }
 
-  rowsPerPageSelect.onchange = function() {
+  // ===============================
+  // LISTENERS
+  // ===============================
+  if (rowsPerPageSelect) {
+    rowsPerPageSelect.addEventListener("change", function () {
       rowsPerPage = parseInt(this.value);
       currentPage = 1;
       displayTable();
       setupPagination();
+    });
+  }
+
+  searchText.addEventListener("input", debounce(() => {
+    currentPage = 1;
+    applyFilterAndSort();
+  }, 250));
+
+  function debounce(fn, delay) {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    }
+  }
+
+  // Sorting
+  table.querySelectorAll("th.sortable").forEach((header, colIndex) => {
+    header.onclick = () => {
+      sortColumn = colIndex;
+      sortAsc = !sortAsc;
+      table.querySelectorAll("th.sortable").forEach(h => h.classList.remove("asc", "desc"));
+      header.classList.add(sortAsc ? "asc" : "desc");
+      applyFilterAndSort();
+    };
+  });
+
+  // Event Delegation for Edit/Delete
+  tbody.onclick = function (e) {
+    const editBtn = e.target.closest(".edit-btn");
+    if (editBtn) {
+      const row = editBtn.closest("tr");
+      const tokenId = row.cells[0].innerText.trim();
+      const user = allRows.find(u => String(u.user_token_id) === String(tokenId));
+      if (!user) return;
+      document.getElementById("editUserId").value = user.user_token_id;
+      document.getElementById("editFName").value = user.first_name;
+      document.getElementById("editLName").value = user.last_name;
+      document.getElementById("editNickName").value = user.nickname;
+      document.getElementById("editEmail").value = user.email;
+      document.getElementById("editDepartment").value = user.department;
+      document.getElementById("editRole").value = user.role;
+      document.getElementById("editStatus").value = user.status;
+      new bootstrap.Modal(document.getElementById("editModal")).show();
+    }
+
+    const deleteBtn = e.target.closest(".delete-btn");
+    if (deleteBtn) {
+      const row = deleteBtn.closest("tr");
+      const tokenId = row.cells[0].innerText.trim();
+      if (!confirm(`Are you sure you want to delete this user?`)) return;
+      fetch(`/admin/delete-user/${tokenId}`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.message) {
+            allRows = allRows.filter(u => String(u.user_token_id) !== String(tokenId));
+            applyFilterAndSort();
+          }
+        });
+    }
   };
 
-  // ===============================
-  // MODAL FORM HANDLER (AJAX)
-  // ===============================
+  // Modal forms handler
   function ajaxFormHandler(formId, responseId) {
-      const form = document.getElementById(formId);
-      const responseDiv = document.getElementById(responseId);
-      if(!form || !responseDiv) return;
+    const form = document.getElementById(formId);
+    const responseDiv = document.getElementById(responseId);
+    if (!form || !responseDiv) return;
 
-      function showAlert(message, type){
-          responseDiv.className = "user-alert " + (type === "success" ? "user-success" : "user-error");
-          responseDiv.style.display = "block";
-          responseDiv.innerText = message;
-          setTimeout(() => responseDiv.style.display = "none", 4000);
-      }
-
-      form.onsubmit = e => {
-          e.preventDefault();
-          
-          let pass = null;
-          let confirm = null;
-                
-          if (formId === "addUserForm") {
-              pass = form.querySelector('input[name="txtPassword"]')?.value;
-              confirm = form.querySelector('input[name="txtPasswordConfirm"]')?.value;
+    form.onsubmit = e => {
+      e.preventDefault();
+      fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.message) {
+            alert(data.message);
+            form.reset();
+            fetchUsers(); // Refresh data
+          } else {
+            alert(data.error || "Error");
           }
-          
-          if (formId === "changePassForm") {
-              pass = form.querySelector('input[name="new_password"]')?.value;
-              confirm = form.querySelector('input[name="confirm_password"]')?.value;
-          }
-          
-          if (pass !== null && confirm !== null) {
-              const minLength = 8;
-              const hasUpper = /[A-Z]/.test(pass);
-              const hasLower = /[a-z]/.test(pass);
-              const hasNumber = /[0-9]/.test(pass);
-              const hasSpecial = /[^A-Za-z0-9]/.test(pass);
-          
-              if (pass.length < minLength) { showAlert("Password must be at least 8 characters long.", "error"); return; }
-              if (!hasUpper) { showAlert("Password must contain at least one uppercase letter.", "error"); return; }
-              if (!hasLower) { showAlert("Password must contain at least one lowercase letter.", "error"); return; }
-              if (!hasNumber) { showAlert("Password must contain at least one number.", "error"); return; }
-              if (!hasSpecial) { showAlert("Password must contain at least one special character.", "error"); return; }
-              if (pass !== confirm) { showAlert("Passwords do not match!", "error"); return; }
-          }
-
-          fetch(form.action, {
-              method: 'POST',
-              body: new FormData(form),
-              headers: {'X-Requested-With': 'XMLHttpRequest'}
-          })
-          .then(res => res.json())
-          .then(data => {
-              if (data.message) {
-                  showAlert(data.message, "success");
-                  form.reset();
-                  if(formId === 'changePassForm') {
-                      setTimeout(() => {
-                          const cpModal = bootstrap.Modal.getInstance(document.getElementById('changePassModal'));
-                          if(cpModal) cpModal.hide();
-                      }, 2000);
-                  }
-              } else {
-                  showAlert(data.error || "An error occurred", "error");
-              }
-          })
-          .catch(()=> showAlert("Something went wrong. Try again.", "error"));
-      };
+        });
+    };
   }
 
-  const btnOpenChangePass = document.getElementById('btnOpenChangePass');
-  if (btnOpenChangePass) {
-      btnOpenChangePass.addEventListener('click', function() {
-          const editModalEl = document.getElementById('editModal');
-          const editModalInstance = bootstrap.Modal.getInstance(editModalEl);
-          
-          const userId = document.getElementById('editUserId').value;
-          document.getElementById('changePassUserId').value = userId;
-
-          if (editModalInstance) {
-              editModalInstance.hide();
-              editModalEl.addEventListener('hidden.bs.modal', function handler() {
-                  const cpModalEl = document.getElementById('changePassModal');
-                  const cpModal = new bootstrap.Modal(cpModalEl);
-                  cpModal.show();
-                  editModalEl.removeEventListener('hidden.bs.modal', handler);
-              });
-          }
-      });
-  }
-
-  ajaxFormHandler('addUserForm','addUserResponse');
-  ajaxFormHandler('editUserForm','editUserResponse');
+  ajaxFormHandler('addUserForm', 'addUserResponse');
+  ajaxFormHandler('editUserForm', 'editUserResponse');
   ajaxFormHandler('changePassForm', 'changePassResponse');
 
 });
