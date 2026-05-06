@@ -51,6 +51,9 @@ app.config.update(
     # SQLAlachemy Connection
     SQLALCHEMY_DATABASE_URI=os.getenv('DATABASE_URL'),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
+
+    # Token Serializer Secret Key
+    TOKEN_SERIALIZER_SECRET_KEY=os.getenv('TOKEN_SERIALIZER_SECRET_KEY'),
     
     # ReCAPTCHA Secret Key
     RECAPTCHA_SECRET_KEY=os.getenv('RECAPTCHA_SECRET_KEY'),

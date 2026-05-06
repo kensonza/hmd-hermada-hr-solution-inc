@@ -290,9 +290,6 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="newsletter-form">
               <input type="email" name="email" placeholder="Enter your email" required>
-              <!-- Dito nakalagay ang oras kung kailan na-render ang form -->
-              <input type="hidden" name="form_load_time" value="{{ now_timestamp }}">
-              <input type="submit" value="Subscribe">
             </div>
             <div class="loading">Loading...</div>
             <div class="error-message"></div>

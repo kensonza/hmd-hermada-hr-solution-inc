@@ -14,6 +14,7 @@ from app import db
 from flask_mail import Message
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 
 pubcontroller = Blueprint('public_controller', __name__, template_folder='templates/public')
 
@@ -232,12 +233,25 @@ def new_contact():
         db.session.rollback()
         logging.error(f"ERROR: {str(e)}")
         return jsonify({"error": "Failed to process your request"}), 500
-    
+
+
+
+
+
+
+
+
+
 # Our Newsletter (Newsletter Subscription Form Submission).
 EMAIL_REGEX = r'^[^@]+@[^@]+\.[^@]+$'
 logging.basicConfig(level=logging.DEBUG)
 
-def generate_newsletter_html(unsubscribe_link, content):
+def generate_newsletter_html(unsubscribe_link, content, show_footer_links=True):
+    # Define footer links for send newsletter confirmation email
+    footer_links = ""
+    if show_footer_links:
+        footer_links = f'<a href="{unsubscribe_link}" style="color:#007bff; text-decoration:underline;">Unsubscribe</a> | <a href="#" style="color: #777;">Update Preferences</a>'
+
     return f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -336,7 +350,9 @@ def generate_newsletter_html(unsubscribe_link, content):
                 <br>
                 (02) 8 737 9323 | +63 917 960 6290 | +63 917 103 0298
               </span>
-              <a href="{unsubscribe_link}" style="color:#007bff; text-decoration:underline;">Unsubscribe</a> | <a href="#" style="color: #777;">Update Preferences</a>
+
+              {footer_links}
+            
             </td>
           </tr>
         </table>
@@ -347,68 +363,71 @@ def generate_newsletter_html(unsubscribe_link, content):
 </html>
 """
 
+# Set Token Serializer for secure subscription links (Double Opt-In).
+def get_serializer():
+    return URLSafeTimedSerializer(current_app.config.get('TOKEN_SERIALIZER_SECRET_KEY'))
+
+# SALT for the security (In any string)
+SALT = 'newsletter-verification-salt'
+
 @pubcontroller.route('/send-newsletter', methods=['POST'])
 @invalidate_cache(pattern="cache:*:/api/newsletter-subscribers*")
 def send_newsletter():
-    # 1. Honeypot Check
-    honeypot = request.form.get('honeypot')
-    if honeypot:  # Kung may laman, malamang bot ito
-        logging.warning("Spam detected via honeypot.")
-        return jsonify({'status': 'error', 'message': 'Spam detected.'}), 400
-
-    # 2. Timestamp Check
-    try:
-        current_time = time.time()
-        form_time = float(request.form.get('timestamp', 0))
-        
-        # Kung mas mabilis sa 3 seconds ang pag-submit, i-reject
-        if current_time - form_time < 3:
-            logging.warning("Spam detected via fast submission.")
-            return jsonify({'status': 'error', 'message': 'Too fast. Are you a robot?'}), 400
-    except (ValueError, TypeError):
-        return jsonify({'status': 'error', 'message': 'Invalid submission.'}), 400
-
     recipient = request.get_json().get('email') if request.is_json else request.form.get('email')
     logging.debug(f"Recipient detected: {recipient}")
 
     if not recipient or not re.match(r'^[^@]+@[^@]+\.[^@]+$', recipient):
         return jsonify({'status': 'error', 'message': 'Valid email is required.'}), 400
+    
+    # Check the email if exists in the database.
+    existing_sub = NewsletterSubscribers.query.filter_by(ns_email=recipient).first()
+
+    # Check the status of the existing subscriber.
+    if existing_sub and existing_sub.ns_status == "Subscribed":
+        return jsonify({'status': 'error', 'message': f'{recipient} is already subscribed.'}), 400
 
     try:
-        latest_nl = Newsletter.query.filter_by(nl_status="Active").order_by(Newsletter.date_created.desc()).first()
-        newsletter_html_content = latest_nl.nl_description if latest_nl else "<p>Welcome to our newsletter!</p>"
-        email_subject = latest_nl.nl_subject if latest_nl else "Welcome to HMD Hermada Newsletter"
-
-        existing_sub = NewsletterSubscribers.query.filter_by(ns_email=recipient).first()
-        new_subscription = None
-
-        if not existing_sub:
-            new_subscription = NewsletterSubscribers(
-                ns_email=recipient,
-                ns_status="Subscribed"
-            )
-            db.session.add(new_subscription)
+        # If the subscriber exists but is unsubscribed, we will immediately update their status to Subscribed and send them the latest newsletter without going through the double opt-in process again.
+        if existing_sub and existing_sub.ns_status == "Unsubscribed":
+            existing_sub.ns_status = "Subscribed"
+            existing_sub.ns_token_id = str(uuid.uuid4())
+            existing_sub.date_created = datetime.now(ZoneInfo("Asia/Manila"))
             db.session.commit()
-            logging.info(f"New subscriber saved: {recipient}")
-        else:
-            if existing_sub.ns_status == "Unsubscribed":
-                existing_sub.ns_token_id = str(uuid.uuid4())
-                existing_sub.ns_status = "Subscribed"
-                existing_sub.date_created = datetime.now(ZoneInfo("Asia/Manila"))
-                db.session.commit()
-                logging.info(f"Subscriber {recipient} re-subscribed.")
-                new_subscription = existing_sub 
-            else:
-                logging.info(f"Email {recipient} already subscribed.")
-                return jsonify({'status': 'error', 'message': f'{recipient} is already subscribed.'}), 400
+            
+            # Get the latest newsletter to send to the re-subscribed user.
+            latest_nl = Newsletter.query.filter_by(nl_status="Active").order_by(Newsletter.date_created.desc()).first()
+            nl_content = latest_nl.nl_description if latest_nl else "<p>Welcome back to our newsletter!</p>"
+            nl_subject = latest_nl.nl_subject if latest_nl else "Welcome back to HMD Hermada Newsletter"
+            
+            # Generate unsubscribe link.
+            unsub_link = url_for('public_controller.unsubscribe', token=existing_sub.ns_token_id, _external=True)
+            email_content = generate_newsletter_html(unsub_link, content=nl_content, show_footer_links=True)
 
-        # token-based unsubscribe link
-        unsubscribe_link = url_for('public_controller.unsubscribe', token=new_subscription.ns_token_id, _external=True)
+            is_sent = send_via_brevo(subject=nl_subject, html_content=email_content, to_email=recipient)
+            
+            return jsonify({
+                'status': 'success', 
+                'message': f'Welcome back! Your subscription has been reactivated and a newsletter was sent to {recipient}.'
+            })
+
+        # If the subscriber doesn't exist, we will create a new entry with "Unsubscribed" status and send them a confirmation email with a secure token link. Once they click the link, their status will be updated to "Subscribed" and they will receive the latest newsletter.
+        s = get_serializer()
+        token = s.dumps(recipient, salt=SALT)
+        confirm_link = url_for('public_controller.confirm_subscription', token=token, _external=True)
         
-        email_content = generate_newsletter_html(unsubscribe_link, content=newsletter_html_content)
+        confirmation_msg = f"""
+            <h2>Confirm Your Subscription</h2>
+            <p>Thank you for your interest in HMD Hermada HR Solutions Corporation! To complete your subscription and start receiving our newsletter, please click the button below:</p>
+            <div style="text-align: center;">
+                <a href="{ confirm_link }" class="cta-button" style="background-color: #dec55d; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; display: inline-block;">Confirm Subscription</a>
+            </div>
+            <p>If you didn't request this, you can safely ignore this email.</p>
+        """
+        
+        email_content = generate_newsletter_html(unsubscribe_link="#", content=confirmation_msg, show_footer_links=False)
 
         is_sent = send_via_brevo(
-            subject=email_subject, 
+            subject="Action Required: Confirm Your Subscription", 
             html_content=email_content, 
             to_email=recipient
         )
@@ -416,18 +435,79 @@ def send_newsletter():
         if is_sent:
             return jsonify({
                 'status': 'success',
-                'message': f'Thank you! Your subscription has been saved and a welcome email was sent to {recipient}.'
+                'message': 'Please check your email to confirm your subscription. We won\'t save your data until you click the link.'
             })
         else:
-            return jsonify({
-                'status': 'error', 
-                'message': 'Subscription saved but failed to send welcome email.'
-            }), 500
+            return jsonify({'status': 'error', 'message': 'Failed to send verification email.'}), 500
 
     except Exception as e:
         db.session.rollback()
-        logging.error(f"Error during subscription: {str(e)}")
-        return jsonify({'status': 'error', 'message': 'Something went wrong. Please try again later.'}), 500
+        logging.error(f"Error in send_newsletter: {str(e)}")
+        return jsonify({'status': 'error', 'message': 'Something went wrong.'}), 500
+
+@pubcontroller.route('/confirm-subscription/<token>')
+@invalidate_cache(pattern="cache:*:/api/newsletter-subscribers*")
+def confirm_subscription(token):
+    s = get_serializer()
+    try:
+        # Verify the valid token (expires in 2 hours / 7200 seconds)
+        email = s.loads(token, salt=SALT, max_age=7200)
+    except SignatureExpired:
+        return "<h1>Link Expired</h1><p>The confirmation link has expired. Please subscribe again.</p>", 400
+    except BadTimeSignature:
+        return "<h1>Invalid Link</h1><p>The confirmation link is invalid.</p>", 400
+
+    try:
+        # Save the subscriber to the database with "Subscribed" status.
+        sub = NewsletterSubscribers.query.filter_by(ns_email=email).first()
+        
+        if not sub:
+            # New Subscriber.
+            sub = NewsletterSubscribers(
+                ns_email=email,
+                ns_status="Subscribed",
+                ns_token_id=str(uuid.uuid4()) # Unique ID for future unsubscriptions.
+            )
+            db.session.add(sub)
+        else:
+            # If existed before (Unsubscribed), update to Subscribed.
+            sub.ns_status = "Subscribed"
+            sub.ns_token_id = str(uuid.uuid4()) # Refresh token for the new subscription session.
+            sub.date_created = datetime.now(ZoneInfo("Asia/Manila"))
+
+        db.session.commit()
+        
+        # Get the latest active newsletter from the database. If none, use default content.
+        latest_nl = Newsletter.query.filter_by(nl_status="Active").order_by(Newsletter.date_created.desc()).first()
+        
+        # Use default content if no active newsletter is found in the database.
+        newsletter_html_content = latest_nl.nl_description if latest_nl else "<p>Welcome to our newsletter! We are excited to have you with us.</p>"
+        email_subject = latest_nl.nl_subject if latest_nl else "Welcome to HMD Hermada Newsletter"
+
+        # Create unsubscribe link (Because the subscriber is now saved in the database, and ns_token_id is now generated).
+        unsubscribe_link = url_for('public_controller.unsubscribe', token=sub.ns_token_id, _external=True)
+        
+        email_content = generate_newsletter_html(
+            unsubscribe_link=unsubscribe_link, 
+            content=newsletter_html_content, 
+            show_footer_links=True
+        )
+
+        is_sent = send_via_brevo(
+            subject=email_subject, 
+            html_content=email_content, 
+            to_email=email
+        )
+
+        if is_sent:
+            return f"<h1>Success!</h1><p>Thank you for confirming. Your first newsletter has been sent to {email}.</p>", 200
+        else:
+            return f"<h1>Success!</h1><p>Your subscription is confirmed, but we had trouble sending the welcome email. Don't worry, you are already in our list.</p>", 200
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Confirmation error: {str(e)}")
+        return "<h1>Error</h1><p>An error occurred while confirming your subscription. Please try again later.</p>", 500
 
 @pubcontroller.route('/unsubscribe/<token>')
 @invalidate_cache(pattern="cache:*:/api/newsletter-subscribers*")
