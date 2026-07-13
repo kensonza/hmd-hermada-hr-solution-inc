@@ -35,8 +35,16 @@ def send_via_brevo(subject, html_content, to_email, to_name=None, reply_to=None)
     }
 
     payload = {
-        "sender": {"name": "HMD Hermada", "email": "ask@hmdhermada.com"},
-        "to": [{"email": to_email, "name": to_name or to_email}],
+        "sender": {
+            "name": "HMD Hermada",
+            "email": "ask@hmdhermada.com"
+        },
+        "to": [
+            {
+                "email": to_email,
+                "name": to_name or to_email
+            }
+        ],
         "subject": subject,
         "htmlContent": html_content
     }
@@ -217,11 +225,15 @@ def new_contact():
         db.session.commit()
 
         # Send Emails Via BREVO
-        manager_email = "ask@hmdhermada.com"
+        manager_emails = [
+            "ask@hmdhermada.com",
+            "ayen@hmdhermada.com"
+        ]
         
         # Email to Manager
         html_manager = generate_contact_html(name, email, subject, message)
-        send_via_brevo(f"New Inquiry: {subject}", html_manager, manager_email, "HMD Admin", reply_to=email)
+        for manager_email in manager_emails:
+            send_via_brevo(f"New Inquiry: {subject}", html_manager, manager_email, "HMD Admin", reply_to=email)
         
         # Auto-reply to Client
         html_client = generate_client_reply_html(name, subject)
@@ -233,13 +245,6 @@ def new_contact():
         db.session.rollback()
         logging.error(f"ERROR: {str(e)}")
         return jsonify({"error": "Failed to process your request"}), 500
-
-
-
-
-
-
-
 
 
 # Our Newsletter (Newsletter Subscription Form Submission).
