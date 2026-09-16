@@ -698,7 +698,7 @@ def generate_client_reply_html(database_name, expiration_date):
 def database_expiration_notification():
 
     # Static database information
-    database_name = "hmdhermada_tjs9"
+    database_name = "hmdhermada_ej4g"
     expiration_date = "2026-10-15"
 
     # Email recipient
