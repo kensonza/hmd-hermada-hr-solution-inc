@@ -34,6 +34,13 @@ def send_via_brevo(subject, html_content, to_email, to_name=None, reply_to=None)
         "content-type": "application/json"
     }
 
+    #payload = {
+    #    "sender": {"name": "HMD Hermada", "email": "ask@hmdhermada.com"},
+    #    "to": [{"email": to_email, "name": to_name or to_email}],
+    #    "subject": subject,
+    #    "htmlContent": html_content
+    #}
+
     payload = {
         "sender": {
             "name": "HMD Hermada",
@@ -534,3 +541,196 @@ def unsubscribe(token):
         db.session.rollback()
         logging.error(f"Unsubscribe error: {str(e)}")
         return "An error occurred. Please try again later.", 500
+
+
+
+
+
+### Email Notification for Database Expiration - New Added 09/16/2026 ###
+# Database Expiration Email Template.
+def generate_client_reply_html(database_name, expiration_date):
+
+    # Convert expiration date string to date object
+    expiration_date_obj = datetime.strptime(
+        expiration_date, "%Y-%m-%d"
+    ).date()
+
+    # Get current date from the machine/server
+    current_date = datetime.now().date()
+
+    # Calculate remaining days
+    days_remaining = (expiration_date_obj - current_date).days
+
+    template = """
+              <!DOCTYPE html>
+              <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Database Expiration Notification - HMD Hermada</title>
+                <style>
+                  body, table, td, a {{ -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }}
+                  table {{ border-collapse: collapse !important; }}
+                  body {{ margin: 0; padding: 0; width: 100%; font-family: Arial, sans-serif; background-color: #f9f9f9; }}
+                  .email-container {{ max-width: 600px; margin: auto; background: #ffffff; border: 1px solid #e0e0e0; }}
+                  .header {{ background: #dec55d; color: #ffffff !important; text-align: center; padding: 30px 20px; font-size: 26px; font-weight: bold; }}
+                  .body-content {{ padding: 30px 25px; line-height: 1.6; color: #333333; }}
+                  .footer {{ background: #f4f4f4; text-align: center; padding: 20px; font-size: 12px; color: #777777; }}
+                  .gold-text {{ color: #dec55d; font-weight: bold; }}
+                  @media screen and (max-width: 600px) {{ .email-container {{ width: 100% !important; }} .header {{ font-size: 22px !important; }} }}
+                </style>
+              </head>
+              <body>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center" style="padding: 20px 0;">
+                      <table class="email-container" width="600" cellpadding="0" cellspacing="0" border="0">
+                        <tr><td class="header">HMD Hermada HR Solutions Corporation</td></tr>
+
+                        <tr>
+                          <td class="body-content">
+
+                            <h2 style="color: #dec55d; margin-top: 0;">
+                              Database Expiration Notification
+                            </h2>
+
+                            <p>Hello,</p>
+
+                            <p>
+                              This is an automated notification to inform you that the
+                              <span class="gold-text">Render database</span> for HMD Hermada
+                              is approaching its expiration date.
+                            </p>
+
+                            <div style="background: #fff8df; border-left: 4px solid #dec55d; padding: 15px 18px; margin: 25px 0;">
+
+                              <p style="margin: 0 0 8px 0;">
+                                <strong>Database:</strong> {database_name}
+                              </p>
+
+                              <p style="margin: 0 0 8px 0;">
+                                <strong>Expiration Date:</strong> {expiration_date}
+                              </p>
+
+                              <p style="margin: 0;">
+                                <strong>Days Remaining:</strong> {days_remaining} day(s)
+                              </p>
+
+                            </div>
+
+                            <p>
+                              Please review the database status in the
+                              <span class="gold-text">Render Dashboard</span> and take the
+                              necessary action before the expiration date to avoid any
+                              potential interruption to the application.
+                            </p>
+
+                            <div style="text-align: center; margin-top: 30px;">
+                              <a href="https://dashboard.render.com/"
+                                 style="background: #dec55d; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 5px; display: inline-block; font-weight: bold;">
+                                Open Render Dashboard
+                              </a>
+                            </div>
+
+                            <p style="font-size: 12px; color: #888888; margin-top: 30px;">
+                              This is an automated system notification. No action is required
+                              if the database expiration has already been addressed.
+                            </p>
+
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="footer">
+
+                            <div style="text-align: center; margin-bottom: 20px;">
+
+                              <a href="https://www.facebook.com/hmdhermada/"
+                                 target="_blank"
+                                 style="text-decoration: none; margin: 0 5px;">
+                                <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png"
+                                     title="Facebook | HMD Hermada"
+                                     alt="Facebook | HMD Hermada"
+                                     width="22"
+                                     height="22"
+                                     style="display: inline-block; vertical-align: middle;">
+                              </a>
+
+                              <a href="https://www.linkedin.com/company/hmd-hermada"
+                                 target="_blank"
+                                 style="text-decoration: none; margin: 0 5px;">
+                                <img src="https://cdn-icons-png.flaticon.com/512/3536/3536505.png"
+                                     title="LinkedIn | HMD Hermada"
+                                     alt="LinkedIn | HMD Hermada"
+                                     width="22"
+                                     height="22"
+                                     style="display: inline-block; vertical-align: middle;">
+                              </a>
+
+                            </div>
+
+                            &copy; 2026 HMD Hermada HR Solutions Corporation. All Rights Reserved.<br>
+
+                            <span style="display: block; margin-top: 5px;">
+                              Unit 2C 4th Floor Regus One E-com Bldg Ocean Drive Mall Of Asia Complex, Barangay 76 1300 Pasay City NCR, Fourth District Philippines
+                              <br>
+                            </span>
+
+                          </td>
+                        </tr>
+
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </body>
+              </html>
+              """
+
+    return template.format(
+        database_name=database_name,
+        expiration_date=expiration_date,
+        days_remaining=days_remaining
+    )
+
+
+@pubcontroller.route('/database-expiration-notification', methods=['GET', 'POST'])
+def database_expiration_notification():
+
+    # Static database information
+    database_name = "hmdhermada_tjs9"
+    expiration_date = "2026-10-15"
+
+    # Email recipient
+    email = "kensonza@gmail.com"
+    name = "Web Admin"
+
+    try:
+
+        # Generate Email HTML
+        html_client = generate_client_reply_html(
+            database_name,
+            expiration_date
+        )
+
+        # Send Email Via BREVO
+        send_via_brevo(
+            "Database Expiration Notification - HMD Hermada",
+            html_client,
+            email,
+            name
+        )
+
+        return jsonify({
+            "message": "Database expiration notification sent successfully!"
+        }), 200
+
+    except Exception as e:
+
+        logging.error(
+            f"Database expiration notification error: {str(e)}"
+        )
+
+        return jsonify({
+            "error": "Failed to send database expiration notification"
+        }), 500
