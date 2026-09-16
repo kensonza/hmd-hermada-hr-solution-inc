@@ -44,6 +44,17 @@ def admin_newsletter():
 
 #### Settings ####
 
+# Cron Jobs
+@admroute.route('/hidden/admin-panel/cron-jobs')
+@login_required
+@maintenance
+def admin_cron_jobs():
+
+    # Get member session
+    user_session = session['nickname']
+
+    return render_template('admin/cron-jobs.html', adnav_active='cron-jobs', user_session = user_session)
+
 # User Accounts
 @admroute.route('/hidden/admin-panel/user-accounts')
 @login_required
@@ -52,6 +63,5 @@ def admin_user_accounts():
 
     # Get member session
     user_session = session['nickname']
-
 
     return render_template('admin/user-accounts.html', adnav_active='user-accounts', user_session = user_session)

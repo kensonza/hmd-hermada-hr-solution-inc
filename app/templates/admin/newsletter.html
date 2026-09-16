@@ -3,7 +3,7 @@
 {% block title %} HMD Hermada - Our Newsletter {% endblock %}
 
 {% block head %}
-Style the Bootstrap pagination arrow anchor links with a gray color.
+<!-- Style the Bootstrap pagination arrow anchor links with a gray color. -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
@@ -244,32 +244,32 @@ td span {
               <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title">Newsletter Content</h5>
+                    <h5 class="modal-title">Newsletter Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                   </div>
                   <div class="modal-body">
-                    <div class="mb-3">
-                      <label class="form-label fw-bold">Title:</label>
-                      <input type="text" id="view_nl_title" class="form-control" disabled>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label fw-bold">Subject:</label>
-                      <input type="text" id="view_nl_subject" class="form-control" disabled>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label fw-bold">Description Preview:</label>
-                      <div id="view-editor-container" style="border: 1px solid #dee2e6; padding: 15px; min-height: 200px; background-color: #f9f9f9; border-radius: 5px; overflow-y: auto;"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Status:</label>
-                        <select class="form-select" id="view_nl_status" disabled>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <table class="table table-bordered">
+                      <tr>
+                        <th>Token ID</th>
+                        <td id="view_nl_token"></td>
+                      </tr>
+                      <tr>
+                        <th>Title</th>
+                        <td id="view_nl_title"></td>
+                      </tr>
+                      <tr>
+                        <th>Subject</th>
+                        <td id="view_nl_subject"></td>
+                      </tr>
+                      <tr>
+                        <th>Description</th>
+                        <td id="view-editor-container" style="white-space: pre-wrap;"></td>
+                      </tr>
+                      <tr>
+                        <th>Status</th>
+                        <td id="view_nl_status"></td>
+                      </tr>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -545,9 +545,10 @@ $(document).on('click', '.view-nl, .edit-btn, .delete-btn', async function(e) {
         e.preventDefault();
         const newsletter = nlAllRows.find(n => n.nl_token_id === target.data('id'));
         if (!newsletter) return;
-        $('#view_nl_title').val(newsletter.nl_title);
-        $('#view_nl_subject').val(newsletter.nl_subject);
-        $('#view_nl_status').val(newsletter.nl_status);
+        $('#view_nl_token').text(newsletter.nl_token_id);
+        $('#view_nl_title').text(newsletter.nl_title);
+        $('#view_nl_subject').text(newsletter.nl_subject);
+        $('#view_nl_status').text(newsletter.nl_status);
         $('#view-editor-container').html(newsletter.nl_description || ''); 
         new bootstrap.Modal(document.getElementById('viewNlModal')).show();
     }
