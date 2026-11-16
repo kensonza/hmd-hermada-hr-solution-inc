@@ -698,8 +698,8 @@ def generate_db_expiration_monitoring_html(database_name, expiration_date):
 def database_expiration_notification():
 
     # Static database information
-    database_name = "hmdhermada_ej4g"
-    expiration_date = "2026-10-15"
+    database_name = "hmdhermada_tgbn"
+    expiration_date = "2026-12-16"
 
     # Email recipient
     email = "kensonza@gmail.com"
