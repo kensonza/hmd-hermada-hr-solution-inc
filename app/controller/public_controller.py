@@ -548,7 +548,7 @@ def unsubscribe(token):
 
 ### Email Notification for Database Expiration - New Added 09/16/2026 ###
 # Database Expiration Email Template.
-def generate_client_reply_html(database_name, expiration_date):
+def generate_db_expiration_monitoring_html(database_name, expiration_date):
 
     # Convert expiration date string to date object
     expiration_date_obj = datetime.strptime(
@@ -708,7 +708,7 @@ def database_expiration_notification():
     try:
 
         # Generate Email HTML
-        html_client = generate_client_reply_html(
+        html_client = generate_db_expiration_monitoring_html(
             database_name,
             expiration_date
         )
